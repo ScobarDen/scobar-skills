@@ -18,9 +18,7 @@ npx skills add ScobarDen/scobar-skills --skill frontend-mvvm
 
 ## Шаблон инструкций агента
 
-Не скилл и не ставится через `npx skills add`. Это короткий `CLAUDE.md`, который я копирую в новый репо или в `~/.claude/CLAUDE.md`.
-
-Файл: [`templates/CLAUDE.md`](templates/CLAUDE.md)
+Не скилл и не ставится через `npx skills add`. Нейтральный [`templates/AGENTS.md`](templates/AGENTS.md) — копирую в корень репо как `AGENTS.md`. Если агент читает только другое имя (`CLAUDE.md`, `GEMINI.md`) — копия или симлинк туда же.
 
 Внутри только поведение, без каталога скиллов и без стека:
 
@@ -29,18 +27,12 @@ npx skills add ScobarDen/scobar-skills --skill frontend-mvvm
 - zero comments
 - планы
 - TODO/FIXME
-- как открывать ссылки
+- как открывать ссылки (fetch → нативный браузер агента → Playwright)
 - кто побеждает при конфликте: чат > проектные правила > скиллы / этот файл
 
 ```bash
-# в корень репо
-curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templates/CLAUDE.md -o CLAUDE.md
-
-# или глобально для Claude Code
-curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templates/CLAUDE.md -o ~/.claude/CLAUDE.md
+curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templates/AGENTS.md -o AGENTS.md
 ```
-
-Для Codex / Cursor / Gemini тот же текст можно положить как `AGENTS.md`.
 
 ---
 
@@ -113,7 +105,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 ## Как устроен репозиторий
 
 ```
-templates/CLAUDE.md   копируемый файл инструкций агента
+templates/AGENTS.md   копируемый файл инструкций агента
 skills/
   frontend/   frontend-mvvm, frontend-state-stack, frontend-testing-approach, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
