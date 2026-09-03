@@ -1,0 +1,32 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Frontend",
+      "description": "MVVM, выбор клиентского стека, тесты и MobX-рецепт.",
+      "skills": [
+        "frontend-mvvm",
+        "frontend-state-stack",
+        "frontend-testing-approach",
+        "mobx-mvvm"
+      ]
+    },
+    {
+      "title": "Qt",
+      "description": "Модульный MVVM и границы архитектуры через CMake.",
+      "skills": [
+        "qt-modular-mvvm",
+        "qt-cmake-boundaries"
+      ]
+    },
+    {
+      "title": "Reatom",
+      "description": "Полевые заметки и тестирование поверх официальных скиллов Reatom.",
+      "skills": [
+        "reatom-field-notes",
+        "reatom-testing"
+      ]
+    }
+  ]
+}
