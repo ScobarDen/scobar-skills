@@ -44,7 +44,6 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | --- | --- |
 | [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Экран с клиентской логикой: слои, пассивный View, VM как фасад и медиатор. Не про выбор STM. |
 | [`frontend-state-stack`](skills/frontend/frontend-state-stack/SKILL.md) | Greenfield или «какой стейт-менеджер». Пока стек уже выбран — не нужен. |
-| [`frontend-testing-approach`](skills/frontend/frontend-testing-approach/SKILL.md) | Писать / ревьюить фронтовые тесты: стоит ли вообще, слои, лестница хелперов L0–L4. |
 | [`mobx-mvvm`](skills/frontend/mobx-mvvm/SKILL.md) | Рецепт, если проект уже на MobX. На greenfield не предлагать. |
 
 ### Qt
@@ -107,7 +106,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 ```
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
-  frontend/   frontend-mvvm, frontend-state-stack, frontend-testing-approach, mobx-mvvm
+  frontend/   frontend-mvvm, frontend-state-stack, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
 ```

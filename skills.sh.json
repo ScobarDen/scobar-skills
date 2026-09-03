@@ -4,11 +4,10 @@
   "groupings": [
     {
       "title": "Frontend",
-      "description": "MVVM, выбор клиентского стека, тесты и MobX-рецепт.",
+      "description": "MVVM, выбор клиентского стека и MobX-рецепт.",
       "skills": [
         "frontend-mvvm",
         "frontend-state-stack",
-        "frontend-testing-approach",
         "mobx-mvvm"
       ]
     },
