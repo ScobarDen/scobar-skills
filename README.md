@@ -50,7 +50,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | --- | --- |
 | [`pr-description`](skills/workflow/pr-description/SKILL.md) | Нужен тайтл и описание PR/MR. Форж-агностик, шаблон репо главнее своего, группировка по домену, а не по файлам. |
 | [`worktree-flow`](skills/workflow/worktree-flow/SKILL.md) | Ворктри: папка-сиблинг `<repo>-<slug>`, перенос локальных untracked-файлов, снос по лестнице проверок (грязь, стэш, непушнутое, открытый MR, влито ли — включая squash). |
-| [`improve`](skills/workflow/improve/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Не баг-хант. |
+| [`refactor-advice`](skills/workflow/refactor-advice/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Не баг-хант. |
 
 ### Frontend
 
@@ -120,7 +120,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 ```
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
-  workflow/   pr-description, worktree-flow, improve
+  workflow/   pr-description, worktree-flow, refactor-advice
   frontend/   frontend-mvvm, frontend-state-stack, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing

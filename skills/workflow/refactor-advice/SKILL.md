@@ -1,9 +1,9 @@
 ---
-name: improve
+name: refactor-advice
 description: Prioritized, read-only improvement advice for a feature, module, path or the current branch's diff — quick wins versus deeper refactors, each with a why, a before→after snippet and effort/impact/risk. Treats simplification as a first-class lens — hunts places where a verbose block collapses to a fraction of its size. Builds the project's effective rulebook by priority and speaks in the architecture the project actually uses. Load when the user asks to improve, simplify, clean up, refactor, tidy, "make this nicer", "what's wrong with this code", "как это упростить". Not a bug hunt and not an automatic rewrite — advice first, edits only when asked. Stack-agnostic.
 ---
 
-# Improve
+# Refactor advice
 
 Given a feature, a module, a path, or just "what I've been writing" — produce a prioritized set of concrete improvements. Each one gets a reason, a `before → after` snippet and an honest cost.
 
