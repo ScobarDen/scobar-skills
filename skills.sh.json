@@ -4,11 +4,12 @@
   "groupings": [
     {
       "title": "Workflow",
-      "description": "Стек-нейтральное: описание PR/MR, ворктри, поиск улучшений.",
+      "description": "Стек-нейтральное: ремесло письма кода, описание PR/MR, ворктри, поиск улучшений.",
       "skills": [
+        "code-craft",
+        "refactor-advice",
         "pr-description",
-        "worktree-flow",
-        "refactor-advice"
+        "worktree-flow"
       ]
     },
     {

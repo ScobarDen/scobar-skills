@@ -1,6 +1,6 @@
 ---
 name: refactor-advice
-description: Prioritized, read-only improvement advice for a feature, module, path or the current branch's diff — quick wins versus deeper refactors, each with a why, a before→after snippet and effort/impact/risk. Treats simplification as a first-class lens — hunts places where a verbose block collapses to a fraction of its size. Builds the project's effective rulebook by priority and speaks in the architecture the project actually uses. Load when the user asks to improve, simplify, clean up, refactor, tidy, "make this nicer", "what's wrong with this code", "как это упростить". Not a bug hunt and not an automatic rewrite — advice first, edits only when asked. Stack-agnostic.
+description: Prioritized, read-only improvement advice for a feature, module, path or the current branch's diff — quick wins versus deeper refactors, each with a why, a before→after snippet and effort/impact/risk. Treats simplification as a first-class lens — hunts places where a verbose block collapses to a fraction of its size. Builds the project's effective rulebook by priority and speaks in the architecture the project actually uses. Load when the user asks to improve, simplify, clean up, refactor, tidy, "make this nicer", "what's wrong with this code", "как это упростить". Not a bug hunt and not an automatic rewrite — advice first, edits only when asked. Pairs with code-craft, which owns the doctrine this judges against. Stack-agnostic.
 ---
 
 # Refactor advice
@@ -10,6 +10,8 @@ Given a feature, a module, a path, or just "what I've been writing" — produce 
 **Advisory by default.** Read, judge, report. Applying the suggestions is a separate decision the user makes after seeing them — and when they do say "apply", apply only what they picked, not the whole list.
 
 **This is not a review.** Reviews hunt defects; this hunts better shapes for code that already works. A real bug you trip over gets one line ("also: `foo.ts:42` drops the error"), not a findings section.
+
+**Doctrine lives in `code-craft`** — what a good name, a good signature, a good state shape and a good function look like, plus the base floor. Load it first and judge against it. Do not restate those rules here; this file owns only what is specific to advising on code that already exists. The two are a pair.
 
 ## 1. Resolve the scope
 
@@ -30,7 +32,7 @@ Advice measured against the wrong rules is noise. Discover the project's *effect
 1. **The project's own rules.** `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` at the root *and* nested ones deeper in the tree, `.cursorrules`, `.cursor/rules/**`, `.windsurfrules`, `.github/copilot-instructions.md`, `CONTRIBUTING.md`, the dev section of `README`, `.editorconfig`, and the linter/formatter/compiler configs the project actually runs (ESLint, Prettier, Biome, Ruff, Black, clang-format, clang-tidy, golangci-lint, RuboCop, ktlint, `tsconfig.json`, `.clang-tidy`, `pyproject.toml`, `Cargo.toml` lints, `.editorconfig`).
 2. **The project's own skills and agents** — `./.claude/skills/*/SKILL.md`, `./.claude/agents/*`, or the equivalent for whatever harness is in use. These are the conventions the team wrote down for itself.
 3. **Installed skills matching the detected stack.** Detect the stack from the repo — manifests, lockfiles, file extensions, imports, config files — and load the skills that match it *before* judging code written in it. A Vue project's advice comes from the Vue skill, not from general instincts about components; a Qt project's from the Qt skill; a test file's from the test-runner skill. Read the ones the stack actually uses and no others.
-4. **The base floor, always in effect.** SOLID, KISS, YAGNI, DRY, separation of concerns, Law of Demeter, composition over inheritance, fail fast, principle of least astonishment, high cohesion / low coupling, the Boy Scout rule — plus declarative call sites (§4).
+4. **The base floor, always in effect** — naming, signatures, state shape, function shape, code placement and the classic principles, all of it in **`code-craft`**. Load that skill rather than working from memory of it.
 
 A conflict between levels is worth one line in the report. The project's convention beating a general principle is the correct outcome, not a finding.
 
@@ -50,23 +52,13 @@ Read the real structure and name units the way the project names them:
 
 **An architecture the project doesn't use is not a finding.** "This should be FSD" is not advice, it's a rewrite proposal wearing advice's clothes.
 
-## 4. Declarative call sites
+## 4. Applying the doctrine as an advisor
 
-A reader should get what a call does from its name and arguments alone, without opening the callee. This bites only where the parameter name is **invisible at the call site** — positional arguments. Named forms (keyword arguments, object fields, template props, builders) are already declarative; never report those.
+`code-craft` says what the right shape is. Turning that into advice about code that already ships adds three constraints it doesn't have:
 
-| Smell | The shape to suggest |
-| --- | --- |
-| `setContent(node, true)` — a positional flag that switches behaviour | an options object, a `'replace' \| 'append'` mode, or two functions |
-| `retry(3, 500, true)` — magic literals, no names in sight | named parameters / an options object |
-| `handleData()`, `processItem()`, `DataManager` — names describing machinery, or nothing | names stating the observable result: `normalizeInvoice()`, `hasUnpaidInvoices`, `canEditOrder` |
-| `retryWithBackoffLoop()` — the algorithm leaking into the name | `fetchWithRetry()`: *what* it achieves; *how* stays inside |
-| `isLoading` + `isError` + `isEmpty` side by side on the project's own type or state | one `status` union — impossible states stop existing |
-| nested conditionals on the way to the happy path | guard clauses, early return, one level of abstraction per function |
-
-- A boolean that **is** the data is fine — `setVisible(true)`, `checked: true`. Only an argument that *selects a branch of behaviour* (`force`, `silent`, `recursive`, `override`) qualifies.
-- The union rule covers the project's **own** domain types and state — never the return shape of a third-party library. Suggesting a wrapper just to comply is a false positive.
-- Where the codebase passes flags positionally everywhere, note the pattern **once**. It's the lowest-priority source, so the project's consistency wins.
-- Only inside your scope, and only where the fix is the scope's to make. A callee the scope doesn't own has other callers; reshaping it is out.
+- **Only inside the scope you were given, and only where the fix is the scope's to make.** A callee the scope doesn't own has other callers; reshaping its signature is out. At most, suggest a named constant at the call site you do own.
+- **Where the codebase breaks a rule everywhere, note the pattern once** — not once per call site. Consistency is the project's own convention, and that outranks the base floor.
+- **Severity tracks reach.** The same defect is worth acting on when the signature is public — an exported symbol, a component prop, an endpoint payload — and worth a nit when it's a private helper inside one file.
 
 ## 5. Read enough to be right
 

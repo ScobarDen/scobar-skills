@@ -29,7 +29,7 @@ npx skills add ScobarDen/scobar-skills --skill frontend-mvvm
 - TODO/FIXME
 - как открывать ссылки (fetch → нативный браузер агента → Playwright)
 - ворктри — только через скилл, и не плодить ворктри внутри ворктри
-- специфичная задача (тесты, фреймворк, язык, библиотека) — сначала проверь, есть ли скилл под неё
+- специфичная задача (тесты, фреймворк, язык, библиотека) — сначала проверь, есть ли скилл под неё; то же и для общих скиллов про ремесло
 - кто побеждает при конфликте: чат > проектные правила > скиллы / этот файл
 
 Каталога скиллов внутри нет. Единственное исключение — `worktree-flow` в пункте про ворктри, и то как `e.g.`: инструкция рабочая и без него.
@@ -48,9 +48,12 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 | Скилл | Когда грузить |
 | --- | --- |
+| [`code-craft`](skills/workflow/code-craft/SKILL.md) | В момент решения, а не на ревью: как назвать, какая подпись, `setContent(node, true, false)` → union или options, guard clauses вместо вложенности, куда положить файл. |
+| [`refactor-advice`](skills/workflow/refactor-advice/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Не баг-хант. |
 | [`pr-description`](skills/workflow/pr-description/SKILL.md) | Нужен тайтл и описание PR/MR. Форж-агностик, шаблон репо главнее своего, группировка по домену, а не по файлам. |
 | [`worktree-flow`](skills/workflow/worktree-flow/SKILL.md) | Ворктри: папка-сиблинг `<repo>-<slug>`, перенос локальных untracked-файлов, снос по лестнице проверок (грязь, стэш, непушнутое, открытый MR, влито ли — включая squash). |
-| [`refactor-advice`](skills/workflow/refactor-advice/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Не баг-хант. |
+
+Пара: `code-craft` владеет доктриной (имена, подписи, форма состояния и функции, базовые принципы), `refactor-advice` её не переписывает, а ссылается и добавляет машинерию отчёта. Ставить лучше оба.
 
 ### Frontend
 
@@ -92,6 +95,7 @@ npx skills add https://github.com/reatom/reatom/tree/v1001/skills
 npx skills add antfu/skills
 npx skills add DenisSergeevitch/agents-best-practices
 npx skills add TheQtCompanyRnD/agent-skills
+npx skills add addyosmani/agent-skills --skill code-simplification
 ```
 
 - [siberiacancode/agent-skills](https://github.com/siberiacancode/agent-skills) — фронт, тесты, практика.
@@ -100,6 +104,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 - [DenisSergeevitch/agents-best-practices](https://github.com/DenisSergeevitch/agents-best-practices) — как собирать агентный харнесс.
 - [DenisSergeevitch/chatgpt-custom-instructions](https://github.com/DenisSergeevitch/chatgpt-custom-instructions) — не скиллы, а кастомные инструкции; всё равно стоит глянуть.
 - [TheQtCompanyRnD/agent-skills](https://github.com/TheQtCompanyRnD/agent-skills) — скиллы Qt Company.
+- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) — `code-simplification` заходит с другой стороны, чем мой `code-craft`: процесс упрощения уже написанного, разбор врущих имён, замена булеан-параметров. Внутрь себя не тащу — чужое ставится из первоисточника, а лестница правил в `refactor-advice` подхватит его сама.
 
 ### MCP
 
@@ -120,7 +125,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 ```
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
-  workflow/   pr-description, worktree-flow, refactor-advice
+  workflow/   code-craft, refactor-advice, pr-description, worktree-flow
   frontend/   frontend-mvvm, frontend-state-stack, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
