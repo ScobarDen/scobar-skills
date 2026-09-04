@@ -20,7 +20,7 @@ npx skills add ScobarDen/scobar-skills --skill frontend-mvvm
 
 Не скилл и не ставится через `npx skills add`. Нейтральный [`templates/AGENTS.md`](templates/AGENTS.md) — копирую в корень репо как `AGENTS.md`. Если агент читает только другое имя (`CLAUDE.md`, `GEMINI.md`) — копия или симлинк туда же.
 
-Внутри только поведение, без каталога скиллов и без стека:
+Внутри только поведение, без стека:
 
 - русский в чате, английский в коде
 - стиль общения
@@ -28,7 +28,11 @@ npx skills add ScobarDen/scobar-skills --skill frontend-mvvm
 - планы
 - TODO/FIXME
 - как открывать ссылки (fetch → нативный браузер агента → Playwright)
+- ворктри — только через скилл, и не плодить ворктри внутри ворктри
+- специфичная задача (тесты, фреймворк, язык, библиотека) — сначала проверь, есть ли скилл под неё
 - кто побеждает при конфликте: чат > проектные правила > скиллы / этот файл
+
+Каталога скиллов внутри нет. Единственное исключение — `worktree-flow` в пункте про ворктри, и то как `e.g.`: инструкция рабочая и без него.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templates/AGENTS.md -o AGENTS.md
@@ -37,6 +41,16 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 ---
 
 ## Что внутри
+
+### Workflow
+
+Стек-нейтральные. Работают на фронте, на бэке, на Qt, на чём угодно с гитом.
+
+| Скилл | Когда грузить |
+| --- | --- |
+| [`pr-description`](skills/workflow/pr-description/SKILL.md) | Нужен тайтл и описание PR/MR. Форж-агностик, шаблон репо главнее своего, группировка по домену, а не по файлам. |
+| [`worktree-flow`](skills/workflow/worktree-flow/SKILL.md) | Ворктри: папка-сиблинг `<repo>-<slug>`, перенос локальных untracked-файлов, снос по лестнице проверок (грязь, стэш, непушнутое, открытый MR, влито ли — включая squash). |
+| [`improve`](skills/workflow/improve/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Не баг-хант. |
 
 ### Frontend
 
@@ -106,6 +120,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 ```
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
+  workflow/   pr-description, worktree-flow, improve
   frontend/   frontend-mvvm, frontend-state-stack, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing

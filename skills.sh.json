@@ -3,6 +3,15 @@
   "notGrouped": "bottom",
   "groupings": [
     {
+      "title": "Workflow",
+      "description": "Стек-нейтральное: описание PR/MR, ворктри, поиск улучшений.",
+      "skills": [
+        "pr-description",
+        "worktree-flow",
+        "improve"
+      ]
+    },
+    {
       "title": "Frontend",
       "description": "MVVM, выбор клиентского стека и MobX-рецепт.",
       "skills": [
