@@ -103,7 +103,6 @@ npx skills add TheQtCompanyRnD/agent-skills
 - [DenisSergeevitch/agents-best-practices](https://github.com/DenisSergeevitch/agents-best-practices) — как собирать агентный харнесс.
 - [DenisSergeevitch/chatgpt-custom-instructions](https://github.com/DenisSergeevitch/chatgpt-custom-instructions) — не скиллы, а кастомные инструкции; всё равно стоит глянуть.
 - [TheQtCompanyRnD/agent-skills](https://github.com/TheQtCompanyRnD/agent-skills) — скиллы Qt Company.
-- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) — `code-simplification` я не ставлю: доктринальная часть у меня уже закрыта `code-craft` и `refactor-advice`. Но дисциплина применения правок в `refactor-advice` §8 (Chesterton's Fence и `git blame` перед правкой, поведение заморожено, тест пришлось править → это не рефакторинг, по одному изменению за раз) подсмотрена именно там. Текст мой, идея оттуда — стоит прочитать в оригинале.
 
 ### MCP
 
