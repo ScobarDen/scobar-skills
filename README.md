@@ -49,7 +49,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | Скилл | Когда грузить |
 | --- | --- |
 | [`code-craft`](skills/workflow/code-craft/SKILL.md) | В момент решения, а не на ревью: как назвать, какая подпись, `setContent(node, true, false)` → union или options, guard clauses вместо вложенности, куда положить файл. |
-| [`refactor-advice`](skills/workflow/refactor-advice/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Не баг-хант. |
+| [`refactor-advice`](skills/workflow/refactor-advice/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Плюс дисциплина применения: `git blame` перед правкой, поведение заморожено, по одному изменению. Не баг-хант. |
 | [`pr-description`](skills/workflow/pr-description/SKILL.md) | Нужен тайтл и описание PR/MR. Форж-агностик, шаблон репо главнее своего, группировка по домену, а не по файлам. |
 | [`worktree-flow`](skills/workflow/worktree-flow/SKILL.md) | Ворктри: папка-сиблинг `<repo>-<slug>`, перенос локальных untracked-файлов, снос по лестнице проверок (грязь, стэш, непушнутое, открытый MR, влито ли — включая squash). |
 
@@ -95,7 +95,6 @@ npx skills add https://github.com/reatom/reatom/tree/v1001/skills
 npx skills add antfu/skills
 npx skills add DenisSergeevitch/agents-best-practices
 npx skills add TheQtCompanyRnD/agent-skills
-npx skills add addyosmani/agent-skills --skill code-simplification
 ```
 
 - [siberiacancode/agent-skills](https://github.com/siberiacancode/agent-skills) — фронт, тесты, практика.
@@ -104,7 +103,7 @@ npx skills add addyosmani/agent-skills --skill code-simplification
 - [DenisSergeevitch/agents-best-practices](https://github.com/DenisSergeevitch/agents-best-practices) — как собирать агентный харнесс.
 - [DenisSergeevitch/chatgpt-custom-instructions](https://github.com/DenisSergeevitch/chatgpt-custom-instructions) — не скиллы, а кастомные инструкции; всё равно стоит глянуть.
 - [TheQtCompanyRnD/agent-skills](https://github.com/TheQtCompanyRnD/agent-skills) — скиллы Qt Company.
-- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) — `code-simplification` заходит с другой стороны, чем мой `code-craft`: процесс упрощения уже написанного, разбор врущих имён, замена булеан-параметров. Внутрь себя не тащу — чужое ставится из первоисточника, а лестница правил в `refactor-advice` подхватит его сама.
+- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) — `code-simplification` я не ставлю: доктринальная часть у меня уже закрыта `code-craft` и `refactor-advice`. Но дисциплина применения правок в `refactor-advice` §8 (Chesterton's Fence и `git blame` перед правкой, поведение заморожено, тест пришлось править → это не рефакторинг, по одному изменению за раз) подсмотрена именно там. Текст мой, идея оттуда — стоит прочитать в оригинале.
 
 ### MCP
 

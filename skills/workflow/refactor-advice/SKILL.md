@@ -1,13 +1,13 @@
 ---
 name: refactor-advice
-description: Prioritized, read-only improvement advice for a feature, module, path or the current branch's diff — quick wins versus deeper refactors, each with a why, a before→after snippet and effort/impact/risk. Treats simplification as a first-class lens — hunts places where a verbose block collapses to a fraction of its size. Builds the project's effective rulebook by priority and speaks in the architecture the project actually uses. Load when the user asks to improve, simplify, clean up, refactor, tidy, "make this nicer", "what's wrong with this code", "как это упростить". Not a bug hunt and not an automatic rewrite — advice first, edits only when asked. Pairs with code-craft, which owns the doctrine this judges against. Stack-agnostic.
+description: Prioritized, read-only improvement advice for a feature, module, path or the current branch's diff — quick wins versus deeper refactors, each with a why, a before→after snippet and effort/impact/risk. Treats simplification as a first-class lens — hunts places where a verbose block collapses to a fraction of its size. Builds the project's effective rulebook by priority and speaks in the architecture the project actually uses. Load when the user asks to improve, simplify, clean up, refactor, tidy, "make this nicer", "what's wrong with this code", "как это упростить". Not a bug hunt and not an automatic rewrite — advice first, edits only when asked, and then under a behaviour-preserving discipline (know why the code exists, one change at a time, tests green unmodified). Also load it when the user says to apply or land a refactor that was already discussed. Pairs with code-craft, which owns the doctrine this judges against. Stack-agnostic.
 ---
 
 # Refactor advice
 
 Given a feature, a module, a path, or just "what I've been writing" — produce a prioritized set of concrete improvements. Each one gets a reason, a `before → after` snippet and an honest cost.
 
-**Advisory by default.** Read, judge, report. Applying the suggestions is a separate decision the user makes after seeing them — and when they do say "apply", apply only what they picked, not the whole list.
+**Advisory by default.** Read, judge, report. Applying the suggestions is a separate decision the user makes after seeing them — and when they do say "apply", apply only what they picked, not the whole list, and under the discipline in §8.
 
 **This is not a review.** Reviews hunt defects; this hunts better shapes for code that already works. A real bug you trip over gets one line ("also: `foo.ts:42` drops the error"), not a findings section.
 
@@ -128,10 +128,50 @@ Why, the trade-off, and a representative `before → after`.
 - **Clean code gets a short report.** "This is already in good shape, here are two nits" is a complete and useful answer. Padding a report to look thorough is the single worst failure mode of this skill.
 - Language of the report follows the harness's own instructions (`AGENTS.md` / `CLAUDE.md` / chat). This skill doesn't override it.
 
+## 8. Applying what was picked
+
+The report is the default terminal state. This section starts only once the user names what they want done — and then it applies to those suggestions and nothing else.
+
+**Know why it exists before you change it.** For each thing you're about to touch — what is it responsible for, what calls it, what calls it makes, what its edge cases and error paths are, whether tests already define its behaviour, and **what `git blame` says about why it was written this way**. A fence across a road gets understood before it gets removed; the reason may still hold (a platform quirk, a perf fix, an incident). Can't answer those → not ready to touch it. Read more.
+
+**Behaviour is frozen.** Refactoring changes how code reads, never what it does. Before each change, check it holds:
+
+- the same output for every input, including the ugly ones
+- the same behaviour on error — nothing swallowed, nothing newly thrown
+- the same side effects, in the same order
+- **existing tests pass unmodified**
+
+That last one is the sharpest signal there is. **If a test had to be edited to go green, the behaviour changed** — that's not a refactor, and it needs to be raised, not absorbed. The only legitimate test edit is one the user asked for as part of the change.
+
+**One at a time.** Make a single change, run the suite, keep it or revert it, then take the next. A batch that goes red tells you nothing about which edit did it. And don't run a refactor and a feature in the same commit — a change that both reshapes and adds is two changes, and reviewing it as one costs more than splitting it.
+
+**Watch for over-simplification** — the failure mode of this whole exercise:
+
+| Looked like a win | What it actually cost |
+| --- | --- |
+| Inlined a one-line helper | The name that helper carried was the only place the concept was explained |
+| Merged two small functions | Two simple things became one complex thing |
+| Dropped an abstraction with one implementation | It existed for testability or a seam, not because someone over-engineered |
+| Removed a try/catch that "did nothing" | The error path was the point; now it fails silently somewhere else |
+| Collapsed a branch to a clever one-liner | Comprehension speed went down, which is the only metric that mattered |
+
+**Stop condition.** If the result reads worse, or the diff is harder to review than the code was to read, revert it and say so. Not every suggestion survives contact with the code — abandoning one is a normal outcome, not a failure to report.
+
+### Rationalizations to catch yourself on
+
+| Excuse | Reality |
+| --- | --- |
+| "The test needed a tiny tweak to match" | The tweak is the evidence that behaviour moved. Stop and surface it. |
+| "I'll fix this unrelated thing while I'm in here" | Out-of-scope edits make the diff unreviewable and put regressions where nobody is looking for them. |
+| "The author had no reason for this, it's just cruft" | Sometimes true. `git blame` is how you find out, and it costs one command. |
+| "I'll batch these, they're all small" | Small edits break things too, and a red suite over five of them costs more than five green runs. |
+| "Tests are green, so it's equivalent" | Green means the suite didn't catch it. A gap in coverage is not a proof of equivalence. |
+| "It's shorter, so it's better" | Shorter is a means. If it reads worse, the change is a regression that happens to fit on one line. |
+
 ## What NOT to do
 
-- ❌ Don't edit code as part of the analysis. Advise first; apply only what the user picks.
-- ❌ Don't run tests, lint, build, or anything that mutates the tree.
+- ❌ Don't edit code as part of the analysis. Advise first; apply only what the user picks, under §8.
+- ❌ Don't run tests, lint or build **during the analysis** — that part is reads only. Once you are applying (§8), running the suite after every single change is required.
 - ❌ Don't propose a wholesale rewrite. Incremental steps that each leave the code working.
 - ❌ Don't invent problems to fill the report, and don't restate the scope for its own sake — mention only code you have something to say about.
 - ❌ Don't impose an architecture, a state manager, or a library the project didn't choose.
