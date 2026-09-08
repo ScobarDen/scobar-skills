@@ -82,6 +82,16 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | [`reatom-field-notes`](skills/reatom/reatom-field-notes/SKILL.md) | Вместе с `reatom`: странные аборты, рекурсия, полевые заметки из канала автора. |
 | [`reatom-testing`](skills/reatom/reatom-testing/SKILL.md) | Тесты на Reatom: `context.start` / `context.reset`, моки, тайминг ассерта. |
 
+### Поверх Мэтта
+
+**Добавка** к [`mattpocock/skills`](https://github.com/mattpocock/skills), не замена. Сначала поставь его пак (см. ниже).
+
+| Скилл | Когда грузить |
+| --- | --- |
+| [`matt-flow`](skills/mattpocock/matt-flow/SKILL.md) | «Вот задача, веди за руку». Разбирает задачу в маршрут по флоу Мэтта, на каждом шаге говорит, какую команду печатать, и помнит, где ты остановился, после `/clear`. |
+
+Оркестраторы Мэтта (`/grill-with-docs`, `/to-spec`, `/to-tickets`, `/implement`) закрыты флагом `disable-model-invocation: true` — вызвать их может только человек, и `matt-flow` это не обходит: он навигатор, команды печатаешь ты. Заодно вставляет в маршрут мои скиллы — стек-специфичные и `code-craft` / `test-craft` перед сборкой.
+
 ---
 
 ## Ещё поставь вот это
@@ -91,6 +101,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 ### Скиллы
 
 ```bash
+npx skills add mattpocock/skills
 npx skills add siberiacancode/agent-skills
 npx skills add https://github.com/reatom/reatom/tree/v1001/skills
 npx skills add antfu/skills
@@ -98,6 +109,7 @@ npx skills add DenisSergeevitch/agents-best-practices
 npx skills add TheQtCompanyRnD/agent-skills
 ```
 
+- [mattpocock/skills](https://github.com/mattpocock/skills) — процесс вместо вайбкодинга: грилл, спека, тикеты, TDD, ревью. Без него мой `matt-flow` пустой.
 - [siberiacancode/agent-skills](https://github.com/siberiacancode/agent-skills) — фронт, тесты, практика.
 - [reatom/reatom `v1001/skills`](https://github.com/reatom/reatom/tree/v1001/skills) — официальные `reatom` / `reatom-async` / `reatom-jsx` / `reatom-review`. Без них мои `reatom-*` слепые.
 - [antfu/skills](https://github.com/antfu/skills) — тулинг, eslint, монорепы, как делает Anthony Fu.
@@ -128,6 +140,7 @@ skills/
   frontend/   frontend-mvvm, frontend-state-stack, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
+  mattpocock/ matt-flow
 ```
 
 Формат — [Agent Skills](https://agentskills.io): папка со `SKILL.md` и YAML-frontmatter (`name`, `description`). Группы на [skills.sh](https://skills.sh/ScobarDen/scobar-skills) задаёт `skills.sh.json`.
