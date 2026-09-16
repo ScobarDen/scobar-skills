@@ -7,7 +7,9 @@ description: Explain work that already exists so the user understands the whole 
 
 A debrief after the flight: the work is done, and now the person who owns it has to understand it well enough to defend it, extend it, and know what they are still carrying.
 
-The reader is a developer who has not seen this code. Stack vocabulary is fine — `ViewModel`, facade, memoization. Anything specific to *this* project gets explained.
+The reader is a developer who has not seen this code — except where they have. Stack vocabulary is fine — `ViewModel`, facade, memoization. Anything specific to *this* project gets explained.
+
+**Calibrate on what the reader already watched.** Decisions the user made, approved or argued through in this session are established; re-deriving them spends the reader's attention on what they already hold. One line of reference each, and the budget goes to what happened out of their sight.
 
 **Read-only.** Reads git and files, writes the debrief into the chat. Runs no tests, no build, no linter. A file only when the user asks for one, at the path they name.
 
@@ -68,9 +70,9 @@ Sections in order; a section with nothing real in it collapses to one line rathe
 
 **Diff mode** — work that changed something:
 
-1. **Суть** — what it was, what it is now, what for. Three sentences.
+1. **Суть** — what it was, what it is now, what for. Three sentences. Where the delivered work diverged from what was asked — scope trimmed, approach swapped, a piece deferred — the divergence belongs here, in the opening. It is the first thing the reader needs and the last thing they will reach if it sits in section 4.
 2. **Карта изменений** — three to six bullets grouped by meaning, not by file. A reader should be able to name the moving parts from this alone.
-3. **Главные решения** — one block per decision from §4: what was chosen → why → what was turned down → what it commits you to next.
+3. **Главные решения** — one block per decision from §4: what was chosen → why → what was turned down → what it now costs, meaning what became harder, slower or newly obligatory. The cost stays inside the block beside the upside; a decision that lists only upsides is advertising.
 4. **Что осталось и где тонко** — cut corners, `TODO`s, uncovered cases, deferred calls, deliberate compromises. Written even when nobody asked, including the ones you made yourself.
 5. **Чего я не проверял** — tests not run, runtime not exercised, integrations not touched. Plus one command the user can run to close the biggest gap.
 6. **Что я сжал** — two or three places where the explanation simplified, each an offer to expand. This is where the reader sees the edge of their own understanding.
@@ -87,12 +89,13 @@ Sections in order; a section with nothing real in it collapses to one line rathe
 
 - **Past tense, factual verbs.** "Вынес маппинг в фасад" — the reader decides whether that was good.
 - **Every "why" answers "and what if the opposite".** A reason that survives no alternative is the code restated; drop it.
-- **Analogies explain mechanism, and land where the mechanism is genuinely non-obvious** — a trade-off, an inversion, a lifecycle. Two or three in a whole debrief is plenty. An analogy that only decorates ("код как сад") costs the reader more than it gives.
+- **The leading decision goes one level below its own label.** "Вынес маппинг в фасад" names a shape; the reader needs the chain — what concretely happens the next time the backend renames a field, and what used to happen instead. A functional summary reads as understanding while leaving none behind.
+- **Analogies explain mechanism, and land where the mechanism is genuinely non-obvious** — a trade-off, an inversion, a lifecycle. Two or three in a whole debrief is plenty, and **each one names where it stops holding**: an analogy carried past its limit is how a confident wrong model gets built. An analogy that only decorates ("код как сад") costs the reader more than it gives.
 - **Snippets are copied, never paraphrased**: `было → стало`, three to five lines, real identifiers, inside decision blocks only. Point at everything else with `path:line`.
 - **Headings and bullets**, emoji in section headings at most.
 - **Language follows the user.** Prose in whatever language the conversation runs in; identifiers, paths, commands and quoted output stay as the repo has them.
 
-Self-assessment stays out: *элегантно*, *чисто*, *значительно*, *robust*, *правильная архитектура* describe the author's feelings rather than the code. So do connectives that announce importance while carrying none — *стоит отметить, что*.
+Self-assessment stays out: *элегантно*, *чисто*, *значительно*, *robust*, *правильная архитектура* describe the author's feelings rather than the code. So do connectives that announce importance while carrying none — *стоит отметить, что*. A straight view of a trade-off is a different thing and belongs in — "этот вариант дороже в поддержке, взял его ради X" explains; "получилось чисто" flatters.
 
 ## 7. Scale and honesty
 
