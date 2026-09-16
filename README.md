@@ -51,10 +51,13 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | [`code-craft`](skills/workflow/code-craft/SKILL.md) | В момент решения, а не на ревью: как назвать, какая подпись, `setContent(node, true, false)` → union или options, guard clauses вместо вложенности, куда положить файл. |
 | [`test-craft`](skills/workflow/test-craft/SKILL.md) | Пишу тест, тест покраснел от рефакторинга без смены поведения, ревью тестов в диффе. Контракт вместо потрохов, моки только на границе чужого кода, одно поведение на тест, галерея запахов. |
 | [`refactor-advice`](skills/workflow/refactor-advice/SKILL.md) | «Улучши / упрости / отрефактори». Быстрые победы vs глубокие рефакторы, упрощение как отдельная линза. Плюс дисциплина применения: `git blame` перед правкой, поведение заморожено, по одному изменению. Не баг-хант. |
+| [`change-debrief`](skills/workflow/change-debrief/SKILL.md) | «Объясни, что сделал» после задачи. Разбор полёта простым языком: суть, карта изменений, 2–4 главных решения с «почему» и «от чего отказался», что осталось и где тонко, чего не проверял. По умолчанию — текущая ветка целиком, коммиты и рабочее дерево. Каждый принцип с источником, ноль самопохвалы. |
 | [`pr-description`](skills/workflow/pr-description/SKILL.md) | Нужен тайтл и описание PR/MR. Форж-агностик, шаблон репо главнее своего, группировка по домену, а не по файлам. |
 | [`worktree-flow`](skills/workflow/worktree-flow/SKILL.md) | Ворктри: папка-сиблинг `<repo>-<slug>`, перенос локальных untracked-файлов, снос по лестнице проверок (грязь, стэш, непушнутое, открытый MR, влито ли — включая squash). |
 
 Пара: `code-craft` владеет доктриной (имена, подписи, форма состояния и функции, базовые принципы), `refactor-advice` её не переписывает, а ссылается и добавляет машинерию отчёта. Ставить лучше оба. `test-craft` — тот же жанр, но про тесты: что ассертить и что не ассертить, чтобы правка реализации не красила сюиту. Стек-специфичное (раннер, API ассертов) он не трогает — это дело скилла под стек.
+
+Три скилла смотрят на один и тот же дифф, но отвечают на разные вопросы: `change-debrief` — «что тут вообще произошло и почему», `refactor-advice` — «как это улучшить», `pr-description` — «что написать в MR».
 
 ### Frontend
 
@@ -136,7 +139,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 ```
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
-  workflow/   code-craft, refactor-advice, pr-description, worktree-flow
+  workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, worktree-flow
   frontend/   frontend-mvvm, frontend-state-stack, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
