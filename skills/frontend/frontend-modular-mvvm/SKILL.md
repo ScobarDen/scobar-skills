@@ -27,10 +27,11 @@ The goal is a module you understand from its file list: open the folder, read th
 | `pages/` | screens and routes: mount modules, pass their dependencies | `modules`, `common` |
 | `modules/` | product scenarios and the domain; most of the code | `common`, other modules' public API, own submodules' public API |
 | `common/` | neutral technical and UI entities with no product meaning | other `common` entities' public API, packages |
-| `global/` | polyfills, shims, `vite-env.d.ts`, global styles; wired by entry or bundler, imported by nobody | nothing |
+| `global/` | polyfills, shims, `vite-env.d.ts`, global styles; connected once by the entry or the bundler, imported by no other code | nothing |
 
 - Five levels; a sixth is an architecture decision, not a folder. A page never imports another page.
 - **Module or common?** Can you describe it without naming the product domain? Yes → `common`. No → a module. "Used in two places" is never the reason by itself.
+- A package wrapped by a `common` entity is used only through the wrapper: `.api` files take transport from `common/http-client`, not from `fetch` or `ky` directly.
 - Names are domain nouns in kebab-case: `checkout`, `user`, `feature-flags`. `common` names state a neutral contract: `button`, `format-date`, `http-client`. `utils`, `helpers`, `shared`, `services`, `components`, `hooks` name no responsibility.
 
 ### Coming from FSD

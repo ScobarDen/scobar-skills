@@ -8,7 +8,8 @@ This table is the single source of truth. Both configs below implement it, so a 
 
 | Files under `src/` | Must not import (specifier ends in) | Why |
 | --- | --- | --- |
-| every file | `@/modules/<x>/…`, `@/common/<x>/…` | deep import past a public `index.ts` |
+| every file | `@/modules/<x>/…`, `@/common/<x>/…`, `@/pages/<x>/…` | deep import past a public `index.ts` |
+| every file except the entry `src/app/main.*` | `@/global…` | global effects are connected once, by the entry |
 | every file except `.api`, `.dto` and tests | `.dto` | raw backend shapes stop at `.api`, re-exports from `index.ts` included |
 | `*.view.{ts,tsx,vue}` | `.api`, types included | the View binds VM output and never sees transport |
 | `*.vm.ts` | `.view`; `.api` values (types pass) | the VM does not know how it is drawn, and it reaches transport through `.model` or an injected function (DI in `frontend-mvvm`) |
@@ -17,13 +18,13 @@ This table is the single source of truth. Both configs below implement it, so a 
 | `index.ts` | `export *` | the contract is explicit named exports |
 | every file | `max-lines` 200 as `warn`, tests 500 | a prompt to name the file's responsibilities |
 
-Adjust `src/` and the `@/` alias to the project's. Where `@feod/analyzer` checks levels, drop the deep-import pattern.
+Adjust `src/`, the `@/` alias and the entry path to the project's. Where `@feod/analyzer` checks levels, drop the deep-import and global patterns.
 
 ## How overrides combine
 
 Both linters apply overrides in order, and per rule the last matching one wins: its options replace the earlier ones for that file instead of merging. Two consequences:
 
-- Each role override repeats the base patterns (deep import, `.dto`) and adds its own. The ESLint helper does it; the oxlint JSON spells it out.
+- Each role override repeats the base patterns (deep import, global, `.dto`) and adds its own. The ESLint helper does it; the oxlint JSON spells it out.
 - A rule the later override does not mention survives. `max-lines` from the base stays on a `.vm.ts` whose `no-restricted-imports` was replaced.
 
 A project boundary whose glob overlaps a role glob obeys the same law. A host rule for `*.web.view.tsx` that lists only `react-native` silently drops the View's `.api` / `.dto` patterns for web views; write it with the View's patterns plus its own, after the View override:
@@ -47,11 +48,15 @@ const role = (...roles) => ({
   message: 'Crosses a role boundary.',
 })
 const deepImport = {
-  regex: '^@/(modules|common)/[^/]+/.+',
+  regex: '^@/(modules|common|pages)/[^/]+/.+',
   message: 'Import the entity root, not its insides.',
 }
+const globalImport = {
+  regex: '^@/global(/|$)',
+  message: 'Only the entry connects global.',
+}
 const restrict = (...patterns) => ({
-  'no-restricted-imports': ['error', { patterns: [deepImport, ...patterns] }],
+  'no-restricted-imports': ['error', { patterns: [deepImport, globalImport, ...patterns] }],
 })
 const maxLines = (max) => ({
   'max-lines': ['warn', { max, skipBlankLines: true, skipComments: true }],
@@ -60,6 +65,7 @@ const maxLines = (max) => ({
 export default [
   { files: ['src/**/*.{ts,tsx,vue}'], rules: { ...restrict(role('dto')), ...maxLines(200) } },
   { files: ['src/**/*.test.{ts,tsx}'], rules: { ...restrict(), ...maxLines(500) } },
+  { files: ['src/app/main.{ts,tsx}'], rules: { 'no-restricted-imports': ['error', { patterns: [deepImport, role('dto')] }] } },
   {
     files: ['src/**/index.ts'],
     rules: {
@@ -86,7 +92,8 @@ export default [
       "rules": {
         "max-lines": ["warn", { "max": 200, "skipBlankLines": true, "skipComments": true }],
         "no-restricted-imports": ["error", { "patterns": [
-          { "regex": "^@/(modules|common)/[^/]+/.+" },
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "^@/global(/|$)" },
           { "regex": "\\.dto(\\.([cm]?[jt]sx?|vue))?$" }
         ] }]
       }
@@ -96,7 +103,17 @@ export default [
       "rules": {
         "max-lines": ["warn", { "max": 500, "skipBlankLines": true, "skipComments": true }],
         "no-restricted-imports": ["error", { "patterns": [
-          { "regex": "^@/(modules|common)/[^/]+/.+" }
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "^@/global(/|$)" }
+        ] }]
+      }
+    },
+    {
+      "files": ["src/app/main.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "\\.dto(\\.([cm]?[jt]sx?|vue))?$" }
         ] }]
       }
     },
@@ -104,7 +121,8 @@ export default [
       "files": ["src/**/*.dto.ts"],
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
-          { "regex": "^@/(modules|common)/[^/]+/.+" }
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "^@/global(/|$)" }
         ] }]
       }
     },
@@ -112,7 +130,8 @@ export default [
       "files": ["src/**/*.api.ts"],
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
-          { "regex": "^@/(modules|common)/[^/]+/.+" },
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "^@/global(/|$)" },
           { "regex": "\\.(vm|view)(\\.([cm]?[jt]sx?|vue))?$" }
         ] }]
       }
@@ -121,7 +140,8 @@ export default [
       "files": ["src/**/*.model.ts"],
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
-          { "regex": "^@/(modules|common)/[^/]+/.+" },
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "^@/global(/|$)" },
           { "regex": "\\.(vm|view|dto)(\\.([cm]?[jt]sx?|vue))?$" }
         ] }]
       }
@@ -130,7 +150,8 @@ export default [
       "files": ["src/**/*.vm.ts"],
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
-          { "regex": "^@/(modules|common)/[^/]+/.+" },
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "^@/global(/|$)" },
           { "regex": "\\.(view|dto)(\\.([cm]?[jt]sx?|vue))?$" },
           { "regex": "\\.api(\\.([cm]?[jt]sx?|vue))?$", "allowTypeImports": true }
         ] }]
@@ -140,7 +161,8 @@ export default [
       "files": ["src/**/*.view.{ts,tsx,vue}"],
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
-          { "regex": "^@/(modules|common)/[^/]+/.+" },
+          { "regex": "^@/(modules|common|pages)/[^/]+/.+" },
+          { "regex": "^@/global(/|$)" },
           { "regex": "\\.(api|dto)(\\.([cm]?[jt]sx?|vue))?$" }
         ] }]
       }
