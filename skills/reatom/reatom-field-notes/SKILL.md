@@ -1,6 +1,6 @@
 ---
 name: reatom-field-notes
-description: Non-obvious Reatom runtime behavior, deliberate design choices, structural traps and field-tested patterns harvested from the author's own channel (t.me/artalog). Load ALONGSIDE the `reatom` skill whenever writing, debugging or reviewing Reatom code — especially for unexplained aborts, recursion errors, suspicious v3-era snippets, perf claims, SSR wiring, observability, or "why Reatom instead of MobX/Zustand/Jotai/Effector/react-query" questions. For tests, load `reatom-testing` instead.
+description: Non-obvious Reatom runtime behavior, deliberate design choices, structural traps and field-tested patterns harvested from the author's own channel (t.me/artalog). Load ALONGSIDE the `reatom` skill whenever writing, debugging or reviewing Reatom code — especially for unexplained aborts, recursion errors, suspicious v3-era snippets, perf claims, SSR wiring, observability, choosing `reatomBoolean`/`reatomEnum`/collection primitives over a bare `atom`, or "why Reatom instead of MobX/Zustand/Jotai/Effector/react-query" questions. For tests, load `reatom-testing` instead.
 ---
 
 # Reatom Field Notes
@@ -9,7 +9,7 @@ Companion to the official `reatom`, `reatom-async`, `reatom-jsx` and `reatom-rev
 
 ## Provenance and precedence
 
-- Source: posts by Reatom's author (artalar) in `t.me/artalog`, swept 2026-08-27 across the full channel history (posts 1–1993). Every claim cites its post — read it at `https://t.me/artalog/<id>` before relying on a detail.
+- Source: posts by Reatom's author (artalar) in `t.me/artalog`, swept 2026-08-27 across the full channel history (posts 1–1993). Every claim cites its post — read it at `https://t.me/artalog/<id>` before relying on a detail. The one exception is *Specialized primitives before a bare atom*, which cites the v1001 source tree instead.
 - **`REFERENCE.md` from the `reatom` skill always wins.** These are notes from a chat channel, not a spec: some posts describe work in progress, some describe a version that has since changed.
 - If anything here contradicts the code in `node_modules/@reatom/*`, the code wins. Say so and move on.
 - Pinned to **v1001** as the current major (as of 2026-08).
@@ -49,6 +49,27 @@ Doc entry points: `v1001.reatom.dev`, mirror without VPN `reatom.github.io/reato
 
 ## Patterns worth reaching for
 
+### Specialized primitives before a bare atom (source: `packages/core/src/primitives`, `v1001.reatom.dev/reference/primitives/`)
+
+Before writing `atom(...)` plus hand-made update actions, check whether a primitive from `@reatom/core` already carries that shape — it gives named actions (readable in the log tree as `isOpen.toggle`), a built-in `reset` to the initial state, and immutable updates for free. Default to the primitive; keep a bare `atom` for a value that is only ever `set` wholesale.
+
+| Signal in the code you are about to write | Primitive and what it adds |
+| --- | --- |
+| `atom(false)` with `set(p => !p)` / `set(true)` | `reatomBoolean` — `toggle`, `setTrue`, `setFalse`, `reset` |
+| TS `enum` or a string union with a `setX` action per variant | `reatomEnum(variants)` — inferred union, generated `setX()` setters (`format: 'camelCase' \| 'snake_case'`), `enum` object, `reset`, runtime rejection of unknown values; initial state is `variants[0]` unless `initState` |
+| counter with `set(p => p + 1)` | `reatomNumber` — `increment(by)`, `decrement(by)`, `random`, `reset` |
+| string that needs a way back to its initial value | `reatomString` — adds only `reset` |
+| `set(p => [...p, x])` | `reatomArray` — `push`, `pop`, `shift`, `unshift` (no `reset`) |
+| `new Set(p)` round-trips, selection toggling | `reatomSet` — `add`, `delete`, `toggle`, `clear`, `reset`, computed `size` |
+| `new Map(p).set(...)`, cache or registry keyed by id | `reatomMap` — `set`, `delete`, `clear`, `reset`, `getOrCreate`, computed `size` |
+| `set(p => ({ ...p, ...patch }))` | `reatomRecord` — `merge`, `omit`, `reset(...keys)` for a per-field reset |
+| large or reorderable list of item models | `reatomLinkedList` — incremental `changes` log that `@reatom/jsx` patches instead of re-rendering; `create`, `remove`, `move`, `swap`, `batch`, computed `array` |
+| a hand-written `reset` back to the initial value | any of the above |
+
+The list reflects v1001 as of 2026-09; the exports of `@reatom/core` (the `primitives` directory in `node_modules`) are the truth when it drifts.
+
+The project's own convention wins: if the codebase consistently writes `atom(false)` with its own toggle, follow it and mention the primitive in one line rather than switching style. On review, a hand-rolled toggle / setter set / reset is a non-blocking smell — name the primitive that replaces it.
+
 ### Derived computation attached to a writable atom (1856)
 
 The pattern with no clean React equivalent, and the strongest argument for Reatom in a form-heavy app: an extra dependent computation can be hung onto a **writable** atom. React forces either a `useEffect` sync (extra renders plus glitch frames) or dragging the setter up into the data source (boilerplate plus coupling); Svelte's answer — writing into computeds — the author considers a bad practice because it is not obvious at the call site.
@@ -76,7 +97,7 @@ Writing a full custom storage adapter is "a couple dozen lines instead of a coup
 
 ### Atomization: state per item, not per list (1275, 1277, 1290, 692; handbook `atomization`)
 
-Give each list item its own model. Then per-item concerns (debounce of that card's update, that card's visibility under a filter) live inside the item's model as one line, and the "stale props / zombie children" class of bug does not arise. Excessive normalization is the anti-pattern here. For large lists, `reatomLinkedList` gives incremental recomputation instead of rebuilding derived state.
+Give each list item its own model. Then per-item concerns (debounce of that card's update, that card's visibility under a filter) live inside the item's model as one line, and the "stale props / zombie children" class of bug does not arise. Excessive normalization is the anti-pattern here. For large lists, `reatomLinkedList` gives incremental recomputation instead of rebuilding derived state (see *Specialized primitives before a bare atom*).
 
 A useful sibling pattern: filter *before* inserting into a collection, not only when rendering it, whenever the collection can otherwise grow unbounded (1594).
 
