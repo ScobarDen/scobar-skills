@@ -90,6 +90,7 @@ The impossible states stop existing, and the exhaustiveness check does the remin
 - **Don't invent a layer the project doesn't have.** A `services/` folder in a codebase with no services is a new convention, and introducing one is a decision to raise, not to make silently.
 - **Dependencies point one way.** Whatever the project's direction is, don't be the first import that goes back up.
 - New file or existing one — a file that has grown past what you can hold in your head is doing too many jobs. That's the signal to split, not the line count.
+- A project with no layout of its own yet: levels, module folders and file names are **`frontend-modular-mvvm`** on a web frontend and **`qt-modular-mvvm`** on Qt Quick.
 
 ## The base floor
 

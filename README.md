@@ -65,8 +65,11 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | Скилл | Когда грузить |
 | --- | --- |
 | [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Экран с клиентской логикой: слои, пассивный View, VM как фасад и медиатор. Не про выбор STM. |
+| [`frontend-modular-mvvm`](skills/frontend/frontend-modular-mvvm/SKILL.md) | Куда класть и как называть: уровни FEOD, файлы `{subject}.{role}.ts` (`.model` / `.vm` / `.view` / `.api`…), папки ролей по мере роста, границы ролей линтом. |
 | [`frontend-state-stack`](skills/frontend/frontend-state-stack/SKILL.md) | Greenfield или «какой стейт-менеджер». Пока стек уже выбран — не нужен. |
 | [`mobx-mvvm`](skills/frontend/mobx-mvvm/SKILL.md) | Рецепт, если проект уже на MobX. На greenfield не предлагать. |
+
+Пара: `frontend-mvvm` — роли, `frontend-modular-mvvm` — где они лежат и как называются.
 
 ### Qt
 
@@ -141,7 +144,7 @@ npx skills add TheQtCompanyRnD/agent-skills
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
   workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, worktree-flow
-  frontend/   frontend-mvvm, frontend-state-stack, mobx-mvvm
+  frontend/   frontend-mvvm, frontend-modular-mvvm, frontend-state-stack, mobx-mvvm
   qt/         qt-modular-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
   mattpocock/ matt-flow

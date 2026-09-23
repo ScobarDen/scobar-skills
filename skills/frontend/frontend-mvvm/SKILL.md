@@ -1,6 +1,6 @@
 ---
 name: frontend-mvvm
-description: MVVM as separation of responsibilities for UI features — Model prepares domain data, View is a passive function of ViewModel, ViewModel is a facade (UI never sees DTOs) plus a mediator (modules wired through arguments, not each other). Load when writing or reviewing a screen with client logic, fetch+map+handlers, a god component, DTO props leaking down the tree, or when deciding where mapping, handlers, and DI live. Triggers on MVVM, ViewModel, passive view, DTO in UI, logic in the component. Not for picking a state library (frontend-state-stack) and not for MobX APIs (mobx-mvvm).
+description: MVVM as separation of responsibilities for UI features — Model prepares domain data, View is a passive function of ViewModel, ViewModel is a facade (UI never sees DTOs) plus a mediator (modules wired through arguments, not each other). Load when writing or reviewing a screen with client logic, fetch+map+handlers, a god component, DTO props leaking down the tree, or when deciding which layer owns mapping, handlers, and DI. Triggers on MVVM, ViewModel, passive view, DTO in UI, logic in the component. Not for picking a state library (frontend-state-stack), MobX APIs (mobx-mvvm), or file layout and names (frontend-modular-mvvm).
 ---
 
 # Frontend MVVM
@@ -116,6 +116,7 @@ Do not smear fetches and maps across the tree to "localize state" or dodge reren
 
 | Need | Load |
 | --- | --- |
+| Files, folders and names for each role | `frontend-modular-mvvm` |
 | Which STM to take | `frontend-state-stack` |
 | Project is already MobX | `mobx-mvvm` |
 | Hook return contract | `react-hooks-best-practices` (`dx-extract-complex-hook`) |

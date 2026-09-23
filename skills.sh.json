@@ -16,9 +16,10 @@
     },
     {
       "title": "Frontend",
-      "description": "MVVM, выбор клиентского стека и MobX-рецепт.",
+      "description": "MVVM, раскладка модулей, выбор клиентского стека и MobX-рецепт.",
       "skills": [
         "frontend-mvvm",
+        "frontend-modular-mvvm",
         "frontend-state-stack",
         "mobx-mvvm"
       ]

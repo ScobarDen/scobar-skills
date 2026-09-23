@@ -18,6 +18,7 @@ A module directory is one level in the first cut and the whole MVVM pyramid in t
 - **Project conventions win.** If the repository already has a layout, a naming scheme or its own module recipe, follow it and mention the divergence in one line. This skill is a default, not a mandate to refactor an existing project into its shape.
 - Qt 5.14+ is the baseline. Qt 6 changes the QML packaging story; see *Qt 6 deltas* at the end.
 - The sibling skill **qt-cmake-boundaries** holds the build-system half: how the layer matrix becomes compiler errors, and copyable CMake templates. Recipes here say "see qt-cmake-boundaries" at exactly the steps that need it.
+- The web-frontend counterpart (the same FEOD levels, role-suffixed files instead of layer folders) is **frontend-modular-mvvm**.
 
 ## 1. Levels
 
