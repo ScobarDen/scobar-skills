@@ -73,6 +73,8 @@ Every file with a role carries it as a dot-suffix, kebab-case throughout (`check
 | `.lib.ts` | pure helpers internal to the module |
 | `.test.ts` / `.stories.tsx` | as the runner requires |
 
+**State goes by lifetime, not by library.** Delete the screen: if the state is still needed (cart contents, the signed-in user, an order draft that survives steps), it is domain state in `.model`; if it dies with the screen (open tab, input draft, selected row), it lives in `.vm`. State only one screen uses and that names no domain concept stays in its `.vm` until a second consumer appears.
+
 The list is closed. A file that fits no role is a signal the module holds two responsibilities; a genuinely new role extends this table or the project README first. Which role may import which is a single matrix in [`references/lint-boundaries.md`](references/lint-boundaries.md).
 
 - **Subject.** The file named after the module is the entry of its role: `checkout.vm.ts`, `checkout.view.tsx`. Every other file is named after its concept: `delivery-address.model.ts`, `promo-code.api.ts`. The path supplies the module; fuzzy search on `checkout promo` matches it.
