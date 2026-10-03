@@ -57,7 +57,7 @@ Print every step of the route as a checklist, the current one marked `→` and e
 | Build | `/implement` | the stack's own skills, plus `code-craft` |
 | PR | — | `pr-description` |
 
-Before Build, detect the stack from the repo — lockfiles, manifests, file extensions, config — and load its skills; a Qt module wants `qt-modular-mvvm` and `qt-cmake-boundaries`, a screen with client logic wants `frontend-mvvm`. Tests ride on `test-craft` alongside `tdd`. `/implement` closes with `code-review` on its own.
+Before Build, detect the stack from the repo — lockfiles, manifests, file extensions, config — and load its skills; a Qt module wants `qt-mvvm` and `qt-cmake-boundaries`, a screen with client logic wants `frontend-mvvm`, and both lean on `mvvm`, `feod` and `role-files`. Tests ride on `test-craft` alongside `tdd`. `/implement` closes with `code-review` on its own.
 
 Between tickets: `/clear`, then `/matt-flow` to resume.
 

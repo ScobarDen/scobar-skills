@@ -9,7 +9,7 @@ npx skills add ScobarDen/scobar-skills
 Один скилл:
 
 ```bash
-npx skills add ScobarDen/scobar-skills --skill frontend-mvvm
+npx skills add ScobarDen/scobar-skills --skill mvvm
 ```
 
 Это не маркетплейс и не «все скиллы, которые я использую». Здесь только то, что написал сам. Чужое — ниже, его лучше ставить из первоисточника.
@@ -60,25 +60,37 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 Три скилла смотрят на один и тот же дифф, но отвечают на разные вопросы: `change-debrief` — «что тут вообще произошло и почему», `refactor-advice` — «как это улучшить», `pr-description` — «что написать в MR».
 
+### Architecture
+
+Ядро без стека. Три идеи, по скиллу на каждую; стековые скиллы ниже на них опираются и добавляют только своё.
+
+| Скилл | Когда грузить |
+| --- | --- |
+| [`feod`](skills/architecture/feod/SKILL.md) | Куда класть код и кто кого импортирует: уровни [FEOD](https://fractal-oriented.tech/), public API модуля, сабмодули, «module или common», миграция с FSD. |
+| [`mvvm`](skills/architecture/mvvm/SKILL.md) | Кто за что отвечает: Model / ViewModel / View, facade (View не видит DTO), mediator на трёх масштабах, ошибки, тестируемость. |
+| [`role-files`](skills/architecture/role-files/SKILL.md) | Как роли становятся файлами: `checkout.vm.ts`, закрытый список ролей, один файл в корне — два и больше в папку, матрица импортов между ролями. |
+
+Словарь терминов, которыми они говорят, — [`CONTEXT.md`](CONTEXT.md).
+
 ### Frontend
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Экран с клиентской логикой: слои, пассивный View, VM как фасад и медиатор. Не про выбор STM. |
-| [`frontend-modular-mvvm`](skills/frontend/frontend-modular-mvvm/SKILL.md) | Куда класть и как называть: уровни FEOD, файлы `{subject}.{role}.ts` (`.model` / `.vm` / `.view` / `.api`…), папки ролей по мере роста, границы ролей линтом. |
+| [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, рецепт нового модуля, пример миграции магазина. |
+| [`frontend-boundaries`](skills/frontend/frontend-boundaries/SKILL.md) | Те же границы, но чтобы их ловил линтер: ESLint flat / oxlint конфиги, `@feod/analyzer`. |
 | [`frontend-state-stack`](skills/frontend/frontend-state-stack/SKILL.md) | Greenfield или «какой стейт-менеджер». Пока стек уже выбран — не нужен. |
 | [`mobx-mvvm`](skills/frontend/mobx-mvvm/SKILL.md) | Рецепт, если проект уже на MobX. На greenfield не предлагать. |
-
-Пара: `frontend-mvvm` — роли, `frontend-modular-mvvm` — где они лежат и как называются.
 
 ### Qt
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`qt-modular-mvvm`](skills/qt/qt-modular-mvvm/SKILL.md) | Куда класть код в Qt Quick: уровни, MVVM внутри модуля, фасад, медиатор. |
+| [`qt-mvvm`](skills/qt/qt-mvvm/SKILL.md) | Ядро в Qt Quick: папки ролей, `include/<name>/` + `qmldir` как public API, `Module` с pimpl, `main.cpp`, `AppViewModel`, QML. |
 | [`qt-cmake-boundaries`](skills/qt/qt-cmake-boundaries/SKILL.md) | Те же границы, но чтобы их ловил компилятор, а не ревью. Шаблоны CMake в `references/`. |
 
-Пара: новый модуль — оба.
+В каждом стеке пара: «как ядро выглядит здесь» + «кто бьёт по рукам». Новый модуль — оба, плюс ядро.
+
+`frontend-modular-mvvm` разъехался по `feod`, `role-files`, `frontend-mvvm` и `frontend-boundaries`; `qt-modular-mvvm` переименован в `qt-mvvm`. Если ставил старые — переставь.
 
 ### Reatom
 
@@ -144,8 +156,9 @@ npx skills add TheQtCompanyRnD/agent-skills
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
   workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, worktree-flow
-  frontend/   frontend-mvvm, frontend-modular-mvvm, frontend-state-stack, mobx-mvvm
-  qt/         qt-modular-mvvm, qt-cmake-boundaries
+  architecture/ feod, mvvm, role-files
+  frontend/   frontend-mvvm, frontend-boundaries, frontend-state-stack, mobx-mvvm
+  qt/         qt-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
   mattpocock/ matt-flow
 ```

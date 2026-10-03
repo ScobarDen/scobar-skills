@@ -158,13 +158,4 @@ What each part shows:
 
 ## The page as mediator
 
-```tsx
-import { useCartSource } from '@/modules/cart'
-import { Checkout } from '@/modules/checkout'
-
-export function CheckoutPage() {
-  return <Checkout cartSource={useCartSource()} />
-}
-```
-
-Both imports end at a module root; `Checkout` is the hooks adapter in `checkout/view/checkout.view.tsx` that calls `useCheckout` from `checkout/vm/checkout.vm.ts`.
+`pages/checkout/checkout.view.tsx` is the page from `SKILL.md` §5: both imports end at a module root, and `Checkout` is the hooks adapter in `checkout/view/checkout.view.tsx` that calls `useCheckout` from `checkout/vm/checkout.vm.ts`.

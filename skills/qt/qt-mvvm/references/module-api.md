@@ -1,8 +1,8 @@
-# Module facade, composition root and mediator — skeletons
+# Module public API, composition root and mediator — skeletons
 
 Copy, rename `budget`/`Budget`, delete what the module does not need. Comments explain the traps the shape guards against; drop them in a project that keeps code comment-free.
 
-## 1. Public facade — `include/budget/module.h`
+## 1. Public API — `include/budget/module.h`
 
 ```cpp
 #pragma once
@@ -46,7 +46,7 @@ private:
 #include "budget/module.h"
 
 #include "budget/budgetviewmodel.h"
-#include "data/budgetrepository.h"   // private layer path: only this file and the layers may see it
+#include "data/budgetrepository.h"   // private role-folder path: only this file and the role targets may see it
 
 namespace budget {
 

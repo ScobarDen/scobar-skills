@@ -1,125 +1,117 @@
 ---
 name: frontend-mvvm
-description: MVVM as separation of responsibilities for UI features — Model prepares domain data, View is a passive function of ViewModel, ViewModel is a facade (UI never sees DTOs) plus a mediator (modules wired through arguments, not each other). Load when writing or reviewing a screen with client logic, fetch+map+handlers, a god component, DTO props leaking down the tree, or when deciding which layer owns mapping, handlers, and DI. Triggers on MVVM, ViewModel, passive view, DTO in UI, logic in the component. Not for picking a state library (frontend-state-stack), MobX APIs (mobx-mvvm), or file layout and names (frontend-modular-mvvm).
+description: MVVM, FEOD and role files applied to a web frontend — the ViewModel as a hook, a composable or a Reatom model, the passive component, `index.ts` as a module's public API, `{subject}.{role}.ts` in TypeScript, routes and file-based routers, a new-module recipe and a worked shop migration. Load when building or reviewing a React or Vue screen or module, writing an `index.ts`, a DTO reaching a component, a fetch or `useQuery` inside a presentational component, or migrating a frontend to modules. Doctrine is in mvvm, feod and role-files; state library choice is frontend-state-stack; lint enforcement is frontend-boundaries.
 ---
 
 # Frontend MVVM
 
-Write the feature as three layers. The ViewModel is a **role**, not a library.
+How `mvvm`, `feod` and `role-files` look in a TypeScript frontend. Load those three for the rules; this file adds only what the web stack changes.
 
 ## Provenance and precedence
 
-- Harvested from [MVVM for React](https://www.youtube.com/watch?v=H0pKvQ8P3UI) (SoC, not reactivity history).
-- **Project conventions win.** If the repo already places mapping in API clients or forbids a VM layer, follow the repo and mention the divergence in one line.
-- Picking Zustand vs Reatom vs MobX vs hooks is **`frontend-state-stack`**. This file assumes the stack is already chosen.
-- MobX wiring (`ViewModelBase`, `withViewModel`, `createQuery`) is **`mobx-mvvm`**.
-- Hook *return shape* (`form` / `state` / `functions` / `refs` / `features`) is **`react-hooks-best-practices`** rule `dx-extract-complex-hook`. This file owns the fact that the hook **is** the ViewModel.
+- Hooks adapter and render rules: [MVVM for React](https://www.youtube.com/watch?v=H0pKvQ8P3UI). Level and public API rules: [FEOD](https://fractal-oriented.tech/llms-full.txt), whose own examples are TypeScript.
+- **Project conventions win.** An existing layout, a file-based router or a ViewModel convention outranks this file. Follow it and mention the divergence in one line.
+- Picking Zustand vs Reatom vs MobX vs hooks is `frontend-state-stack`. MobX wiring is `mobx-mvvm`. Reatom API is `reatom` / `reatom-async`.
+- Hook *return shape* (`form` / `state` / `functions` / `refs` / `features`) is `react-hooks-best-practices` rule `dx-extract-complex-hook`. This file owns the fact that the hook **is** the ViewModel.
 
-## When this applies
+## 1. The ViewModel on each framework
 
-A feature that fetches, maps, and handles user intent — a table with filters, a dashboard, a form that orchestrates more than one source. A static presentational piece (icon, layout chrome, a UI-kit button) is not a VM.
-
-## The three layers
-
-| Layer | Owns | Does not own |
-| --- | --- | --- |
-| **Model** | API calls, domain types, pure transforms, DTO→domain adapters, storage | JSX, UI-kit props, click handlers |
-| **ViewModel** | Orchestration: handlers, wiring modules, data *shaped for this screen's UI* | Raw DTO fields, markup |
-| **View** | Bind VM output to UI-kit. `View = f(ViewModel)` | Fetch, map, assemble use-case flow |
-
-Start analysis from **state**, then bind the View. Do not start from the JSX tree and sprinkle fetch/map into whoever needed a field.
-
-## Facade: the View never sees a DTO
-
-The VM (or the Model it calls) maps backend shapes into what the UI-kit already consumes — `{ label, value }[]` for a select, column defs for a table, card configs for stats. The View binds those objects. It does not map.
-
-**Wrong:** DTO enters a parent, is passed as props, mapped in one child, mapped again in a grandchild. An analyst asking "which fields of this endpoint do we use?" has to walk the tree.
-
-**Right:** one mapping site in Model/VM. The View's props are UI types.
-
-Pass DTO through a component only as an opaque id if a child VM needs to load its own Model. Do not pass the DTO *to render it*.
-
-Where mapping lives is a size call, not a religion: a tiny app may map in the VM; a real domain maps in the Model (adapter next to the API function) and the VM only composes. Never in the View.
-
-## Mediator: modules do not know each other
-
-The VM is the one place that constructs (or receives) collaborators and passes **functions/values as arguments**. A service does not import a storage. Two services that share an id do not import each other — the VM passes the id through.
-
-This is inversion of control so the graph can be substituted in tests. It is the *intention* of a mediator, not the GoF class.
-
-```ts
-class TableStore {
-  constructor(
-    private getTasks: (params: TaskQuery) => Promise<Task[]>,
-    private params: () => TaskQuery,
-  ) {}
-}
-
-this.tableStore = new TableStore(taskService.getTasks, () => ({
-  ...this.filterStore.query,
-  ...this.paginationStore.params,
-}))
-```
-
-The same shape on hooks: `useTable({ getTasks, params })` receives getters, it does not call `useFilters()` inside.
-
-Inject the service into the VM from the outside (`payload`, constructor, hook argument). The VM does not `new AxiosClient()` in a leaf.
-
-## Compose the screen by domain, not by file length
-
-Split the VM into collaborating stores/hooks along **UI domains of this feature** — filters, stats, table, pagination — then bind each to a passive widget.
-
-A nested feature that is its own business value gets **its own VM**. The parent passes in what that VM needs (ids, callbacks, a pre-built widget). It does not absorb the child's use-case.
-
-## Handlers and action configs live in the VM
-
-Click/submit/search handlers are VM methods. When a row of buttons is data (style, label, icon, handler, loading), the VM exposes an array of configs and the View is one generic `ActionButtons` that reads `view` and renders. Assembling that array in JSX is the logic leak this layer exists to kill.
-
-## Hooks adapter
-
-React ties logic to component lifecycle, so a *pure* VM class is optional. The physical split is not:
+React ties logic to component lifecycle, so a pure ViewModel class is optional. The physical split is not:
 
 ```tsx
-export function WorkflowPage(props: { taskService: TaskService }) {
-  const vm = useWorkflowPage(props)
-  return <WorkflowView {...vm} />
+export function Checkout(props: CheckoutProps) {
+  const vm = useCheckout(props)
+  return <CheckoutView {...vm} />
 }
 ```
 
-`useWorkflowPage` is the ViewModel: mapping, handlers, queries, wiring. `WorkflowView` and its children bind. They do not call the API.
+`useCheckout` is the ViewModel: queries, mapping, handlers, wiring. `CheckoutView` and its children bind; they do not call the API. `Checkout` is the module's root View.
 
-- Return grouping: follow `dx-extract-complex-hook`. Do not invent a second return vocabulary here.
-- React infrastructure (debounce, click-outside, `createStore` / `useSyncExternalStore` selectors, disclosure) comes from **`reactuse`**. Business use-case does not.
-- Granular renders, if a measured problem: subscribe the widget to *its* store/hook, not the whole page VM. That is a binding choice, not a reason to fetch from the widget.
+- **Vue**: the ViewModel is a composable (`useCheckout`), the View is the SFC template. SFC mechanics stay in the Vue skills.
+- **Reatom**: the ViewModel is a model of atoms and actions. Load `reatom`; do not re-implement `mvvm` as atoms here.
+- **MobX**: `ViewModelBase` + `withViewModel`, see `mobx-mvvm`.
+- Mediator arguments on hooks: `useTable({ getTasks, params })` receives getters; it does not call `useFilters()` inside.
+- React infrastructure (debounce, click-outside, `createStore` / `useSyncExternalStore` selectors, disclosure) comes from `reactuse`. Business use cases do not.
+- Inject services through props, hook arguments or the composition root in `app/`. A ViewModel does not `new AxiosClient()` in a leaf.
 
-On Vue the VM is a composable (`useXxx`), the View is the SFC template. Same DTO/DI rules. SFC mechanics stay in the Vue skills.
+## 2. Renders
 
-On Reatom the VM is a model (atoms/actions). Load **`reatom`**. Do not re-implement this file's rules as atoms.
+Do not smear fetches and maps across the tree to "localize state" or dodge re-renders. Boundaries first. If a measured problem exists (profiler, real jank), subscribe the widget to its own store or hook, not the whole page ViewModel. `vercel-react-best-practices` applies **after** a measurement and does not override `mvvm`. Memo sprinkled on a god component is not architecture.
 
-## Renders
+## 3. Public API in TypeScript
 
-Do not smear fetches and maps across the tree to "localize state" or dodge rerenders. Boundaries first.
+`feod` §3, spelled out:
 
-`vercel-react-best-practices` applies **after a measured problem** (profiler, a real jank). It does not override this file. Memo sprinkled on a god component is not architecture.
+- `index.ts` at the entity root, `export { A, B } from './…'` only; `export *` is banned (`frontend-boundaries` checks it in ESLint).
+- Consumers import `@/modules/checkout`, never `@/modules/checkout/vm/checkout.vm`. `import type` obeys the same rule.
+- Public names: `Checkout`, `useCheckout`, `CheckoutProps`, `getOrderTotal`. Inside the module, names follow the library's convention (mobx-view-model's `CheckoutVM` class); the public surface does not restate the role.
+- A consumer writing `ReturnType<typeof getOrderStatus>` or `Parameters<typeof placeOrder>[0]` means the owner forgot to export the type.
+
+## 4. Role files in TypeScript
+
+`role-files` with the suffix as the marker, kebab-case throughout: `checkout-form.view.tsx`, not `CheckoutForm.tsx`.
+
+| Marker | Files |
+| --- | --- |
+| `view` | `.view.tsx`, `.view.ts`, `.view.vue` |
+| everything else | `.model.ts`, `.vm.ts`, `.api.ts`, `.dto.ts`, `.route.ts`, `.config.ts`, `.types.ts`, `.lib.ts` |
+| tests, stories | `.test.ts`, `.stories.tsx`, after the role: `checkout.vm.test.ts` |
+
+- The hooks adapter from §1 lives in `checkout.view.tsx` and is what `index.ts` exports as `Checkout`.
+- `.api` files take transport from `common/http-client`, not from `fetch` or `ky` directly.
+- `global/` holds `polyfills.ts`, `vite-env.d.ts`, global styles; `app/main.tsx` connects them and nothing else imports them.
+
+## 5. Routes and pages
+
+`pages/<page>/<page>.route.ts` declares the route; `pages/<page>/<page>.view.tsx` mounts module roots and passes their dependencies. The page is the mediator between modules on one screen:
+
+```tsx
+import { useCartSource } from '@/modules/cart'
+import { Checkout } from '@/modules/checkout'
+
+export function CheckoutPage() {
+  return <Checkout cartSource={useCartSource()} />
+}
+```
+
+A file-based router (Next, Nuxt, TanStack Router, React Router fs-routes) dictates its own file names. They win; `.route.ts` is not used, and the route file stays as thin as `.view.tsx` above.
+
+## 6. Recipe: a new module
+
+1. **Qualify it** (`feod` §2): name it in product terms, kebab-case, under `modules/`.
+2. **Files**: `index.ts`, `README.md` if it has a ViewModel, then one file per role you need (`<name>.api.ts`, `<name>.dto.ts`, `<name>.model.ts`, `<name>.vm.ts`, `<name>.view.tsx`). Folders appear only when a role reaches two files.
+3. **Model**: domain types and the DTO → domain adapter in `.api` / `.model`. The DTO goes no further.
+4. **ViewModel**: the hook takes services as arguments, returns UI-shaped data and commands; tests beside it with a fake service and a fixed clock.
+5. **View**: the root View in `<name>.view.tsx` calls the hook and renders passive children.
+6. **Public API**: `index.ts` exports the root View, its props type and the domain types consumers need. Nothing else.
+7. **Mount**: a page imports the module root and passes its dependencies; the module never imports the page or another module's internals.
+8. **Check**: lint is green with the `frontend-boundaries` config; the README names what is injected.
+
+## 7. Worked example
+
+[`references/worked-example.md`](references/worked-example.md) takes a typical shop frontend sorted by technical kind (`components/`, `hooks/`, `utils/`, `types/`) to this layout, row by row: every level, every role folder, submodules, and a page wiring two modules. Read it when migrating a project or starting a new one.
 
 ## Review smells
 
 - `useQuery` / `fetch` / DTO field access inside a presentational component.
-- The same DTO type in a widget's props.
-- `selectOptions` assembled in JSX from a raw enum/DTO.
-- Service module imports storage *and* HTTP client.
-- Feature stores/hooks importing each other instead of taking arguments.
-- Parent View re-implements a child feature instead of mounting the child's VM.
-- "We put the query in the row component so the table doesn't rerender."
+- A DTO type in a component's props.
+- `selectOptions` assembled in JSX from a raw enum or DTO.
+- "We put the query in the row component so the table doesn't re-render."
+- `export *` in an `index.ts`; an import path past a module root.
+- `ReturnType<typeof …>` reconstructing a type another module owns.
+- A component file without a role suffix inside a module.
 
 ## Related skills
 
 | Need | Load |
 | --- | --- |
-| Files, folders and names for each role | `frontend-modular-mvvm` |
-| Which STM to take | `frontend-state-stack` |
+| What each role owns | `mvvm` |
+| Levels and public API | `feod` |
+| File names and role folders | `role-files` |
+| Lint rules for levels and roles | `frontend-boundaries` |
+| Which state library | `frontend-state-stack` |
 | Project is already MobX | `mobx-mvvm` |
+| Reatom API | `reatom` / `reatom-async` |
 | Hook return contract | `react-hooks-best-practices` (`dx-extract-complex-hook`) |
 | Which ReactUse hook | `reactuse` |
-| Reatom API | `reatom` / `reatom-async` |
 | Render optimization after a measurement | `vercel-react-best-practices` |

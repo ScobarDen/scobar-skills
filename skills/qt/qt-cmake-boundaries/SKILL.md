@@ -1,18 +1,20 @@
 ---
 name: qt-cmake-boundaries
-description: Make CMake enforce architecture boundaries in a Qt / C++ project so that a forbidden dependency is a compile error, not a code-review comment — one OBJECT library per MVVM layer with an explicit "sees" list of sibling layers, a STATIC module target assembled from the layers' objects with a public facade include dir and a pointed PRIVATE list, PUBLIC vs PRIVATE vs INTERFACE linking, $<LINK_ONLY:> to link a library without granting its headers, per-module unit-test registration with layer access, plus the Qt-specific traps (AUTOMOC needs macro headers on the include path or properties vanish silently, rcc rejects "--" in .qrc comments, RUNTIME_OUTPUT_DIRECTORY when targets move into subdirectories). Load whenever writing or reviewing CMakeLists.txt in a Qt project, adding a module or a layer, wiring a new library, deciding PUBLIC/PRIVATE, fixing "No such file or directory" for a file that exists, "undefined reference" after adding a layer, or a Q_PROPERTY that QML cannot see. Copyable templates in references/. The architecture itself (levels, layers, facade, mediator) is the sibling skill qt-modular-mvvm.
+description: Make CMake enforce architecture boundaries in a Qt / C++ project so that a forbidden dependency is a compile error, not a code-review comment — one OBJECT library per role folder (a "layer" target) with an explicit "sees" list of sibling folders, a STATIC module target assembled from their objects with a public API include dir and a pointed PRIVATE list, PUBLIC vs PRIVATE vs INTERFACE linking, $<LINK_ONLY:> to link a library without granting its headers, per-module unit-test registration with layer access, plus the Qt-specific traps (AUTOMOC needs macro headers on the include path or properties vanish silently, rcc rejects "--" in .qrc comments, RUNTIME_OUTPUT_DIRECTORY when targets move into subdirectories). Load whenever writing or reviewing CMakeLists.txt in a Qt project, adding a module or a role folder, wiring a new library, deciding PUBLIC/PRIVATE, fixing "No such file or directory" for a file that exists, "undefined reference" after adding a layer, or a Q_PROPERTY that QML cannot see. Copyable templates in references/. The architecture itself is feod, mvvm and role-files, applied to Qt in qt-mvvm.
 ---
 
 # Qt CMake boundaries
 
-A layer diagram enforced by discipline is broken the first time someone is in a hurry. This skill turns the diagram into include paths and link lines, so a model that reaches for the database does not compile.
+A role matrix enforced by discipline is broken the first time someone is in a hurry. This skill turns the matrix of `role-files` §7, as `qt-mvvm` §2 maps it onto role folders, into include paths and link lines, so a list model that reaches for the database does not compile.
+
+"Layer" in this file is the CMake mechanism only: an OBJECT target built from one role folder. The templates keep the name (`add_layer`).
 
 ## Provenance and precedence
 
 - Harvested 2026-09-03 from a Qt 5.15 / CMake 3.16+ teaching project whose layer matrix was probed empirically: every forbidden include in the tables below produced the quoted compiler error.
 - **Project conventions win.** Keep the project's target naming, its helper functions, its minimum CMake version. Templates here use `${PROJECT_NAME}_` as a target prefix and function names `add_layer` / `add_unit_test`; rename to taste, keep the mechanics.
 - CMake ≥ 3.16 is assumed (Qt's own floor for `find_package(Qt5)` with AUTOMOC works fine there). Where a newer feature would simplify something, the note says which version.
-- Architecture doctrine (what the layers *mean*) is the sibling skill **qt-modular-mvvm**. This skill assumes you already know which layer may see which.
+- What the role folders *mean* is **qt-mvvm** (on top of `feod`, `mvvm`, `role-files`). This skill assumes you already know which folder may see which.
 
 ## 1. The mechanism in one paragraph
 
@@ -63,7 +65,7 @@ add_library(${PROJECT_NAME}_module_expenses STATIC
 )
 
 target_include_directories(${PROJECT_NAME}_module_expenses
-    PUBLIC  include                        # the facade: #include "expenses/module.h"
+    PUBLIC  include                        # the public API: #include "expenses/module.h"
     PRIVATE data/include domain/include    # POINTED, not the module root
 )
 
@@ -121,7 +123,7 @@ Why the pieces exist:
 ## 6. Application target and resources
 
 - **`RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}`** on the executable once `add_executable` moves from the root into `src/app/`: CMake mirrors the source tree, so the binary would otherwise land in `build/src/app/` and every script and README pointing at `build/<app>` breaks quietly.
-- **The executable links modules only through their facades.** Its link list names module targets; it never adds a module's layer paths. Remove a module's public headers and the build fails *here*: that is the proof the facades are real.
+- **The executable links modules only through their public API.** Its link list names module targets; it never adds a module's layer paths. Remove a module's public headers and the build fails *here*: that is the proof the public API is real.
 - **Qt 5 resources.** All `.qml` and `qmldir` files of all levels go into one `.qrc` in `app/` (QML is embedded, and there is one executable), with `alias` so the resource tree can differ from the FEOD directory tree. Paths on the left of `alias` are relative to the `.qrc` file's directory.
 - **rcc forbids `--` inside an XML comment.** A dashed separator line in a `.qrc` comment fails with `Expected '>', but got '-'`, which points nowhere near the cause. Use `=` for separators there.
 - Set `CMAKE_AUTOMOC ON` and `CMAKE_AUTORCC ON` at the root; `CMAKE_EXPORT_COMPILE_COMMANDS ON` for clang-tidy and clangd.
@@ -169,7 +171,7 @@ Why the pieces exist:
 
 ## 9. Qt 6 deltas
 
-- `qt_add_qml_module(target URI Modules.Expenses VERSION 1.0 QML_FILES ExpensesView.qml AddDialog.qml ...)` replaces the `.qrc` + `qmldir` pair and generates both. Per-module QML targets become natural, and `internal` types are simply files not exported; the layer/facade mechanics for C++ are unchanged.
+- `qt_add_qml_module(target URI Modules.Expenses VERSION 1.0 QML_FILES ExpensesView.qml AddDialog.qml ...)` replaces the `.qrc` + `qmldir` pair and generates both. Per-module QML targets become natural, and `internal` types are simply files not exported; the layer and public API mechanics for C++ are unchanged.
 - `qt_standard_project_setup()` sets AUTOMOC/AUTORCC and modern policies in one call.
 - `find_package(Qt6 COMPONENTS Core Quick Sql Test)` and `Qt6::` targets; the `$<LINK_ONLY:Qt6::Sql>` trick works identically.
 - `qt_add_executable` instead of `add_executable`; `RUNTIME_OUTPUT_DIRECTORY` advice is unchanged.

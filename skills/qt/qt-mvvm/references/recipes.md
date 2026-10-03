@@ -1,6 +1,6 @@
 # Recipes
 
-Four procedures. Each lists every place that must change, because the price of the layered layout is exactly that: more places per change, each of them small and each of them checkable. Steps marked **[cmake]** are detailed in the sibling skill qt-cmake-boundaries.
+Four procedures. Each lists every place that must change, because the price of role folders is exactly that: more places per change, each of them small and each of them checkable. Steps marked **[cmake]** are detailed in the sibling skill qt-cmake-boundaries.
 
 ## Recipe 1 — New module `budget`
 
@@ -20,11 +20,11 @@ Copy the smallest existing module (a read-only one, without dialogs) rather than
    ```
    A header-only layer (a domain of one struct) needs no `.cpp`; the layer then has no build target, only a path.
 
-2. **Facade.** `module.h` + `module.cpp` from `module-facade.md` §1–2. Cross-module dependencies as constructor arguments; never construct another module inside.
+2. **Module class.** `module.h` + `module.cpp` from `module-api.md` §1–2. Cross-module dependencies as constructor arguments; never construct another module inside.
 
-3. **Public ViewModel header** from `module-facade.md` §3: forward-declared internals, `QAbstractItemModel *` for the model, injected clock, no data load in the constructor.
+3. **Public ViewModel header** from `module-api.md` §3: forward-declared internals, `QAbstractItemModel *` for the model, injected clock, no data load in the constructor.
 
-4. **[cmake] Layer declaration and module target.** One `CMakeLists.txt` inside the module: four layer calls with the visibility matrix (`domain` sees nothing, `data` sees `domain` and gets the SQL library, `model` sees `domain` only, `viewmodel` sees all three plus the public header), then one STATIC module target assembled from the layers' objects with `PUBLIC include` and a *pointed* `PRIVATE` on just the layer paths `module.cpp` needs. Add `add_subdirectory(modules/budget)` to the root and the module target to the executable's link list.
+4. **[cmake] Role targets and module target.** One `CMakeLists.txt` inside the module: four `add_layer` calls with the visibility matrix (`domain` sees nothing, `data` sees `domain` and gets the SQL library, `model` sees `domain` only, `viewmodel` sees all three plus the public header), then one STATIC module target assembled from the layers' objects with `PUBLIC include` and a *pointed* `PRIVATE` on just the role-folder paths `module.cpp` needs. Add `add_subdirectory(modules/budget)` to the root and the module target to the executable's link list.
 
 5. **QML.** `ui/qmldir` exports `BudgetView` and marks everything else `internal`. `BudgetView.qml` declares `property BudgetViewModel vm` and never touches `App`.
 
@@ -38,9 +38,9 @@ Copy the smallest existing module (a read-only one, without dialogs) rather than
 
 10. **Tab.** A `TabButton` in the root QML and a `BudgetPage {}` in the `StackLayout`, in the same position: they are linked by index.
 
-11. **Tests.** `tests/CMakeLists.txt` registers a unit test that may see the module's `data` and `domain` layers (test-time access to internals is allowed; the test is part of the module). The ViewModel test uses a fake repository subclass and a fixed clock and needs no database. **[cmake]** for the test registration helper.
+11. **Tests.** `tests/CMakeLists.txt` registers a unit test that may see the module's `data` and `domain` folders (test-time access to internals is allowed; the test is part of the module). The ViewModel test uses a fake repository subclass and a fixed clock and needs no database. **[cmake]** for the test registration helper.
 
-## Recipe 2 — New field `shop` through every layer
+## Recipe 2 — New field `shop` through every role folder
 
 Eight places. Know them before promising the feature.
 
@@ -58,7 +58,7 @@ Eight places. Know them before promising the feature.
 1. **Qualify it.** Explain it without a product term ("a date range whose start is not after its end"). If you cannot, it is a module.
 2. **Shape.** A value type or free functions, no QObject, no inheritance: `struct Range { QDate from, to; }` plus pure functions (`withFrom`, `lastDays`, `currentMonth`, `text`). ViewModels keep their own `Q_PROPERTY`s and only *apply* the rules; `common` never emits signals for them.
 3. **Target.** `common/period/` with `include/period/period.h`, a `.cpp`, its own `CMakeLists.txt` (STATIC, or INTERFACE if header-only), added to the root. **[cmake]**
-4. **Consumers.** Each layer that uses it lists it in its own dependencies; the module target lists it `PUBLIC` if the type appears in a public header (an alias like `using Today = period::Today` counts).
+4. **Consumers.** Each role target that uses it lists it in its own dependencies; the module target lists it `PUBLIC` if the type appears in a public header (an alias like `using Today = period::Today` counts).
 5. **Test.** `common/period/tests/tst_period.cpp`, `QTEST_APPLESS_MAIN`: no private paths needed because the entity is public in full. Move the invariant tests here out of the ViewModel tests; they now test only that the ViewModel emits and re-queries.
 
 ## Recipe 4 — Linking two modules

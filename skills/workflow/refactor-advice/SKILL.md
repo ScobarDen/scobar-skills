@@ -43,6 +43,7 @@ Read the real structure and name units the way the project names them:
 | Signals | Architecture → unit vocabulary |
 | --- | --- |
 | `src/{app,pages,widgets,features,entities,shared}` | Feature-Sliced Design → layer + slice |
+| `src/{app,pages,modules,common,global}`, `index.ts` per module | FEOD → level + module (`feod`) |
 | `src/modules/*`, `*.module.ts`, per-feature folders with a public entry point | Modular / feature-based → module |
 | `domain/application/infrastructure`, `controllers/services/repositories`, ports & adapters | Layered / Clean / Hexagonal → layer |
 | `packages/*`, `apps/*`, `libs/*` + a workspace config | Monorepo → package / app |

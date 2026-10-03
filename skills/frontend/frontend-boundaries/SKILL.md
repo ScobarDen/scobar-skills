@@ -1,10 +1,17 @@
-# Lint boundaries for roles and levels
+---
+name: frontend-boundaries
+description: Make the linter enforce FEOD levels and role boundaries on a web frontend — `no-restricted-imports` regex patterns for deep imports, `global`, `.dto` and the role matrix, the `export *` ban, `max-lines` as a size prompt, copyable ESLint flat and oxlint configs, `@feod/analyzer` for levels. Load when setting up or reviewing a frontend lint config, adding a role or a host suffix, or when a review finds an import crossing a level or role boundary. What the boundaries mean is feod and role-files; this file only turns them into rules.
+---
 
-The role suffixes from `SKILL.md` §3 exist so these globs work. Every import boundary is `no-restricted-imports` with a `regex` pattern matched against the import specifier, and ESLint and oxlint read the same options; `max-lines` and the `export *` ban ride along. Both configs were run on fixtures for every row with oxlint 1.83 and ESLint 10.11 (2026-09-23; ESLint without a TS parser, so its `allowTypeImports` is taken from the rule's source).
+# Frontend boundaries
+
+A boundary the linter does not check lasts until the first deadline. This file turns `feod` §1–3 and the role matrix of `role-files` §7 into lint rules; the suffixes from `frontend-mvvm` §4 exist so these globs work. Every import boundary is `no-restricted-imports` with a `regex` pattern matched against the import specifier, and ESLint and oxlint read the same options; `max-lines` and the `export *` ban ride along. Both configs were run on fixtures for every row with oxlint 1.83 and ESLint 10.11 (2026-09-23; ESLint without a TS parser, so its `allowTypeImports` is taken from the rule's source).
+
+**Project conventions win.** An existing lint config, alias or boundary plugin keeps its shape; add the missing rows to it instead of replacing it.
 
 ## The matrix
 
-This table is the single source of truth. Both configs below implement it, so a change here is a change in both.
+This table is the glob translation of `feod` and `role-files` §7. Both configs below implement it, so a change here is a change in both, and a change of meaning starts in those two skills.
 
 | Files under `src/` | Must not import (specifier ends in) | Why |
 | --- | --- | --- |
@@ -12,13 +19,13 @@ This table is the single source of truth. Both configs below implement it, so a 
 | every file except the entry `src/app/main.*` | `@/global…` | global effects are connected once, by the entry |
 | every file except `.api`, `.dto` and tests | `.dto` | raw backend shapes stop at `.api`, re-exports from `index.ts` included |
 | `*.view.{ts,tsx,vue}` | `.api`, types included | the View binds VM output and never sees transport |
-| `*.vm.ts` | `.view`; `.api` values (types pass) | the VM does not know how it is drawn, and it reaches transport through `.model` or an injected function (DI in `frontend-mvvm`) |
+| `*.vm.ts` | `.view`; `.api` values (types pass) | the VM does not know how it is drawn, and it reaches transport through `.model` or an injected function (mediator in `mvvm` §4) |
 | `*.model.ts` | `.vm`, `.view` | the Model is below the VM |
 | `*.api.ts` | `.vm`, `.view` | transport is below the VM |
 | `index.ts` | `export *` | the contract is explicit named exports |
 | every file | `max-lines` 200 as `warn`, tests 500 | a prompt to name the file's responsibilities |
 
-Adjust `src/`, the `@/` alias and the entry path to the project's. Where `@feod/analyzer` checks levels, drop the deep-import and global patterns.
+Adjust `src/`, the `@/` alias and the entry path to the project's. Levels and deep imports can also be checked by [`@feod/analyzer`](https://fractal-oriented.tech/en/tools/) (`feod-analyzer analyze`); where it runs, drop the deep-import and global patterns and keep the role rules.
 
 ## How overrides combine
 
@@ -82,7 +89,7 @@ export default [
 
 ## oxlint
 
-`.oxlintrc.json`, or the `lint` block of `vite.config.ts` under vite-plus. oxlint parses TypeScript and the script of `.vue` files on its own. It has no selector-based `no-restricted-syntax`, so `export *` stays a review item there (`SKILL.md` §9).
+`.oxlintrc.json`, or the `lint` block of `vite.config.ts` under vite-plus. oxlint parses TypeScript and the script of `.vue` files on its own. It has no selector-based `no-restricted-syntax`, so `export *` stays a review item there (`feod` §9).
 
 ```json
 {
@@ -170,3 +177,12 @@ export default [
   ]
 }
 ```
+
+## Related skills
+
+| Need | Load |
+| --- | --- |
+| What a level may import, public API | `feod` |
+| The role list and role matrix | `role-files` |
+| Suffixes and `index.ts` in TypeScript | `frontend-mvvm` |
+| The same boundaries enforced by a C++ compiler | `qt-cmake-boundaries` |

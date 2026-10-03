@@ -1,17 +1,17 @@
 ---
 name: mobx-mvvm
-description: MobX MVVM recipe — ViewModelBase + withViewModel, payload/DI into the VM not the View, mobx-tanstack-query createQuery outside React, compose feature stores through constructor args. Load only when the project already uses MobX / mobx-view-model / mobx-tanstack-query, or when implementing or reviewing that stack. Do not recommend MobX on greenfield (load frontend-state-stack). Doctrine lives in frontend-mvvm.
+description: MobX MVVM recipe — ViewModelBase + withViewModel, payload/DI into the VM not the View, mobx-tanstack-query createQuery outside React, compose feature stores through constructor args. Load only when the project already uses MobX / mobx-view-model / mobx-tanstack-query, or when implementing or reviewing that stack. Do not recommend MobX on greenfield (load frontend-state-stack). Doctrine lives in mvvm.
 ---
 
 # MobX MVVM recipe
 
-How to implement **`frontend-mvvm`** when the repo is already on MobX. Not a MobX tutorial and not a greenfield recommendation.
+How to implement **`mvvm`** when the repo is already on MobX. Not a MobX tutorial and not a greenfield recommendation.
 
 ## Provenance and precedence
 
 - Recipe from [MVVM for React](https://www.youtube.com/watch?v=H0pKvQ8P3UI), packages from [js2me/mobx-view-model](https://js2me.github.io/mobx-view-model/) and [js2me/mobx-tanstack-query](https://js2me.github.io/mobx-tanstack-query/).
 - **Installed typings and the project's existing VM files win.** Re-check signatures before copying snippets; the React bindings moved to `mobx-view-model-react` (root re-export is deprecated).
-- Layers, DTO rule, mediator rule: **`frontend-mvvm`**. Do not restate them. This file is the wiring.
+- Roles, facade, mediator: **`mvvm`**. Files and `index.ts`: **`frontend-mvvm`**. Do not restate them. This file is the wiring.
 - Greenfield / "should we take MobX": **`frontend-state-stack`**. The answer is no unless the repo already did.
 
 ## Stack

@@ -15,20 +15,29 @@
       ]
     },
     {
+      "title": "Architecture",
+      "description": "Ядро без стека: FEOD, MVVM и файлы по ролям.",
+      "skills": [
+        "feod",
+        "mvvm",
+        "role-files"
+      ]
+    },
+    {
       "title": "Frontend",
-      "description": "MVVM, раскладка модулей, выбор клиентского стека и MobX-рецепт.",
+      "description": "Ядро на вебе, границы линтером, выбор клиентского стека и MobX-рецепт.",
       "skills": [
         "frontend-mvvm",
-        "frontend-modular-mvvm",
+        "frontend-boundaries",
         "frontend-state-stack",
         "mobx-mvvm"
       ]
     },
     {
       "title": "Qt",
-      "description": "Модульный MVVM и границы архитектуры через CMake.",
+      "description": "Ядро в Qt Quick и границы архитектуры через CMake.",
       "skills": [
-        "qt-modular-mvvm",
+        "qt-mvvm",
         "qt-cmake-boundaries"
       ]
     },

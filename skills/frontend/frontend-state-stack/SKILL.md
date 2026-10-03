@@ -5,7 +5,7 @@ description: Choose a client-state stack before mixing libraries. Simple screens
 
 # Frontend state stack
 
-Pick **one** reactive contract for the feature's logic. Then structure it with **`frontend-mvvm`**; on greenfield, lay out the project with **`frontend-modular-mvvm`**.
+Pick **one** reactive contract for the feature's logic. Then structure it with **`mvvm`** through **`frontend-mvvm`**; on greenfield, lay out the project with **`feod`** and **`role-files`**.
 
 This skill is a gate, not a feature implementation guide. If `package.json` already shows the winner, stop and follow the repo.
 
@@ -24,7 +24,7 @@ This skill is a gate, not a feature implementation guide. If `package.json` alre
 ## When not to load
 
 - The repo already has a chosen stack and the task is to implement a screen. Load `frontend-mvvm` plus the stack skill (`reatom`, `mobx-mvvm`, or hooks).
-- The question is "how do I map this DTO" or "where does the click handler go". That is `frontend-mvvm`.
+- The question is "how do I map this DTO" or "where does the click handler go". That is `mvvm`.
 
 ## Decision tree
 
