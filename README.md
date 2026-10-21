@@ -111,6 +111,16 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 Оркестраторы Мэтта (`/grill-with-docs`, `/to-spec`, `/to-tickets`, `/implement`) закрыты флагом `disable-model-invocation: true` — вызвать их может только человек, и `matt-flow` это не обходит: он навигатор, команды печатаешь ты. Заодно вставляет в маршрут мои скиллы — стек-специфичные и `code-craft` / `test-craft` перед сборкой.
 
+### Поверх UI-скиллов
+
+**Добавка** к [`jakubkrehel/skills`](https://github.com/jakubkrehel/skills) и [`Leonxlnx/taste-skill`](https://github.com/Leonxlnx/taste-skill), не замена. Сначала поставь оба пака (см. ниже).
+
+| Скилл | Когда грузить |
+| --- | --- |
+| [`design-flow`](skills/design/design-flow/SKILL.md) | «Как бы улучшить этот интерфейс» или «хочу новый». По запросу и коду решает развилки (новое или существующее, страница или рабочий экран, один компонент или весь экран, есть ли Figma) и выдаёт маршрут на 1–4 шага: какую команду печатать и готовый промпт к ней. Сам ничего не строит. |
+
+Половина скиллов Якуба (`/variant`, `/state-machine`, `/break`, `/interface-review`, `/explain-interface`) закрыта `disable-model-invocation: true`, их запускаешь только ты. `design-flow` помечает в маршруте, какой шаг закрытый, а какой можно просто попросить словами. И режет «дашборд» на компоненты, потому что эти скиллы берут один компонент за прогон.
+
 ---
 
 ## Ещё поставь вот это
@@ -126,6 +136,8 @@ npx skills add https://github.com/reatom/reatom/tree/v1001/skills
 npx skills add antfu/skills
 npx skills add DenisSergeevitch/agents-best-practices
 npx skills add TheQtCompanyRnD/agent-skills
+npx skills add jakubkrehel/skills
+npx skills add Leonxlnx/taste-skill
 ```
 
 - [mattpocock/skills](https://github.com/mattpocock/skills) — процесс вместо вайбкодинга: грилл, спека, тикеты, TDD, ревью. Без него мой `matt-flow` пустой.
@@ -135,6 +147,8 @@ npx skills add TheQtCompanyRnD/agent-skills
 - [DenisSergeevitch/agents-best-practices](https://github.com/DenisSergeevitch/agents-best-practices) — как собирать агентный харнесс.
 - [DenisSergeevitch/chatgpt-custom-instructions](https://github.com/DenisSergeevitch/chatgpt-custom-instructions) — не скиллы, а кастомные инструкции; всё равно стоит глянуть.
 - [TheQtCompanyRnD/agent-skills](https://github.com/TheQtCompanyRnD/agent-skills) — скиллы Qt Company.
+- [jakubkrehel/skills](https://github.com/jakubkrehel/skills) — интерфейс по дисциплинам: `better-*` про цвет, типографику, лейаут, тексты, a11y и полировку, плюс стенды `variant` / `state-machine` / `break` и ревью диффа. Без него мой `design-flow` наполовину пустой.
+- [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) — арт-дирекшн против AI-слопа: раздаёт направления из библиотеки реальных сайтов, проверяет в браузере, отдельный прогон для дашбордов и рабочих экранов.
 
 ### MCP
 
@@ -161,6 +175,7 @@ skills/
   qt/         qt-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
   mattpocock/ matt-flow
+  design/     design-flow
 ```
 
 Формат — [Agent Skills](https://agentskills.io): папка со `SKILL.md` и YAML-frontmatter (`name`, `description`). Группы на [skills.sh](https://skills.sh/ScobarDen/scobar-skills) задаёт `skills.sh.json`.

@@ -49,6 +49,13 @@
       ]
     },
     {
+      "title": "Поверх UI-скиллов",
+      "description": "Навигатор по jakubkrehel/skills и taste-skill: какой скилл вызвать, чтобы улучшить или придумать интерфейс, и с каким промптом.",
+      "skills": [
+        "design-flow"
+      ]
+    },
+    {
       "title": "Reatom",
       "description": "Полевые заметки и тестирование поверх официальных скиллов Reatom.",
       "skills": [
