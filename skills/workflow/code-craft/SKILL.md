@@ -29,6 +29,10 @@ Deliberately short. It loads at a decision point, not for the duration of a task
 
 Read how the neighbours in this repo already do it and follow that. A convention you'd have chosen differently, applied consistently, beats a better idea applied in one file. Everything below is the default for where the project has no opinion — never a licence to reshape code nobody asked you to touch.
 
+## Pairs with ponytail
+
+When [`ponytail`](https://github.com/DietrichGebert/ponytail) is installed, load it too: it decides **how much** code to write — the smallest complete change, at its default `full` level — and this file decides **the shape** of what remains. Its `shortcut: <limit>, <when to upgrade>` marker is a legitimate why-comment.
+
 ## Names state the result, not the machinery
 
 A reader should get what something does from its name, without opening it.

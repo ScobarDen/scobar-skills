@@ -24,7 +24,7 @@ npx skills add ScobarDen/scobar-skills --skill mvvm
 
 - русский в чате, английский в коде
 - стиль общения
-- zero comments
+- zero comments (маркер `shortcut: <limit>, <when to upgrade>` — допустимое «почему»)
 - планы
 - TODO/FIXME
 - документация: сначала MCP Context7 или `llms.txt` / `llms-full.txt` на сайте доки
@@ -58,7 +58,9 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 Пара: `code-craft` владеет доктриной (имена, подписи, форма состояния и функции, базовые принципы), `refactor-advice` её не переписывает, а ссылается и добавляет машинерию отчёта. Ставить лучше оба. `test-craft` — тот же жанр, но про тесты: что ассертить и что не ассертить, чтобы правка реализации не красила сюиту. Стек-специфичное (раннер, API ассертов) он не трогает — это дело скилла под стек.
 
-Три скилла смотрят на один и тот же дифф, но отвечают на разные вопросы: `change-debrief` — «что тут вообще произошло и почему», `refactor-advice` — «как это улучшить», `pr-description` — «что написать в MR».
+Четыре скилла смотрят на один и тот же дифф, но отвечают на разные вопросы: `change-debrief` — «что тут вообще произошло и почему», `refactor-advice` — «как это улучшить», `review-flow` (ниже, поверх ponytail) — «что тут сломано», `pr-description` — «что написать в MR».
+
+Если стоит [ponytail](https://github.com/DietrichGebert/ponytail), `code-craft` грузит его в пару: ponytail решает, *сколько* кода писать, `code-craft` — *какой формы*.
 
 ### Architecture
 
@@ -121,6 +123,16 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 Половина скиллов Якуба (`/variant`, `/state-machine`, `/break`, `/interface-review`, `/explain-interface`) закрыта `disable-model-invocation: true`, их запускаешь только ты. `design-flow` помечает в маршруте, какой шаг закрытый, а какой можно просто попросить словами. И режет «дашборд» на компоненты, потому что эти скиллы берут один компонент за прогон.
 
+### Поверх ponytail
+
+**Добавка** к [`DietrichGebert/ponytail`](https://github.com/DietrichGebert/ponytail), не замена. Сначала поставь его (см. ниже); без него скилл работает, но без базового ревью.
+
+| Скилл | Когда грузить |
+| --- | --- |
+| [`review-flow`](skills/workflow/review-flow/SKILL.md) | «Отревьюй». База — `ponytail-review`, сверху до трёх линз, которые реально касаются диффа: спека (Мэттовский `code-review`, только ось Spec), `code-craft` / `test-craft` по новому коду, стековые и любые установленные ревью-скиллы — найденные динамически, по зоне. Линзы гоняются сабагентами параллельно, на выходе один отчёт: дефекты сверху, дубли схлопнуты по `file:line`. Закрытые скиллы (`/interface-review`) — в блок «запусти руками». Ничего не правит. |
+
+Скоуп по умолчанию — вся ветка против базы плюс рабочее дерево, как у `refactor-advice`. Модель грузит его сама на «отревьюй», вместо прямого `ponytail-review`.
+
 ---
 
 ## Ещё поставь вот это
@@ -138,6 +150,7 @@ npx skills add DenisSergeevitch/agents-best-practices
 npx skills add TheQtCompanyRnD/agent-skills
 npx skills add jakubkrehel/skills
 npx skills add Leonxlnx/taste-skill
+npx skills add DietrichGebert/ponytail
 ```
 
 - [mattpocock/skills](https://github.com/mattpocock/skills) — процесс вместо вайбкодинга: грилл, спека, тикеты, TDD, ревью. Без него мой `matt-flow` пустой.
@@ -149,6 +162,12 @@ npx skills add Leonxlnx/taste-skill
 - [TheQtCompanyRnD/agent-skills](https://github.com/TheQtCompanyRnD/agent-skills) — скиллы Qt Company.
 - [jakubkrehel/skills](https://github.com/jakubkrehel/skills) — интерфейс по дисциплинам: `better-*` про цвет, типографику, лейаут, тексты, a11y и полировку, плюс стенды `variant` / `state-machine` / `break` и ревью диффа. Без него мой `design-flow` наполовину пустой.
 - [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) — арт-дирекшн против AI-слопа: раздаёт направления из библиотеки реальных сайтов, проверяет в браузере, отдельный прогон для дашбордов и рабочих экранов.
+- [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) — режим «ленивого сеньора»: самое маленькое изменение, которое целиком решает задачу, без спекулятивных абстракций; плюс `ponytail-review` (ревью диффа), `ponytail-audit` (то же по всему репо) и `ponytail-debt` (реестр `shortcut:`-срезов). Без него мой `review-flow` без базы. В Claude Code лучше плагином — хуки держат режим включённым в каждой сессии, после `/clear` и компакта, и в сабагентах:
+
+  ```
+  /plugin marketplace add DietrichGebert/ponytail
+  /plugin install ponytail@ponytail
+  ```
 
 ### MCP
 
@@ -169,7 +188,7 @@ npx skills add Leonxlnx/taste-skill
 ```
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
-  workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, worktree-flow
+  workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, worktree-flow, review-flow
   architecture/ feod, mvvm, role-files
   frontend/   frontend-mvvm, frontend-boundaries, frontend-state-stack, mobx-mvvm
   qt/         qt-mvvm, qt-cmake-boundaries

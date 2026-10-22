@@ -1,6 +1,6 @@
 ---
 name: change-debrief
-description: Explain work that already exists so the user understands the whole task end to end — why it was done, the one change that matters most shown in real code, which decisions carried weight, what is left and where it is thin. Short by default, deeper on request. Default scope is the current branch, commits and working tree together; also takes a branch, a range, a path, or a feature named in prose, and then it explains how existing code is built instead of what changed. Plain language and named sources — every claim comes from files that were actually read, and every principle it cites says where that principle is written. Load when the user asks to explain what was done, walk me through this branch, I don't understand what happens here, onboard me onto this module, «объясни, что сделал», «разбери эту ветку», «введи в курс». Read-only and explanatory — bugs belong to code-review, improvements to refactor-advice, MR text to pr-description. A single question about a single function is an ordinary answer, not a debrief. Stack-agnostic.
+description: Explain work that already exists so the user understands the whole task end to end — why it was done, the one change that matters most shown in real code, which decisions carried weight, what is left and where it is thin. Short by default, deeper on request. Default scope is the current branch, commits and working tree together; also takes a branch, a range, a path, or a feature named in prose, and then it explains how existing code is built instead of what changed. Plain language and named sources — every claim comes from files that were actually read, and every principle it cites says where that principle is written. Load when the user asks to explain what was done, walk me through this branch, I don't understand what happens here, onboard me onto this module, «объясни, что сделал», «разбери эту ветку», «введи в курс». Read-only and explanatory — bugs belong to review-flow, improvements to refactor-advice, MR text to pr-description. A single question about a single function is an ordinary answer, not a debrief. Stack-agnostic.
 ---
 
 # Change debrief
@@ -15,7 +15,7 @@ The reader is a developer who has not seen this code — except where they have.
 
 **Read-only.** Reads git, files, the forge and the tracker, and writes the debrief into the chat. Runs no tests, no build, no linter. A file only when the user asks for one, at the path they name.
 
-**Explains, does not grade.** Bugs → `code-review`. Improvements → `refactor-advice`. MR text → `pr-description`. When something genuinely broken surfaces mid-debrief, name it in one line, say which skill picks it up, and carry on explaining.
+**Explains, does not grade.** Bugs → `review-flow`. Improvements → `refactor-advice`. MR text → `pr-description`. When something genuinely broken surfaces mid-debrief, name it in one line, say which skill picks it up, and carry on explaining.
 
 ## 1. Resolve the scope
 
