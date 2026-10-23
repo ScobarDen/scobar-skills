@@ -78,7 +78,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, рецепт нового модуля, пример миграции магазина. |
+| [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, compound-компоненты и пресеты вместо пропса на каждый вариант, рецепт нового модуля, пример миграции магазина. |
 | [`frontend-boundaries`](skills/frontend/frontend-boundaries/SKILL.md) | Те же границы, но чтобы их ловил линтер: ESLint flat / oxlint конфиги, `@feod/analyzer`. |
 | [`frontend-state-stack`](skills/frontend/frontend-state-stack/SKILL.md) | Greenfield или «какой стейт-менеджер». Пока стек уже выбран — не нужен. |
 | [`mobx-mvvm`](skills/frontend/mobx-mvvm/SKILL.md) | Рецепт, если проект уже на MobX. На greenfield не предлагать. |

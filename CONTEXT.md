@@ -64,6 +64,22 @@ _Avoid_: controller, presenter, store
 The role that binds ViewModel output to UI and sends user actions back; it decides nothing.
 _Avoid_: component, template, UI layer
 
+**God component**:
+A component that fetches, maps and decides on its own instead of binding ViewModel output; the failure MVVM exists to prevent.
+_Avoid_: using it for a preset
+
+**Compound component**:
+A component split into a root and flat named parts the caller assembles; the root owns UI state, parts read it through context.
+_Avoid_: composite, slot component
+
+**Structural prop**:
+A prop that shows, hides, replaces or rearranges a part of a component; the trigger to split it into a compound.
+_Avoid_: config prop, option
+
+**Preset**:
+A fixed assembly of a compound component, inserted as one tag, taking only data and callbacks.
+_Avoid_: god component, wrapper, default component
+
 **Facade**:
 The ViewModel's promise that the View receives only UI-shaped data and never a backend shape.
 _Avoid_: using it for a module's public API

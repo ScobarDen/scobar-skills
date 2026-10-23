@@ -1,6 +1,6 @@
 ---
 name: frontend-mvvm
-description: MVVM, FEOD and role files applied to a web frontend — the ViewModel as a hook, a composable or a Reatom model, the passive component, `index.ts` as a module's public API, `{subject}.{role}.ts` in TypeScript, routes and file-based routers, a new-module recipe and a worked shop migration. Load when building or reviewing a React or Vue screen or module, writing an `index.ts`, a DTO reaching a component, a fetch or `useQuery` inside a presentational component, or migrating a frontend to modules. Doctrine is in mvvm, feod and role-files; state library choice is frontend-state-stack; lint enforcement is frontend-boundaries.
+description: MVVM, FEOD and role files applied to a web frontend — the ViewModel as a hook, a composable or a Reatom model, the passive component, `index.ts` as a module's public API, `{subject}.{role}.ts` in TypeScript, routes and file-based routers, compound components and presets, a new-module recipe and a worked shop migration. Load when building or reviewing a React or Vue screen or module, a component growing props that show, hide or replace its parts, writing an `index.ts`, a DTO reaching a component, a fetch or `useQuery` inside a presentational component, or migrating a frontend to modules. Doctrine is in mvvm, feod and role-files; state library choice is frontend-state-stack; lint enforcement is frontend-boundaries.
 ---
 
 # Frontend MVVM
@@ -87,7 +87,18 @@ A file-based router (Next, Nuxt, TanStack Router, React Router fs-routes) dictat
 7. **Mount**: a page imports the module root and passes its dependencies; the module never imports the page or another module's internals.
 8. **Check**: lint is green with the `frontend-boundaries` config; the README names what is injected.
 
-## 7. Worked example
+## 7. Compound components and presets
+
+A component that grows a prop per variant becomes unreadable. Split it into a **compound** (`CardRoot`, `CardHeader`, `CardActions`, flat named exports) and keep the usual assembly as a **preset** (`UserCard`).
+
+- The first **structural prop** (`showHeader`, `renderActions`, a `variant` that changes which parts exist) is the trigger, not the prop count.
+- The root owns UI state and passes it through context; domain data comes from the ViewModel. A part used outside its root throws.
+- A preset appears on the third identical assembly, takes data and callbacks only, and never grows a structural prop: a frequent variant gets a second preset, a rare one is assembled in place.
+- Interactive compounds (dialog, select, tabs) wrap the project's headless library.
+
+[`references/compound-components.md`](references/compound-components.md) has the full rules, FEOD placement and React and Vue examples. Read it when building or splitting a reusable component.
+
+## 8. Worked example
 
 [`references/worked-example.md`](references/worked-example.md) takes a typical shop frontend sorted by technical kind (`components/`, `hooks/`, `utils/`, `types/`) to this layout, row by row: every level, every role folder, submodules, and a page wiring two modules. Read it when migrating a project or starting a new one.
 
@@ -100,6 +111,9 @@ A file-based router (Next, Nuxt, TanStack Router, React Router fs-routes) dictat
 - `export *` in an `index.ts`; an import path past a module root.
 - `ReturnType<typeof …>` reconstructing a type another module owns.
 - A component file without a role suffix inside a module.
+- A structural prop: `showFooter`, `renderHeader`, a `variant` that adds or drops parts.
+- A preset that grew a structural prop.
+- A compound part that fetches or holds domain state.
 
 ## Related skills
 

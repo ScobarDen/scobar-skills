@@ -65,6 +65,7 @@ The rule bites where the parameter's name is **invisible at the call site** — 
 - Two positionals of the same type in a row is a bug waiting to happen — `transfer(accountA, accountB)` reads fine until someone swaps them. Name them, or take a single object.
 - Magic literals at a call site get a named constant, even when the signature is fine.
 - **Three or more parameters is a signal**, not a violation. Ask whether they are really one concept.
+- A UI component prop that shows, hides or replaces a part of it (`showFooter`, `renderHeader`) is the same flag at the component level: split it into a compound, see `frontend-mvvm` §7.
 
 ## One union beats a constellation of booleans
 
