@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Change map</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #fafaf9; --panel: #ffffff; --text: #1c1917; --muted: #78716c; --line: #e7e5e4;
+  --accent: #2563eb; --must: #dc2626; --skim: #d97706; --noise: #a8a29e;
+  --add-bg: #dcfce7; --add-fg: #166534; --del-bg: #fee2e2; --del-fg: #991b1b; --hunk: #6366f1;
+  --sketch: #f59e0b;
+  accent-color: var(--accent);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c0a09; --panel: #1c1917; --text: #f5f5f4; --muted: #a8a29e; --line: #292524;
+    --accent: #60a5fa; --must: #f87171; --skim: #fbbf24; --noise: #78716c;
+    --add-bg: #052e16; --add-fg: #86efac; --del-bg: #450a0a; --del-fg: #fca5a5; --hunk: #a5b4fc;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 system-ui, sans-serif; }
+header { padding: 16px 24px; border-bottom: 1px solid var(--line); background: var(--panel); }
+header h1 { margin: 0 0 4px; font-size: 18px; }
+header p { margin: 0; color: var(--muted); }
+.warn { margin-top: 8px; padding: 8px 12px; border-left: 3px solid var(--must); background: var(--del-bg); color: var(--del-fg); }
+nav.tabs { display: flex; gap: 4px; padding: 0 24px; border-bottom: 1px solid var(--line); background: var(--panel); }
+nav.tabs button { border: 0; background: none; color: var(--muted); padding: 10px 14px; font: inherit; cursor: pointer; border-bottom: 2px solid transparent; }
+nav.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+.tier { margin-bottom: 32px; }
+.tier > h2 { font-size: 15px; margin: 0 0 12px; display: flex; gap: 8px; align-items: center; }
+.dot { inline-size: 10px; block-size: 10px; border-radius: 50%; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+.card.reviewed { opacity: .55; }
+.card-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.card-head code { color: var(--muted); font-size: 12px; }
+.why { margin: 6px 0; }
+.label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-top: 10px; }
+.contract { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.contract pre { margin: 4px 0 0; }
+.consumers { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.consumers code { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+pre { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; overflow-x: auto; font: 12px/1.45 ui-monospace, monospace; }
+pre .add { background: var(--add-bg); color: var(--add-fg); display: block; }
+pre .del { background: var(--del-bg); color: var(--del-fg); display: block; }
+pre .hunk { color: var(--hunk); display: block; }
+details summary { cursor: pointer; color: var(--accent); margin-top: 8px; }
+.noise-list { color: var(--muted); }
+.ui { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+.ui aside button { display: block; inline-size: 100%; text-align: start; border: 1px solid transparent; background: none; color: var(--text); padding: 8px 10px; border-radius: 6px; font: inherit; cursor: pointer; }
+.ui aside button[aria-current="true"] { background: var(--panel); border-color: var(--line); }
+.ui aside small { display: block; color: var(--muted); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; background: var(--panel); color: var(--text); padding: 6px 12px; font: inherit; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.hint { color: var(--muted); font-size: 12px; }
+.badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.badge.render { background: var(--add-bg); color: var(--add-fg); }
+.badge.sketch { background: var(--sketch); color: #000; }
+.sketch-banner { padding: 8px 12px; border: 2px dashed var(--sketch); border-radius: 6px; margin-bottom: 12px; }
+.stage { position: relative; display: inline-grid; max-inline-size: 100%; background: repeating-conic-gradient(var(--line) 0 25%, transparent 0 50%) 0 0 / 16px 16px; border: 1px solid var(--line); border-radius: 6px; }
+.stage img { display: block; max-inline-size: 100%; }
+.stage > :not(.tag) { grid-area: 1 / 1; }
+.stage { margin-top: 22px; }
+.stage .tag { position: absolute; top: -20px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.stage .placeholder { padding: 48px 64px; color: var(--muted); }
+input[type="range"] { inline-size: min(100%, 480px); }
+@media (max-width: 760px) { .ui { grid-template-columns: 1fr; } .contract { grid-template-columns: 1fr; } main { padding: 16px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title"></h1>
+  <p id="subtitle"></p>
+  <div id="warn"></div>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<main id="main"></main>
+<script src="data.js"></script>
+<script>
+const data = window.CHANGE_MAP;
+const TIERS = [
+  ['must', 'Must look', 'var(--must)'],
+  ['skim', 'Skim', 'var(--skim)'],
+  ['noise', 'Noise', 'var(--noise)'],
+];
+const el = (tag, attrs = {}, ...kids) => {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+    else if (v !== undefined && v !== null && v !== false) node.setAttribute(k, v);
+  }
+  node.append(...kids.flat().filter(k => k !== undefined && k !== null && k !== false));
+  return node;
+};
+const store = {
+  get(key) { try { return localStorage.getItem(key); } catch { return null; } },
+  set(key, value) { try { value === null ? localStorage.removeItem(key) : localStorage.setItem(key, value); } catch {} },
+};
+const reviewKey = id => `change-map:${data.title}:${id}`;
+
+function diffBlock(text) {
+  const pre = el('pre');
+  for (const line of text.split('\n')) {
+    const cls = line.startsWith('@@') ? 'hunk'
+      : line.startsWith('+') && !line.startsWith('+++') ? 'add'
+      : line.startsWith('-') && !line.startsWith('---') ? 'del' : null;
+    pre.append(cls ? el('span', { class: cls }, line) : line + '\n');
+  }
+  return pre;
+}
+
+function moduleCard(m) {
+  const card = el('article', { class: 'card' });
+  const box = el('input', { type: 'checkbox', 'aria-label': `Mark ${m.name} reviewed` });
+  box.checked = store.get(reviewKey(m.id)) === '1';
+  card.classList.toggle('reviewed', box.checked);
+  box.addEventListener('change', () => {
+    store.set(reviewKey(m.id), box.checked ? '1' : null);
+    card.classList.toggle('reviewed', box.checked);
+  });
+  const consumers = m.consumers || [];
+  const hiddenConsumers = (m.consumersTotal || consumers.length) - consumers.length;
+  card.append(el('div', {},
+    el('div', { class: 'card-head' },
+      el('label', {}, box, ' ', el('strong', {}, m.name)),
+      el('code', {}, m.path)),
+    m.why && el('p', { class: 'why' }, m.why),
+    m.contract && el('div', {},
+      el('div', { class: 'label' }, 'Contract'),
+      el('div', { class: 'contract' },
+        el('div', {}, el('span', { class: 'hint' }, 'before'), el('pre', {}, m.contract.before || '—')),
+        el('div', {}, el('span', { class: 'hint' }, 'after'), el('pre', {}, m.contract.after || '—')))),
+    consumers.length > 0 && el('div', {},
+      el('div', { class: 'label' }, `Consumers · ${m.consumersTotal || consumers.length}`),
+      el('div', { class: 'consumers' },
+        consumers.map(c => el('code', {}, c)),
+        hiddenConsumers > 0 && el('span', { class: 'hint' }, `+${hiddenConsumers} more`))),
+    m.diff && el('details', {}, el('summary', {}, 'Diff'), diffBlock(m.diff)),
+  ));
+  return card;
+}
+
+function renderCode(root) {
+  for (const [tier, title, color] of TIERS) {
+    const mods = data.modules.filter(m => m.tier === tier);
+    if (mods.length === 0) continue;
+    const section = el('section', { class: 'tier' },
+      el('h2', {}, el('span', { class: 'dot', style: `background:${color}` }), `${title} · ${mods.length}`));
+    if (tier === 'noise') {
+      section.append(el('p', { class: 'noise-list' }, mods.map(m => m.path).join(', ')));
+    } else {
+      section.append(...mods.map(moduleCard));
+    }
+    root.append(section);
+  }
+}
+
+let onUiKey = null;
+function renderUi(root) {
+  const screens = data.screens;
+  const state = { screen: 0, variant: 0, side: 'after', mode: 'flip', curtain: 50 };
+  const list = el('aside');
+  const view = el('section');
+  root.append(el('div', { class: 'ui' }, list, view));
+
+  const image = (src, side) => src
+    ? el('img', { src, alt: `${screens[state.screen].name} ${side}` })
+    : el('div', { class: 'placeholder' }, side === 'before' ? 'Did not exist before' : 'Removed');
+
+  function draw() {
+    const s = screens[state.screen];
+    const v = s.states[state.variant] || s.states[0];
+    list.replaceChildren(...screens.map((x, i) => el('button', {
+      'aria-current': i === state.screen ? 'true' : 'false',
+      onclick: () => { state.screen = i; state.variant = 0; draw(); },
+    }, x.name, el('small', {}, x.kind === 'sketch' ? 'sketch' : 'render', x.usedOn?.length ? ` · ${x.usedOn.join(', ')}` : ''))));
+
+    const seg = (items, key) => el('div', { class: 'seg' }, items.map(([value, label]) => el('button', {
+      'aria-pressed': state[key] === value ? 'true' : 'false',
+      onclick: () => { state[key] = value; draw(); },
+    }, label)));
+
+    let stage;
+    if (state.mode === 'flip') {
+      stage = el('div', { class: 'stage' }, image(v[state.side], state.side),
+        el('span', { class: 'tag', style: 'left:6px' }, state.side));
+    } else {
+      const over = el('div', { class: 'over', style: `clip-path: inset(0 0 0 ${state.curtain}%)` }, image(v.after, 'after'));
+      stage = el('div', { class: 'stage' }, image(v.before, 'before'), over,
+        el('span', { class: 'tag', style: 'left:6px' }, 'before'),
+        el('span', { class: 'tag', style: 'right:6px' }, 'after'));
+    }
+    const range = el('input', { type: 'range', min: 0, max: 100, value: state.curtain, 'aria-label': 'Curtain position' });
+    range.addEventListener('input', () => {
+      state.curtain = Number(range.value);
+      stage.querySelector('.over').style.clipPath = `inset(0 0 0 ${state.curtain}%)`;
+    });
+
+    view.replaceChildren(el('div', {},
+      el('div', { class: 'toolbar' },
+        el('strong', {}, s.name),
+        el('span', { class: `badge ${s.kind}` }, s.kind === 'sketch' ? 'SKETCH' : 'RENDER'),
+        s.states.length > 1 && seg(s.states.map((x, i) => [i, x.name]), 'variant'),
+        seg([['flip', 'Flip'], ['curtain', 'Curtain']], 'mode'),
+        state.mode === 'flip' && seg([['before', 'Before'], ['after', 'After']], 'side'),
+        el('span', { class: 'hint' }, 'Space: flip · ←/→: screen')),
+      s.kind === 'sketch' && el('div', { class: 'sketch-banner' },
+        'Sketch drawn by the agent from the code, not a render of the component. ', s.note || ''),
+      s.kind !== 'sketch' && s.note && el('p', { class: 'hint' }, s.note),
+      stage,
+      state.mode === 'curtain' && el('div', {}, range),
+      s.diff && el('details', {}, el('summary', {}, 'Markup and style diff'), diffBlock(s.diff)),
+    ));
+  }
+
+  document.removeEventListener('keydown', onUiKey);
+  onUiKey = e => {
+    if (e.target.closest('input, textarea, select, button, summary, a')) return;
+    if (e.key === ' ') {
+      e.preventDefault();
+      state.mode = 'flip';
+      state.side = state.side === 'after' ? 'before' : 'after';
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      state.screen = (state.screen + (e.key === 'ArrowRight' ? 1 : -1) + screens.length) % screens.length;
+      state.variant = 0;
+    } else return;
+    draw();
+  };
+  document.addEventListener('keydown', onUiKey);
+  draw();
+}
+
+document.getElementById('title').textContent = data.title;
+document.getElementById('subtitle').textContent = [data.summary, `${data.base} → ${data.head}`].filter(Boolean).join(' · ');
+if (data.split) document.getElementById('warn').append(el('div', { class: 'warn' }, data.split));
+
+const tabs = [];
+if (data.screens?.length) tabs.push(['ui', `UI · ${data.screens.length}`, renderUi]);
+tabs.push(['code', `Code · ${data.modules.length}`, renderCode]);
+const main = document.getElementById('main');
+function openTab(id) {
+  store.set('change-map:tab', id);
+  const [, , render] = tabs.find(t => t[0] === id);
+  document.getElementById('tabs').replaceChildren(...tabs.map(([tid, label]) => el('button', {
+    role: 'tab', 'aria-selected': tid === id ? 'true' : 'false', onclick: () => openTab(tid),
+  }, label)));
+  const panel = el('div', { role: 'tabpanel' });
+  document.removeEventListener('keydown', onUiKey);
+  main.replaceChildren(panel);
+  render(panel);
+}
+const saved = store.get('change-map:tab');
+openTab(tabs.some(t => t[0] === saved) ? saved : tabs[0][0]);
+</script>
+</body>
+</html>
