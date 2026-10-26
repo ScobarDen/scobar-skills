@@ -52,7 +52,10 @@ Each must and skim module gets a `why` — one line naming its signal: "CartItem
 
 Skip this step when no UI file changed: components, templates, styles, QML.
 
-A **UI piece** is a changed component that renders on its own. List each with the screens it shows up on — walk the import graph up to route or page files (FEOD `pages`, a file-based router's path) — and the **states** the diff touched: a changed `isError`, `isEmpty`, `loading` branch earns its state; the default state is always in.
+A **UI piece** is a changed component that renders on its own. List each with the screens it shows up on — walk the import graph up to route or page files (FEOD `pages`, a file-based router's path) — and the **states** the diff touched: a changed `isError`, `isEmpty`, `loading` branch earns its state; the default state is always in. Two more kinds of state come from reading how each side lays the piece out:
+
+- **Viewports** at the project's own breakpoints wherever the piece switches layout across one.
+- **Data shapes** that the two sides render differently — a non-square image where one side fills and the other covers, a name long enough to wrap. Same-shaped data can make a real change invisible.
 
 Show the list to the user before rendering anything: pieces, states, screens, and which rung each will take (step 4). Rendering is the expensive part, and the user prunes it here.
 
@@ -63,14 +66,14 @@ Show the list to the user before rendering anything: pieces, states, screens, an
 Take each piece down this ladder; the first rung that works wins:
 
 1. **Storybook** — the project has Storybook → our own story per piece and state on the shared mocks, built with the project's Storybook setup on both sides.
-2. **Vite harness** — the project builds with Vite → our own entry per piece and state, mounting the real component alone on the shared mocks inside the app's providers, built by the project's Vite config on both sides.
-3. **Sketch** — everything else (webpack without Storybook, Next, Qt, a component that needs a live store, a build that failed twice) → plain HTML and CSS drawn from the old and new code and the project's tokens.
+2. **Vite harness** — the project has Vite, as its builder or only as its test runner (a Next app with a Vitest config counts) → our own entry per piece and state, mounting the real component alone on the shared mocks inside the app's providers, built through Vite with the project's aliases and CSS pipeline on both sides.
+3. **Sketch** — everything else (webpack with neither Storybook nor Vitest, Qt, a component that needs a live store, a build that failed twice) → plain HTML and CSS drawn from the old and new code and the project's tokens.
 
 Rungs 1 and 2 produce a **render**; rung 3 produces a **sketch**. The words are exact: a sketch is never called a render, and its `note` says why the piece fell to it ("needs useCartStore with live queries", "webpack build").
 
 [`references/render.md`](references/render.md) is the recipe: the temp worktrees, mocks, providers, both harnesses, shooting with [`scripts/shoot.mjs`](scripts/shoot.mjs), and cleanup.
 
-**Done when:** every approved piece has a picture for each side that existed (a new piece has no before, a removed one no after) and a kind, and every temp worktree is gone.
+**Done when:** every approved piece has a picture for each side that existed (a new piece has no before, a removed one no after) and a kind, every temp worktree is gone, and the checkout's `node_modules` is still there.
 
 ## 5. Write the data and open the page
 
