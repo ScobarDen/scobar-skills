@@ -1,11 +1,11 @@
 ---
 name: qt-mvvm
-description: MVVM, FEOD and role files applied to a Qt Quick (QML + C++) application — role folders `domain / data / model / viewmodel / ui` inside every module, `include/<name>/` plus `qmldir` as a module's public API, a pimpl `Module` class that assembles the module, constructor injection instead of a DI container, `main.cpp` as the composition root, an `AppViewModel` mediator, QML binding rules. Load when structuring or reviewing a Qt Quick app — a new screen or module, "where does this code go", a ViewModel or a QAbstractListModel, the `Module` class, qmldir and `internal`, `main.cpp` order, cross-module wiring — even if the user never says FEOD or MVVM. Doctrine is in feod, mvvm and role-files; CMake enforcement is qt-cmake-boundaries, load both when creating a module.
+description: MVVM, FEOD and role files applied to a Qt Quick (QML + C++) application — role folders `domain / data / model / viewmodel / ui` inside every module, `include/<name>/` plus `qmldir` as a module's public API, a pimpl `Module` class that assembles the module, constructor injection instead of a DI container, `main.cpp` as the composition root, an `AppViewModel` mediator, QML binding rules. Load when structuring or reviewing a Qt Quick app — a new screen or module, "where does this code go", a ViewModel or a QAbstractListModel, the `Module` class, qmldir and `internal`, `main.cpp` order, cross-module wiring — even if the user never says FEOD or MVVM. Doctrine is in feod-preset, mvvm and role-files; CMake enforcement is qt-cmake-boundaries, load both when creating a module.
 ---
 
 # Qt MVVM
 
-How `feod`, `mvvm` and `role-files` look in a Qt Quick application. Load those three for the rules; this file adds what C++, QML and moc change.
+How FEOD (`feod-preset`), `mvvm` and `role-files` look in a Qt Quick application. Load those three for the rules; this file adds what C++, QML and moc change.
 
 A module directory is one FEOD module and the whole MVVM stack at once. Understand one module and you understand them all.
 
@@ -63,7 +63,7 @@ modules/<name>/
 What each folder adds on Qt:
 
 - **domain**: plain structs, `enum class`, pure validation functions. No Qt beyond `QString` / `QDate`, no SQL, no `QObject`. It tests without a database, a window or a `QCoreApplication`.
-- **data**: repositories, SQL in, domain structs out; rows never leave. A repository spans as many tables as one scenario needs. Methods are `virtual`: that virtuality is the test seam, not polymorphism for its own sake. A report repository joining a table another module owns is a documented exception (`feod` §7).
+- **data**: repositories, SQL in, domain structs out; rows never leave. A repository spans as many tables as one scenario needs. Methods are `virtual`: that virtuality is the test seam, not polymorphism for its own sake. A report repository joining a table another module owns is a documented exception (`feod-preset` §7).
 - **model**: receives rows through `setRows(...)`; it never fetches. Roles start at `Qt::UserRole + 1`; `roleNames()` is the contract with QML and gets a test that pins the names.
 - **viewmodel**: screen state as `Q_PROPERTY` with `NOTIFY`, commands as `Q_INVOKABLE`, calls into the repository it received through its constructor. It includes repository headers to use that instance and never constructs one: the C++ form of `role-files` §7 "`api` types pass, values do not". The header compiles without any QtQuick include and the build does not give it `Qt5::Quick`. It exposes the list as `QAbstractItemModel *` so the concrete model stays private. On error it keeps the rows and sets `errorText` (`mvvm` §8).
 - **ui**: declarative bindings to the ViewModel and handlers that call its commands (§5).
@@ -130,7 +130,7 @@ Step-by-step procedures in [`references/recipes.md`](references/recipes.md):
 
 ## 9. Review checklist (Qt half)
 
-Run `feod` §9 and the `mvvm` smells too; the build half is in `qt-cmake-boundaries`.
+Run `feod-preset` §9 and the `mvvm` smells too; the build half is in `qt-cmake-boundaries`.
 
 - [ ] Other modules are used only through `include/<name>/`, never through role-folder paths
 - [ ] Module QML has no `App`; module C++ has no app headers
@@ -170,7 +170,7 @@ Run `feod` §9 and the `mvvm` smells too; the build half is in `qt-cmake-boundar
 
 | Need | Load |
 | --- | --- |
-| Levels, public API, exceptions | `feod` |
+| Levels, public API, exceptions | `feod-preset` |
 | What each role owns, mediator, errors, test seams | `mvvm` |
 | The role list and role matrix | `role-files` |
 | CMake targets that enforce all of the above | `qt-cmake-boundaries` |

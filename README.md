@@ -65,11 +65,11 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 ### Architecture
 
-Ядро без стека. Три идеи, по скиллу на каждую; стековые скиллы ниже на них опираются и добавляют только своё.
+Ядро без стека. Три идеи, по скиллу на каждую; FEOD — это официальный `feod` плюс мой `feod-preset` поверх; стековые скиллы ниже на них опираются и добавляют только своё.
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`feod`](skills/architecture/feod/SKILL.md) | Куда класть код и кто кого импортирует: уровни [FEOD](https://fractal-oriented.tech/), public API модуля, сабмодули, «module или common», миграция с FSD. |
+| [`feod-preset`](skills/architecture/feod-preset/SKILL.md) | Мой пресет поверх официального скилла [FEOD](https://feod.dev/) (`feod` от [Sdju](https://github.com/Sdju/feod)): тест «module или common», строгий public API модуля, kebab-case, README модуля, когда пора в сабмодуль, ревью-чеклист. Сам `feod` ставится отдельно (см. ниже). |
 | [`mvvm`](skills/architecture/mvvm/SKILL.md) | Кто за что отвечает: Model / ViewModel / View, facade (View не видит DTO), mediator на трёх масштабах, ошибки, тестируемость. |
 | [`role-files`](skills/architecture/role-files/SKILL.md) | Как роли становятся файлами: `checkout.vm.ts`, закрытый список ролей, один файл в корне — два и больше в папку, матрица импортов между ролями. |
 
@@ -80,7 +80,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | Скилл | Когда грузить |
 | --- | --- |
 | [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, compound-компоненты и пресеты вместо пропса на каждый вариант, рецепт нового модуля, пример миграции магазина. |
-| [`frontend-boundaries`](skills/frontend/frontend-boundaries/SKILL.md) | Те же границы, но чтобы их ловил линтер: ESLint flat / oxlint конфиги, `@feod/analyzer`. |
+| [`frontend-boundaries`](skills/frontend/frontend-boundaries/SKILL.md) | Те же границы, но чтобы их ловил линтер: официальные `@o-feod/*` плагины на уровни плюс ESLint flat / oxlint правила на роли. |
 | [`frontend-state-stack`](skills/frontend/frontend-state-stack/SKILL.md) | Greenfield или «какой стейт-менеджер». Пока стек уже выбран — не нужен. |
 | [`mobx-mvvm`](skills/frontend/mobx-mvvm/SKILL.md) | Рецепт, если проект уже на MobX. На greenfield не предлагать. |
 
@@ -93,7 +93,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 В каждом стеке пара: «как ядро выглядит здесь» + «кто бьёт по рукам». Новый модуль — оба, плюс ядро.
 
-`frontend-modular-mvvm` разъехался по `feod`, `role-files`, `frontend-mvvm` и `frontend-boundaries`; `qt-modular-mvvm` переименован в `qt-mvvm`. Если ставил старые — переставь.
+`frontend-modular-mvvm` разъехался по `feod`, `role-files`, `frontend-mvvm` и `frontend-boundaries`; `qt-modular-mvvm` переименован в `qt-mvvm`. Мой `feod` переименован в `feod-preset`, а имя `feod` теперь у официального скилла автора FEOD. Если ставил старые — переставь.
 
 ### Reatom
 
@@ -143,6 +143,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 ### Скиллы
 
 ```bash
+npx skills add Sdju/feod
 npx skills add mattpocock/skills
 npx skills add siberiacancode/agent-skills
 npx skills add https://github.com/reatom/reatom/tree/v1001/skills
@@ -154,6 +155,7 @@ npx skills add Leonxlnx/taste-skill
 npx skills add DietrichGebert/ponytail
 ```
 
+- [Sdju/feod](https://github.com/Sdju/feod) — официальный скилл `feod` от автора FEOD: уровни, матрица импортов, сабмодули, модификации, линт-плагины. Без него мой `feod-preset` висит в воздухе.
 - [mattpocock/skills](https://github.com/mattpocock/skills) — процесс вместо вайбкодинга: грилл, спека, тикеты, TDD, ревью. Без него мой `matt-flow` пустой.
 - [siberiacancode/agent-skills](https://github.com/siberiacancode/agent-skills) — фронт, тесты, практика.
 - [reatom/reatom `v1001/skills`](https://github.com/reatom/reatom/tree/v1001/skills) — официальные `reatom` / `reatom-async` / `reatom-jsx` / `reatom-review`. Без них мои `reatom-*` слепые.
@@ -190,7 +192,7 @@ npx skills add DietrichGebert/ponytail
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
   workflow/   code-craft, test-craft, refactor-advice, change-debrief, change-map, pr-description, worktree-flow, review-flow
-  architecture/ feod, mvvm, role-files
+  architecture/ feod-preset, mvvm, role-files
   frontend/   frontend-mvvm, frontend-boundaries, frontend-state-stack, mobx-mvvm
   qt/         qt-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing

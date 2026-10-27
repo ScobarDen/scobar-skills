@@ -5,7 +5,7 @@ description: Choose a client-state stack before mixing libraries. Simple screens
 
 # Frontend state stack
 
-Pick **one** reactive contract for the feature's logic. Then structure it with **`mvvm`** through **`frontend-mvvm`**; on greenfield, lay out the project with **`feod`** and **`role-files`**.
+Pick **one** reactive contract for the feature's logic. Then structure it with **`mvvm`** through **`frontend-mvvm`**; on greenfield, lay out the project with **`feod`**, **`feod-preset`** and **`role-files`**.
 
 This skill is a gate, not a feature implementation guide. If `package.json` already shows the winner, stop and follow the repo.
 
