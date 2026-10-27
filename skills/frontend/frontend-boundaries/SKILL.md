@@ -30,7 +30,7 @@ This table is the lint translation of FEOD (`feod`, `feod-preset`) and `role-fil
 
 ## Project config
 
-The plugin reads one source: a `feod` key in `package.json` or `feod.config.json`. Two keys are this family's:
+The plugin reads one source: a `feod` key in `package.json` or `feod.config.json`. The alias keys follow the project; `submodules` is this family's:
 
 ```json
 {
