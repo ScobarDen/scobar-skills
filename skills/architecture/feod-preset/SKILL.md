@@ -19,13 +19,13 @@ FEOD is written for frontend projects. Applying it to Qt / C++ is this family's 
 
 Enough to work without the official skill loaded; `feod` has the full matrix.
 
-- `global`: `.d.ts`, shims, polyfills. Imported by nobody; the entry, tsconfig or the test setup wires it.
+- `global`: `.d.ts`, shims, polyfills. Imported by nobody, the entry included; tsconfig, the HTML entry, the bundler config or the test setup wires it.
 - `common`: small neutral entities, usually one file, no `index.ts`. Imports only `common`.
 - `modules`: product responsibilities. Import `common` and other modules through `@/modules/<name>` (`index.ts`) only.
 - `pages`: thin route screens. Import `modules` and `common`; never another page.
 - `app`: bootstrap, router, layouts, integrations, the composition root. Imports everything below.
 
-Submodules live in `modules/<name>/modules/<sub>/`. A submodule may reach its parent's internals; the parent, other modules and pages reach it only through the parent's `index.ts`.
+Submodules live in `modules/<name>/modules/<sub>/`. A submodule may reach its parent's internals; the parent reaches it only through its `index.ts`. **Stricter than FEOD:** other modules and pages reach a submodule only through the parent's `index.ts`; FEOD's linter lets them import the submodule's own `index.ts` unless the project sets `submodules.visibility: "parent-only"`, so set it.
 
 ## 2. Module or common
 
@@ -82,7 +82,7 @@ The exports are already in `index.ts`. The README carries what the tree cannot t
 
 An exception is legal only when a project decision describes it and a tool can check it (the FEOD config's `ignore`, `globals.allowedFiles`, a lint override with a comment). The known classes:
 
-- the entry connects global styles, polyfills or settings before the app starts;
+- the HTML entry, the bundler config or `main()` before the app starts connects global styles, polyfills or settings;
 - test setup connects mocks and polyfills outside the production graph;
 - build-time configuration imports files outside the runtime graph;
 - a temporary migration alias, pointing at the target public API, with an end date;

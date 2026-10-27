@@ -52,7 +52,7 @@ To answer "which fields of the order endpoint does the UI use" you read `api/che
 | `components/ProductCard.tsx` takes `ProductDto` | a catalog View reading a DTO | `catalog/view/product-card.view.tsx`, fed by `catalog.vm.ts` |
 | `pages/CheckoutPage.tsx` | markup of the module in a page, and a page reaching into the cart store | `pages/checkout/checkout.view.tsx` mounts `Checkout` and hands it the cart; `checkout.route.ts` declares the URL |
 | `App.tsx`, 280 lines | router, providers and client setup in one file | `app/main.tsx`, `app/router.ts`, `app/providers.tsx` |
-| `polyfills.ts` | wired by the entry, imported by nobody | `global/polyfills.ts` |
+| `polyfills.ts` | imported by `App.tsx` like ordinary code | `global/polyfills.ts`, loaded by `index.html` before the entry; no code imports it |
 
 ## After
 
