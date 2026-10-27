@@ -21,8 +21,8 @@ A module directory is one FEOD module and the whole MVVM stack at once. Understa
 
 | Level | Holds on Qt |
 | --- | --- |
-| `global` | settings applied before the `QGuiApplication` exists (HiDPI attributes, style, defaults). `main()` calls it first, which is FEOD's entry exception; nothing else includes it |
-| `common` | money formatting, the DB connection, date ranges, UI primitives, sugar over Qt; each entity is its own target with `include/<entity>/` |
+| `global` | settings applied before the `QGuiApplication` exists (HiDPI attributes, style, defaults). `main()` calls it first; nothing else includes it. Qt extension: FEOD imports `global` from nowhere, but C++ has no HTML entry or bundler to run code before the app object, so `main()` is the one documented exception (`feod-preset` §7) |
+| `common` | money formatting, the DB connection, date ranges, UI primitives, sugar over Qt; each entity is its own target with `include/<entity>/`. Qt extension: that is the target's include path, not a barrel; consumers include the header itself (`#include <period/period.h>`), which is FEOD's import-the-file rule for `common` |
 | `modules` | product scenarios; most of the work |
 | `pages` | thin QML screens that mount a module's View and hand it its ViewModel |
 | `app` | `main.cpp` as the composition root, `AppViewModel` as the mediator, root QML, resources |
@@ -48,7 +48,10 @@ modules/<name>/
   viewmodel/              implementation of the public ViewModel
   ui/                     QML: one public View, the rest `internal` in qmldir
   tests/                  unit tests of this module
+  modules/<sub>/          a submodule: the same layout, its own target
 ```
+
+A submodule (FEOD: `modules/<name>/modules/<sub>/`) is linked by its parent only; the parent's `module.h` exposes what outside code needs from it. Its role targets may see the parent's role folders, the parent sees only the submodule's `include/<sub>/`.
 
 | Folder | `role-files` marker | `mvvm` role |
 | --- | --- | --- |
