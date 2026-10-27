@@ -1,11 +1,11 @@
 # scobar-skills architecture vocabulary
 
-The terms the architecture skills (`feod`, `mvvm`, `role-files` and their stack skills) share. A skill uses a term from here in exactly this meaning, or does not use it.
+The terms the architecture skills (`feod-preset`, `mvvm`, `role-files` and their stack skills) share. A skill uses a term from here in exactly this meaning, or does not use it.
 
 ## Skill family
 
 **Core skill**:
-A stack-neutral skill that states one idea: `feod`, `mvvm` or `role-files`.
+A stack-neutral skill that states one idea: `feod-preset`, `mvvm` or `role-files`. The official `feod` skill (Sdju/feod) sits under `feod-preset` and is installed separately.
 _Avoid_: base skill, generic skill
 
 **Stack skill**:
@@ -27,20 +27,32 @@ A folder on the `modules` level holding one product responsibility, used from ou
 _Avoid_: feature, slice, package
 
 **Submodule**:
-A module nested inside another module for a stable part of its responsibility, invisible outside unless the parent exports it.
+A module nested in `modules/<name>/modules/<sub>/` for a stable part of its parent's responsibility, invisible outside unless the parent exports it. It may reach its parent's internals; the parent reaches it only through its `index.ts`.
 _Avoid_: child module, sub-feature
 
+**Transit module**:
+A `modules/<group>/<child>/` container whose children share a private core in `<group>/_/index.ts` (FEOD "сквозной модуль").
+_Avoid_: group module, folder module
+
+**Private page module**:
+A `pages/_<name>/` folder usable only by the page that owns it.
+_Avoid_: page helper, page component
+
 **Common entity**:
-A folder on the `common` level whose purpose can be stated without naming the product domain.
+A file on the `common` level, at most one folder deep, whose purpose can be stated without naming the product domain. It has no `index.ts`; consumers import the file.
 _Avoid_: shared, util, helper
 
 **Public API**:
-The contract a module or common entity exposes to the rest of the code; everything else in it is internal.
+A module's `index.ts`: the contract it exposes to the rest of the code; everything else in it is internal.
 _Avoid_: facade, barrel, entry point
 
 **Deep import**:
-An import from outside an entity that bypasses its public API and reaches an internal file or folder.
+An import from outside a module that bypasses its `index.ts` and reaches an internal file or folder.
 _Avoid_: private import, internal import
+
+**Zigzag import**:
+An import from one module, or any of its submodules, into a submodule of another module.
+_Avoid_: cross import
 
 **Import matrix**:
 The table of which level may import which.

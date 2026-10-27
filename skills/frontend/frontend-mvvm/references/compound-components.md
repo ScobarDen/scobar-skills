@@ -25,7 +25,7 @@ A preset is a ready assembly of a compound, inserted into markup as one tag.
 
 - **Rule of three.** Three identical assemblies earn a preset. Two do not.
 - **A preset takes data and callbacks only.** Its structure is fixed. A frequent new variant gets a second preset; a rare one is assembled from the parts in place. A structural prop on a preset turns it back into the component the compound replaced.
-- **Placement** (`feod`): the compound is a common entity under `common/`. A preset that names domain concepts (`UserCard`) lives in the module that uses it; a purely visual preset (`ConfirmDialog`) sits beside its compound in `common/`.
+- **Placement** (`feod-preset` §2): the compound is a common entity under `common/`. A preset that names domain concepts (`UserCard`) lives in the module that uses it; a purely visual preset (`ConfirmDialog`) sits beside its compound in `common/`.
 
 ## React
 
@@ -83,7 +83,7 @@ export function UserCard({ user, onMessage }: UserCardProps) {
 
 ## Vue
 
-Each part is its own SFC, so the parts sit in a `view/` folder (`role-files` §4): `common/card/view/card-root.view.vue`, `card-actions.view.vue`. The context pair lives in `common/card/card.lib.ts`.
+Each part is its own SFC: `common/card/card-root.view.vue`, `card-actions.view.vue`. In a module they would move into a `view/` folder (`role-files` §4); `common` stays one folder deep (FEOD `no-common-deep`), so the parts sit flat in `common/card/`. The context pair lives in `common/card/card.lib.ts`.
 
 A project-wide `createContext` in `common/`, modelled on Reka UI's, gives the typed key and the throw. If `@vueuse/core` is already installed, `createInjectionState` does the same job, but its injector returns `undefined` outside the provider, so wrap it with the throw.
 

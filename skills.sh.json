@@ -17,9 +17,9 @@
     },
     {
       "title": "Architecture",
-      "description": "Ядро без стека: FEOD, MVVM и файлы по ролям.",
+      "description": "Ядро без стека: пресет FEOD (официальный `feod` ставится из Sdju/feod), MVVM и файлы по ролям.",
       "skills": [
-        "feod",
+        "feod-preset",
         "mvvm",
         "role-files"
       ]

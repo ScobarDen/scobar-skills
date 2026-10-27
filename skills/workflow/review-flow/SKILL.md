@@ -56,7 +56,7 @@ Gather candidates from two places:
 | `code-craft` | new names, signatures, state shapes, new files — judge **new code only** |
 | `test-craft` | tests added or changed |
 | `reatom-review` | Reatom imports |
-| `frontend-mvvm`, `qt-mvvm`, `mobx-mvvm`, `feod` | a new or moved module, screen, ViewModel, or a cross-module import |
+| `frontend-mvvm`, `qt-mvvm`, `mobx-mvvm`, `feod-preset` | a new or moved module, screen, ViewModel, or a cross-module import |
 | `better-interface`, `better-accessibility` | UI files: components, templates, styles, QML |
 | `/interface-review` | UI files — closed |
 | `security-review` | auth, sessions, secrets, crypto, SQL, input crossing a trust boundary |
