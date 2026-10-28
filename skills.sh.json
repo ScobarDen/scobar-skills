@@ -70,6 +70,13 @@
         "reatom-field-notes",
         "reatom-testing"
       ]
+    },
+    {
+      "title": "Media",
+      "description": "Домашний кинотеатр: точный матч сериалов и фильмов в Plex.",
+      "skills": [
+        "plexmatch"
+      ]
     }
   ]
 }

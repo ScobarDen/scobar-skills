@@ -134,6 +134,14 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 Скоуп по умолчанию — вся ветка против базы плюс рабочее дерево, как у `refactor-advice`. Модель грузит его сама на «отревьюй», вместо прямого `ponytail-review`.
 
+### Media
+
+Для домашнего кинотеатра, к коду отношения не имеет.
+
+| Скилл | Когда грузить |
+| --- | --- |
+| [`plexmatch`](skills/media/plexmatch/SKILL.md) | Прикрепил папку с сериалами или фильмами, а Plex матчит криво. Сериалам пишет `.plexmatch`: `tvdbid`, `pattern:` / `ep:` для имён, которые Plex не парсит, спешлы в Season 0. Фильмам переименовывает папку в `Название (Год) {tmdb-ID}`: `.plexmatch` у Plex официально только для сериалов. ID сначала показывает таблицей на подтверждение, переименования — планом «было → станет», в конце команды отката. |
+
 ---
 
 ## Ещё поставь вот это
@@ -198,6 +206,7 @@ skills/
   reatom/     reatom-field-notes, reatom-testing
   mattpocock/ matt-flow
   design/     design-flow
+  media/      plexmatch
 ```
 
 Формат — [Agent Skills](https://agentskills.io): папка со `SKILL.md` и YAML-frontmatter (`name`, `description`). Группы на [skills.sh](https://skills.sh/ScobarDen/scobar-skills) задаёт `skills.sh.json`.
