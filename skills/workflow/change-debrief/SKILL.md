@@ -1,7 +1,8 @@
 ---
 name: change-debrief
+description: Explains finished work end to end in plain language — why it was done, the change that matters most in real code, the decisions that carried weight, what is left and where it is thin. Short by default, deeper on request. Read-only.
 disable-model-invocation: true
-description: Explain work that already exists so the user understands the whole task end to end — why it was done, the one change that matters most shown in real code, which decisions carried weight, what is left and where it is thin. Short by default, deeper on request. Default scope is the current branch, commits and working tree together; also takes a branch, a range, a path, or a feature named in prose, and then it explains how existing code is built instead of what changed. Plain language and named sources — every claim comes from files that were actually read, and every principle it cites says where that principle is written. Load when the user asks to explain what was done, walk me through this branch, I don't understand what happens here, onboard me onto this module, «объясни, что сделал», «разбери эту ветку», «введи в курс». Read-only and explanatory — bugs belong to review-flow, improvements to refactor-advice, MR text to pr-description, a visual map of a big diff to change-map. A single question about a single function is an ordinary answer, not a debrief. Stack-agnostic.
+argument-hint: "branch, range, path or feature in prose, or nothing for the current branch"
 ---
 
 # Change debrief

@@ -1,7 +1,8 @@
 ---
 name: review-flow
+description: Reviews a change — the current branch, a PR, uncommitted work or named files — with `ponytail-review` as the baseline plus up to three lenses matched to the diff, merged into one deduplicated report. Read-only.
 disable-model-invocation: true
-description: Review a change — the current branch, a PR, uncommitted work, or named files — by running `ponytail-review` as the baseline plus up to three review lenses matched to the diff (the spec, the project's craft skills, the stack's own review skills, whatever review skills are installed), then merging them into one deduplicated report. Load on "review this", "отревьюй", "code review", "check my PR", "what did I break", and load it instead of calling `ponytail-review` directly — it calls that itself. Read-only. Not for improving working code (refactor-advice), explaining it (change-debrief) or mapping it visually (change-map). Stack-agnostic.
+argument-hint: "branch, PR number or URL, paths, or nothing for the current branch"
 ---
 
 # Review flow
