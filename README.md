@@ -60,6 +60,8 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 Пять скиллов смотрят на один и тот же дифф, но отвечают на разные вопросы: `change-debrief` — «что тут вообще произошло и почему», `change-map` — «куда тут смотреть глазами и как выглядело до», `refactor-advice` — «как это улучшить», `review-flow` (ниже, поверх ponytail) — «что тут сломано», `pr-description` — «что написать в MR».
 
+`change-debrief`, `change-map` и `review-flow` закрыты `disable-model-invocation: true`: сам агент их не подтянет, запускаешь только ты — `/change-debrief`, `/change-map`, `/review-flow`.
+
 Если стоит [ponytail](https://github.com/DietrichGebert/ponytail), `code-craft` грузит его в пару: ponytail решает, *сколько* кода писать, `code-craft` — *какой формы*.
 
 ### Architecture

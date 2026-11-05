@@ -1,5 +1,6 @@
 ---
 name: change-map
+disable-model-invocation: true
 description: Turn a diff too big to read line by line into a local interactive page that steers the reviewer's eyes — modules ranked into must-look / skim / noise by contract changes and blast radius, and changed UI components rendered before and after on mock data with a flip, side-by-side and curtain viewer. Default scope is the current branch, commits and working tree together; also takes a branch, a range, or someone else's MR/PR by number or URL. Load when the user asks to show what changed, map or visualise a diff or an MR, see the UI before and after, or says a change is too big to review — «покажи, что поменялось», «карта изменений», «визуальный дифф». Read-only towards the project. Explaining why belongs to change-debrief, hunting bugs to review-flow. Stack-agnostic; real renders on Storybook or Vite, sketches elsewhere.
 ---
 
