@@ -12,7 +12,7 @@ git worktree add --detach "$(node -p "require('os').tmpdir()")/change-map-<side>
 
 Link the checkout's dependencies into it instead of installing: `ln -s <checkout>/node_modules <tree>/node_modules`; on Windows a junction from PowerShell, `New-Item -ItemType Junction -Path <tree>\node_modules -Target <checkout>\node_modules` (`mklink` called from Git Bash mangles the path). When a side's lockfile differs from the checkout's, that side runs on borrowed dependencies — say so in the `note` of every piece built this way. For someone else's MR that adds or bumps a dependency, the head side may not build at all; that piece falls to a sketch with the dependency named.
 
-These are detached, throwaway snapshots: no branch, no work, nothing to carry over. `worktree-flow` is for worktrees where work lives, so it stays out of these. Remove each as soon as its builds are done — shooting reads only from `<map>` — and also after a failure.
+These are detached, throwaway snapshots: no branch, no work, nothing to carry over. Remove each as soon as its builds are done — shooting reads only from `<map>` — and also after a failure.
 
 **Unlink `node_modules` first.** A recursive delete of the worktree can follow the link into the checkout's real `node_modules`. Remove the link itself, non-recursively — `rm <tree>/node_modules` (no `-r`), on Windows `[System.IO.Directory]::Delete('<tree>\node_modules')`, which removes a junction and refuses a real folder. Then:
 
