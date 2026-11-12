@@ -1,6 +1,6 @@
 # Example debrief
 
-A fictional branch, `feature/ORD-412-order-status`, in a fictional repo. Read it for **form and density**: how short each section is, how the main change lands in code, how a decision block fits in four lines. The wording is not a template, and the language of a real debrief follows the user.
+A fictional branch, `feature/ORD-412-order-status`, in a fictional repo. Read it for **form and density**: how short each section is, how a change of shape lands as a sketch plus the one line of code that holds it, how a decision block fits in five lines. The wording is not a template, and the language of a real debrief follows the user.
 
 ---
 
@@ -16,16 +16,21 @@ A fictional branch, `feature/ORD-412-order-status`, in a fictional repo. Read it
 
 ## Главное в коде
 
-`src/modules/orders/ui/OrderRow.tsx:12` — было:
+Кто видит ответ бэкенда, `src/modules/orders/`:
 
-```tsx
-const res = await fetch(`/api/orders/${id}`)
-const dto = await res.json()
-…
-<Badge>{dto.status_code === 2 ? 'Оплачен' : '…'}</Badge>
+```diff
+ <OrderListPage>                    ui/OrderListPage.tsx
++  OrderListViewModel               viewmodel/OrderListViewModel.ts
++    ordersApi.list()
++    toOrder(dto)                   viewmodel/mappers.ts
+   <OrderList>
+     <OrderRow>                     ui/OrderRow.tsx
+-      fetch(`/api/orders/${id}`)
+-      dto.status_code
++      order.status
 ```
 
-`src/modules/orders/viewmodel/mappers.ts:5` — стало:
+`src/modules/orders/viewmodel/mappers.ts:5`:
 
 ```ts
 export function toOrder(dto: OrderDto): Order {
@@ -55,6 +60,7 @@ export function toOrder(dto: OrderDto): Order {
 - **Почему:** форму ответа меняют без нас, и у чужого контракта должна быть одна точка входа (правило: `CLAUDE.md`, «UI не видит DTO»; как в `billing/viewmodel/mappers.ts:14`).
 - **Вместо:** маппинга прямо в хуке запроса — короче, но маппер тогда не проверить без мока сети.
 - **Цена:** новое поле API добавляется в двух местах, в `OrderDto` и в `toOrder()`.
+- **Откат:** двусторонняя дверь, наружу слой не торчит.
 
 ### 2. Статус — union вместо флагов
 
@@ -62,6 +68,7 @@ export function toOrder(dto: OrderDto): Order {
 - **Почему:** три флага описывают восемь состояний при четырёх реальных; union делает несуществующие — «отменён и отгружен» — невыразимыми (общая практика).
 - **Вместо:** флагов плюс вычисляемого `status` — два источника правды разъедутся при первой правке одного из них.
 - **Цена:** старые записи в localStorage лежат с флагами, `parseStoredOrder()` обязан их конвертировать, пока не протухнут сессии.
+- **Откат:** односторонняя дверь — новые записи уже ложатся в localStorage с `status`, и после revert старый код их не прочитает, пока не научить `parseStoredOrder()` обратной конвертации.
 
 ### 3. API — аргументом конструктора
 
@@ -69,6 +76,7 @@ export function toOrder(dto: OrderDto): Order {
 - **Почему:** в тесте подменяется объект, а не механизм импорта (как в `billing/viewmodel/BillingViewModel.ts:22`).
 - **Вместо:** DI-контейнера — на два модуля это инфраструктура ради инфраструктуры.
 - **Цена:** сборку держит человек; забытая строчка в `index.ts` вылезет в рантайме, а не на компиляции.
+- **Откат:** двусторонняя дверь.
 
 ## Что осталось и чего не проверял
 

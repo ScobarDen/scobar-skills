@@ -1,6 +1,6 @@
 ---
 name: change-debrief
-description: Explains finished work end to end in plain language — why it was done, the change that matters most in real code, the decisions that carried weight, what is left and where it is thin. Short by default, deeper on request. Read-only.
+description: Explains finished work end to end in plain language — why it was done, the change that matters most in real code or a structural sketch, whether each weighty decision can be walked back, the decisions that carried weight, what is left and where it is thin. Short by default, deeper on request. Read-only.
 disable-model-invocation: true
 argument-hint: "branch, range, path or feature in prose, or nothing for the current branch"
 ---
@@ -80,18 +80,21 @@ Sections in order. A section with nothing real in it is left out entirely, headi
 **Diff mode** — work that changed something:
 
 1. **Суть** — 2–3 sentences: **why** first (the problem), then what it is now. Where the delivered work diverged from what was asked — scope trimmed, approach swapped, a piece deferred — the divergence goes here, in the opening.
-2. **Главное в коде** — decision №1, shown. One real snippet, then 2–3 sentences:
-   - A local edit → one ```` ```diff ```` block. Code that moved between files → two blocks, `было` and `стало`. Each block is headed by its `path:line`, holds at most 8 lines, and is cut with `…` rather than paraphrased. Code is copied verbatim — no markers added inside it.
+2. **Главное в коде** — decision №1, shown. Pick the view by what the decision is about, then 2–3 sentences:
+   - **Behaviour** — a condition, a computation, a state transition → real code. A local edit → one ```` ```diff ```` block. Code that moved between files → two blocks, `было` and `стало`. Each block is headed by its `path:line`, holds at most 8 lines, and is cut with `…` rather than paraphrased. Code is copied verbatim — no markers added inside it.
+   - **Shape** — a boundary moved, a dependency changed direction, a layer or module appeared, files were reorganised → a structural sketch: a call tree, a component tree or a shallow file tree in one ```` ```diff ```` block, `+` and `-` on the nodes that changed, unchanged nodes kept only where they show ownership and order. At most 10 lines. Every node is an identifier or path read in this run, with its file beside the nodes the reader will want to open — a sketch is a map of the files, not a picture of the intent. When one line of code is what makes the shape hold (the signature, the import), it follows as a second block under the code rules above.
+   - Plain text only: no Mermaid or anything else that needs a renderer — the debrief lands in a chat or a terminal.
    - The sentences name the key line by its identifier and say what changes **in behaviour**: what happens at the next edit of this kind, and what used to happen instead. This is where the debrief goes one level below the label — a shape ("вынес маппинг в фасад") reads as understanding while leaving none behind; the chain is what stays with the reader.
    - No meaningful code in the diff (docs, config, types only) → the weightiest hunk, whatever its kind. Nothing but noise → the section is left out.
 3. **Что поменялось** — 3–5 bullets grouped by meaning, not by file, plus one line for routine and noise. A reader should be able to name the moving parts from this alone.
-4. **Главные решения** — one block per decision from §4, four short lines of one sentence each:
+4. **Главные решения** — one block per decision from §4, five short lines of one sentence each:
    - **Выбрал** — what.
    - **Почему** — the reason, answering "and what if the opposite".
    - **Вместо** — what was turned down.
    - **Цена** — what became harder, slower or newly obligatory. A decision that lists only upsides is advertising.
+   - **Откат** — the door. Two-way: a revert undoes it, and three words say so. One-way: name what makes it so — data a migration rewrote, a contract someone already consumes, state written in the new format, a message already sent. The one-way doors are why this line exists.
 
-   Decision №1 refers to the snippet above instead of repeating it. The other decisions get `path:line`, never a snippet.
+   Decision №1 refers to the snippet or sketch above instead of repeating it. The other decisions get `path:line`, never a snippet.
 5. **Что осталось и чего не проверял** — up to 5 bullets: cut corners, `TODO`s, uncovered cases, deferred calls, deliberate compromises — including your own — and the tests, runtime and integrations not exercised. Then one command the user can run to close the biggest gap.
 
 Close with one line: **«Могу развернуть: …»** — two or three places where the debrief simplified, each an offer to expand. This is where the reader sees the edge of their own understanding.
@@ -99,7 +102,7 @@ Close with one line: **«Могу развернуть: …»** — two or three
 **Code mode** — a path or a feature that already existed:
 
 1. **Зачем эта штука** — the job it does, 2–3 sentences.
-2. **Сердце механизма** — up to 10 lines of the one place everything turns on (the entry point, the mapper, the state transition), headed by `path:line`, then 2–3 sentences on what happens there and why it is built that way.
+2. **Сердце механизма** — up to 10 lines of the one place everything turns on (the entry point, the mapper, the state transition), headed by `path:line` — or, when the mechanism is in how the parts connect, a call or component tree without `+`/`-`, same rules as the sketch above — then 2–3 sentences on what happens there and why it is built that way.
 3. **Из чего состоит** — 3–5 bullets: the parts, and who talks to whom.
 4. **Главные решения** — same block and criteria as §4, reconstructed from the code. Mark reconstruction as reconstruction: "выглядит так, будто" is honest where an ADR or `git blame` is silent, and both are cheap to check first.
 5. **Где тонко и чего не проверял** — debts, oddities, `TODO`s, the places that break under an innocent edit; remaining work only where the code itself declares it.
