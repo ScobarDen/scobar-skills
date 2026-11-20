@@ -55,11 +55,15 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | [`change-debrief`](skills/workflow/change-debrief/SKILL.md) | «Объясни, что сделал» после задачи. Разбор полёта простым языком на минуту-две: сначала «зачем», потом главное изменение: живым кодом было → стало, а если сдвинулась форма (граница, зависимость, слой) — диффом по дереву вызовов, компонентов или файлов; с объяснением, что меняется в поведении. 3–5 буллетов изменений, 1–3 решения по пять строк (выбрал / почему / вместо / цена / откат — односторонняя дверь или двусторонняя), что осталось и чего не проверял. Глубже — по запросу через «Могу развернуть». По умолчанию — текущая ветка целиком, коммиты и рабочее дерево. Каждый принцип с источником, ноль самопохвалы. |
 | [`pr-description`](skills/workflow/pr-description/SKILL.md) | Нужен тайтл и описание PR/MR или обновить уже открытое. Сначала «зачем» (из тела PR, задачи в трекере, коммитов — или один вопрос автору), потом «что», по 1–3 буллета, группировка по домену, а не по файлам. Тайтл на английском, тело на языке, на котором со мной говорят. Форж-агностик, шаблон репо главнее своего, шум вроде lockfile'ов и генерёнки — только по `--stat`. В форж пишет только по явной просьбе и только внутри своего блока `<!-- pr-description:start/end -->`. |
 
+| [`skill-review`](skills/workflow/skill-review/SKILL.md) | `/skill-review <папка скилла> [--trial] [--stack <стек>]`. Ревью одного скилла по [`writing-for-agents`](https://github.com/mattpocock/skills) Мэтта (ставится отдельно, без него скилл останавливается) плюс линза гринфилда: агент в пустой репе, подражать нечему. Сначала решает, нужен ли скилл вообще (оставить / удалить / слить / разрезать), потом вердикт на каждый блок с названным режимом провала, отдельно — привязка к прошлому проекту, привычкам автора и висячие ссылки. Правит только после «да», чинит входящие ссылки и этот README, не коммитит. С `--trial` свежий сабагент во временной папке строит по скиллу тестовый проект до и после правок; критерии выписаны заранее и не меняются, максимум два круга починки. |
+
+Ревью скиллов гоняю по одному на сессию, в порядке ядро → стек → workflow: стековые ссылаются на ядро, и чистить их раньше — значит чинить ссылки дважды.
+
 Пара: `code-craft` владеет доктриной (имена, подписи, форма состояния и функции, базовые принципы), `refactor-advice` её не переписывает, а ссылается и добавляет машинерию отчёта. Ставить лучше оба. `test-craft` — тот же жанр, но про тесты: что ассертить и что не ассертить, чтобы правка реализации не красила сюиту. Стек-специфичное (раннер, API ассертов) он не трогает — это дело скилла под стек.
 
 Четыре скилла смотрят на один и тот же дифф, но отвечают на разные вопросы: `change-debrief` — «что тут вообще произошло и почему», `refactor-advice` — «как это улучшить», `review-flow` (ниже, поверх ponytail) — «что тут сломано», `pr-description` — «что написать в MR».
 
-`change-debrief` и `review-flow` закрыты `disable-model-invocation: true`: сам агент их не подтянет, запускаешь только ты — `/change-debrief`, `/review-flow`.
+`change-debrief`, `review-flow` и `skill-review` закрыты `disable-model-invocation: true`: сам агент их не подтянет, запускаешь только ты — `/change-debrief`, `/review-flow`, `/skill-review`.
 
 Если стоит [ponytail](https://github.com/DietrichGebert/ponytail), `code-craft` грузит его в пару: ponytail решает, *сколько* кода писать, `code-craft` — *какой формы*.
 
@@ -152,7 +156,7 @@ npx skills add DietrichGebert/ponytail
 ```
 
 - [Sdju/feod](https://github.com/Sdju/feod) — официальный скилл `feod` от автора FEOD: уровни, матрица импортов, сабмодули, модификации, линт-плагины. Без него мой `feod-preset` висит в воздухе.
-- [mattpocock/skills](https://github.com/mattpocock/skills) — процесс вместо вайбкодинга: грилл, спека, тикеты, TDD, ревью.
+- [mattpocock/skills](https://github.com/mattpocock/skills) — процесс вместо вайбкодинга: грилл, спека, тикеты, TDD, ревью. Его `writing-for-agents` — мерило для моего `skill-review`.
 - [siberiacancode/agent-skills](https://github.com/siberiacancode/agent-skills) — фронт, тесты, практика.
 - [reatom/reatom `v1001/skills`](https://github.com/reatom/reatom/tree/v1001/skills) — официальные `reatom` / `reatom-async` / `reatom-jsx` / `reatom-review`. Без них мои `reatom-*` слепые.
 - [antfu/skills](https://github.com/antfu/skills) — тулинг, eslint, монорепы, как делает Anthony Fu.
@@ -187,7 +191,7 @@ npx skills add DietrichGebert/ponytail
 ```
 templates/AGENTS.md   копируемый файл инструкций агента
 skills/
-  workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, review-flow
+  workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, review-flow, skill-review
   architecture/ feod-preset, mvvm, role-files
   frontend/   frontend-mvvm, frontend-boundaries
   qt/         qt-mvvm, qt-cmake-boundaries

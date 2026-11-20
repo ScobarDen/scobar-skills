@@ -4,13 +4,14 @@
   "groupings": [
     {
       "title": "Workflow",
-      "description": "Стек-нейтральное: ремесло письма кода и тестов, разбор сделанного, описание PR/MR, поиск улучшений.",
+      "description": "Стек-нейтральное: ремесло письма кода и тестов, разбор сделанного, описание PR/MR, поиск улучшений, ревью самих скиллов.",
       "skills": [
         "code-craft",
         "test-craft",
         "refactor-advice",
         "change-debrief",
-        "pr-description"
+        "pr-description",
+        "skill-review"
       ]
     },
     {
