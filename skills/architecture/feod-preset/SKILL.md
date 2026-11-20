@@ -5,18 +5,29 @@ description: FEOD preset — stricter module rules on top of the official `feod`
 
 # FEOD preset
 
-Load the official `feod` skill first (`npx skills add Sdju/feod`); it owns the levels, the import matrix, the project profile and the lint setup. Where this file and `feod`'s defaults differ, templates included, this file wins. An existing project's `feod.profile.md` and layout win over both: follow them and mention the divergence in one line. Inside a module, file names are `role-files` and responsibilities are `mvvm`.
+Load the official `feod` skill first (`npx skills add Sdju/feod`); it owns the levels, the import matrix, the project profile and the lint setup. Where this file and `feod`'s defaults differ, templates included, this file wins. An existing project's `feod.profile.md` and layout win over both: follow them and mention the divergence in one line. Load `mvvm` too (`npx skills add ScobarDen/scobar-skills --skill mvvm`): inside a module, responsibilities are `mvvm`. Naming depends on whether `role-files` is available; see Names.
 
 Every rule below holds for the code you add or move. Name any rule you could not satisfy and why.
 
 ## New project
 
-Right after `feod` init:
+After `feod`'s init flow writes `feod.profile.md`:
 
-1. Under `## Project notes` in `feod.profile.md`, add one line: module rules follow the `feod-preset` skill, kebab-case module names, role files inside modules.
-2. Put the two config options named below (`submodules.visibility`, `modules.forbiddenNames`) into the FEOD config.
+1. Under `## Project notes` in `feod.profile.md`, add one line: module rules follow the `feod-preset` skill, and naming follows `role-files` or `feod`, whichever Names picked.
+2. Put these options into the FEOD config source `feod` set up, `package.json#feod` or `feod.config.json`. When there is none yet, lint wiring included, create `package.json#feod`:
 
-Done when the profile names the preset and the config holds both options.
+   ```json
+   {
+     "submodules": { "visibility": "parent-only" },
+     "modules": {
+       "forbiddenNames": ["utils", "helpers", "shared", "misc", "services", "components", "composables", "hooks"]
+     }
+   }
+   ```
+
+   Without `role-files`, write the names in PascalCase (`Utils`, `Helpers`, …): the check is exact and case-sensitive.
+
+Done when the profile names the preset and the naming, and the config holds both options.
 
 ## Module or common
 
@@ -25,28 +36,43 @@ Done when the profile names the preset and the config holds both options.
 
 Decide by this test alone, whatever the reuse count. Money formatting, an HTTP client, a coloured dot with a label: `common`. The same dot named `CategoryDot` is a thin wrapper in the `category` module over the neutral one.
 
+A common entity is a file on the `common` level, at most one folder deep, whose purpose can be stated without naming the product domain. It has no `index.ts`; consumers import the file.
+
 ## Module public API
 
 - `index.ts` names every export one by one; `export *` publishes whatever lands in the folder next.
 - A new export has a consumer or a stated reason.
-- Exported names are domain names (`Checkout`, `getOrderTotal`); `CheckoutApi` and `UserModel` echo an internal folder.
+- Exported names are domain names (`Checkout`, `getOrderTotal`); `CheckoutApi`, `createCheckoutApi` and `UserModel` echo an internal folder or role marker.
 - The owner exports its types, and consumers import them from it.
 - An external package wrapped by a common entity or a module is used only through that wrapper.
 
 ## Names
 
-- Modules are domain nouns in kebab-case: `checkout`, `feature-flags`. If no short product name fits, the boundary is not clear yet.
-- A folder is named after a responsibility or a role from `role-files`, on every level and inside modules. `utils`, `helpers`, `shared`, `misc`, `services`, `components`, `composables`, `hooks` name neither; list them in `modules.forbiddenNames` so lint rejects them as module names.
+`role-files` decides naming when that skill is available (`npx skills add ScobarDen/scobar-skills --skill role-files`); without it, `feod`'s templates do. The switch covers every name:
+
+| | With `role-files` | Without it |
+| --- | --- | --- |
+| Module folders | kebab-case: `checkout`, `feature-flags` | `feod`'s PascalCase: `Checkout`, `FeatureFlags` |
+| Files and folders on every level, inside modules included | `role-files` | `feod`'s templates |
+
+- Modules are domain nouns. If no short product name fits, the boundary is not clear yet.
+- The names in the `forbiddenNames` list under New project never name a module.
+- With `role-files`, a folder on every level is named after a responsibility or a role; the `forbiddenNames` names are neither.
 
 ## Submodules
 
-- Cut one when a part of the module gets its own reason to change: `modules/checkout/modules/delivery/`. Two files are too early, and a folder grouping files by technical kind is a role folder.
+- Cut one when a part of the module gets its own reason to change: `modules/checkout/modules/delivery/`. Two files are too early, and a folder grouping files by technical kind is not a submodule.
 - A part with its own consumers and its own product responsibility is a separate module.
 - Code outside the parent reaches a submodule through the parent's `index.ts`. Lint allows the submodule's own `index.ts` until the config sets `submodules.visibility: "parent-only"`.
 
 ## Module README
 
-Every module with a ViewModel has a `README.md` of five to ten lines with exactly these parts:
+Every module and submodule has a `README.md` of five to ten lines with exactly these parts, in this order:
+
+- `# <module>`.
+- One sentence of purpose. A headless module, one with no View of its own, says so here.
+- `Injected:` what is injected and from where; `nothing` when nothing is.
+- `Out of scope:` neighbouring responsibilities, each with the module that owns it.
 
 ```md
 # checkout
@@ -56,6 +82,8 @@ Turns a cart into a placed order: address, delivery slot, payment.
 - Injected: `cartSource`, `paymentClient` (from `app/`).
 - Out of scope: cart editing (`cart`), order history (`orders`).
 ```
+
+The README is the module's one description, for people and agents alike. A module's `AGENTS.md` holds only agent instructions specific to that module, such as a gotcha or a command, and leaves the description to the README.
 
 ## Exceptions
 
