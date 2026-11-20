@@ -11,30 +11,30 @@ The goal is a module you understand from its file list: open the folder, read th
 
 ## Terms
 
-- **Level**: one of the five top-level folders `app`, `pages`, `modules`, `common`, `global` (FEOD).
+- **Level**: one of the five top-level folders `app`, `pages`, `modules`, `common`, `global` (FEOD). A project with no UI may name `pages` `routes` or `commands` (`feod-preset`, Stack spelling); every rule about `pages` holds for it.
 - **Module**: a folder on the `modules` level holding one product responsibility, used from outside only through its public API. A **submodule** is a module nested in `modules/<name>/modules/<sub>/`.
-- **Public API**: a module's `index.ts`, the contract it exposes to the rest of the code; everything else in it is internal.
+- **Public API**: a module's public entry, the one file that is the contract it exposes to the rest of the code (`index.ts` in TypeScript, `__init__.py` in Python; `feod-preset`, Stack spelling); everything else in it is internal.
 - **Common entity**: a file on the `common` level whose purpose can be stated without naming the product domain.
 - **Role**: what a file is responsible for inside a module. Model, ViewModel and View are the MVVM roles; `route`, `config`, `types`, `lib` are supporting roles.
 
 ## 1. Role marker
 
-A file states its role through a **role marker**: a dot-suffix in its name (`checkout.vm.ts`) or the role folder it sits in (`vm/`). The suffix is the default and is always there; a folder appears when a role grows (§4) and its files keep the suffix. Tooling keys off the suffix: lint globs and build targets enforce role boundaries, and fuzzy search on `checkout vm` finds the file. A stack skill may make the folder alone the marker; then every role is a folder, a single file included.
+A file states its role through a **role marker**: a suffix in its name, the last word before the extension (`checkout.vm.ts`; `checkout_vm.py` where §3 Case changes the separator), or the role folder it sits in (`vm/`). The suffix is the default and is always there; a folder appears when a role grows (§4) and its files keep the suffix. Tooling keys off the suffix: lint globs and build targets enforce role boundaries, and fuzzy search on `checkout vm` finds the file. A stack skill may make the folder alone the marker; then every role is a folder, a single file included.
 
-On every level, role markers replace folders by technical kind (`components/`, `composables/`, `hooks/`, `store/`); §2 maps `feod`'s folders to roles.
+On every level, role markers replace folders by technical kind (`components/`, `composables/`, `hooks/`, `store/`); `frontend-mvvm` §4 maps `feod`'s folders to roles.
 
-A file with no role carries no marker: the public API `index.ts`, the module `README.md`, and the files §4 App and global names. A stylesheet or an asset that belongs to one file takes that file's name with its own extension (`cart.web.view.css`) and counts in that file's role.
+A file with no role carries no marker: the public entry, the module `README.md`, and the files §4 App and global names. A stylesheet or an asset that belongs to one file takes that file's name with its own extension (`cart.web.view.css`) and counts in that file's role.
 
 ## 2. The roles
 
 | Marker | Holds | MVVM role (`mvvm`) |
 | --- | --- | --- |
-| `model` | domain types, domain rules, domain state | Model |
-| `api` | transport plus the backend → domain adapter | Model |
+| `model` | domain types, domain rules, domain state, and the type of every injected collaborator (`OrderRepository`, `PaymentClient`), which `api` implements | Model |
+| `api` | whatever crosses the process boundary, transport or storage, plus the backend → domain adapter; a repository is `api` | Model |
 | `dto` | raw backend shapes; they stop at `api` | Model |
 | `vm` | screen state, commands, UI-shaped data, list adapters | ViewModel |
-| `view` | passive render of ViewModel output | View |
-| `route` | route declaration; lives in `pages`, the router collecting them in `app` | — |
+| `view` | passive render of ViewModel output, and the module root that constructs the ViewModel (`mvvm` §4); with no screen, the delivery binding (`mvvm` §10) | View |
+| `route` | route declaration; lives in `pages`, the router collecting them in `app` as `app.route.ts` | — |
 | `config` | constants and feature flags the whole module shares | — |
 | `types` | types with no single owner file | — |
 | `lib` | pure helpers internal to the module | — |
@@ -42,35 +42,21 @@ A file with no role carries no marker: the public API `index.ts`, the module `RE
 
 The list is **closed**. A file that fits no role signals that the module holds two responsibilities. A genuinely new role extends this table, or the `## Roles` section of the repository's root `README.md`, first. A stack that spells markers its own way maps them to this table in its skill.
 
-`feod`'s templates group files by technical kind. Each of their folders becomes a role:
-
-| `feod`'s folder | Role |
-| --- | --- |
-| `components/`, `ui/` | `view` |
-| `composables/`, `hooks/` | `vm` |
-| `api/` | `api`; raw response shapes `dto` |
-| `store/` | `model` |
-| `types/` | `model` for domain types; `types` for types with no owner file |
-| `utilities/` | `lib` |
-| `constants/` | `config`, or the file of the rule they tune (§3) |
-| `layouts/` on `app` | `view` |
-| `integrations/` on `app` | each file's own role, usually `api` |
-| `init/` on `app` | the composition root in the entry point (§4 App) |
-| `styles/` on `app` | `app.view.css` (§4 App) |
+`feod`'s templates group files by technical kind; `frontend-mvvm` §4 maps each of their folders to a role.
 
 ## 3. Names
 
-- **Subject**: the part of a file name before the role marker, naming the concept the file is about. The file whose subject is the module's name is the main file of its role: `checkout.vm.ts`, `checkout.view.tsx`. Every other file is named after its concept: `delivery-address.model.ts`, `promo-code.api.ts`. The path supplies the module.
-- **Case**: kebab-case for every file and folder, unless the stack skill states its own idiom.
-- **Hosts.** A module rendered by several hosts puts the host before the role: `checkout.web.view.tsx`, `checkout.native.view.tsx`. A glob on the role still matches both. The module keeps one public API, `index.ts`, exporting each host's View under its own name.
-- **Tests** sit beside the file they test and repeat its name: `checkout.vm.test.ts`. A test split by behaviour (§5) keeps the prefix: `order-total.model.discounts.test.ts`. A test of two modules tests their mediator and sits beside it (`mvvm` §9).
+- **Subject**: the part of a file name before the role marker, naming the concept the file is about. The file whose subject is the module's name is the main file of its role: `checkout.vm.ts`, `checkout.view.tsx`. Every other file is named after its concept: `delivery-address.model.ts`, `promo-code.api.ts`. The path supplies the module. The module root (`mvvm` §4) shares the main `view` file with the passive View it mounts.
+- **Case**: kebab-case for every file and folder, with a dot before the marker. Where the language cannot import such a name or its own linter rejects it, the language's file-naming idiom takes over for files and folders alike, and the marker stays the last word before the extension: `checkout_vm.py`, `feature_flags/`. The stack skill states the idiom; without one, pick it and record it as one line under `## Project notes` in `feod.profile.md`.
+- **Hosts.** A module rendered by several hosts puts the host before the role: `checkout.web.view.tsx`, `checkout.native.view.tsx`. A glob on the role still matches both. The module keeps one public entry, exporting each host's View under its own name.
+- **Tests** sit beside the file they test and repeat its name: `checkout.vm.test.ts`. Where the runner dictates its own tree or suffix, the test mirrors the file's path there and keeps its name: `test/modules/checkout/checkout.vm_test.dart`. A test split by behaviour (§5) keeps the prefix: `order-total.model.discounts.test.ts`. A test of two modules tests their mediator and sits beside it (`mvvm` §9).
 - **Constants** tuned together with one rule live in that rule's file; `config` holds only what the whole module shares.
 
 ## 4. One file or one folder per role
 
 ### Modules
 
-Count the files of each role in the module, tests, stories and styles included (`checkout.vm.test.ts` counts as `vm`):
+Count the files of each role that sit in the module, tests, stories and styles included (`checkout.vm.test.ts` counts as `vm`; a test the runner keeps in its own tree is not in the module):
 
 - **One file** → it sits at the module root.
 - **Two or more** → all of them move into a folder named exactly like the marker: `model/`, `vm/`, `view/`, `api/`, `dto/`, `lib/`, `config/`, `types/`. Files keep the suffix inside the folder; the suffix is what globs and search see.
@@ -97,17 +83,17 @@ A submodule (`modules/<name>/modules/<sub>/`) repeats the same layout inside its
 
 ### Common
 
-`common` is at most one folder deep (FEOD) and groups its files by role: each common entity sits in its role's folder, `common/lib/format-money.lib.ts`, `common/api/http-client.api.ts`. `common` has no `view/`: UI primitives live in the `ui-kit` module (`feod-preset`, Module or common). A common entity is one file plus its test wherever the stack allows; one that keeps growing files is a module. `common` has no `index.ts`: consumers import the file.
+`common` is at most one folder deep (FEOD) and groups its files by role: each common entity sits in its role's folder, `common/lib/format-money.lib.ts`, `common/api/http-client.api.ts`. `common` has no `view/`: UI primitives live in the `ui-kit` module (`feod-preset`, Module or common). A common entity is one file plus its test wherever the stack allows; one that keeps growing files is a module. `common` has no public entry: consumers import the file.
 
 ### Pages
 
-The page folder follows the URL: `/cart` → `pages/cart/`, `/` → `pages/home/`. Inside it, `<page>.route.ts` declares the route and `<page>.view.tsx` mounts module roots; the subject is the page folder's name. A private page module (`pages/_<name>/`) is laid out like a module, `index.ts` included.
+The page folder follows the URL: `/cart` → `pages/cart/`, `/` → `pages/home/`. Inside it, `<page>.route.ts` declares the route and `<page>.view.tsx` mounts module roots; the subject is the page folder's name. A private page module (`pages/_<name>/`) is laid out like a module, public entry included. A page that renders nothing of its own is the `route` file alone. With no screen that is every page, and its `route` file mounts the module roots and wires them; with a screen, it is a page mounting one module root with nothing to wire. A page folder stays flat whatever its file count: tests sit beside its files, and no role folder appears.
 
 `feod`'s module pages and a module's `routes.ts` are not used: the route lives here (§6). A page that mounts a single module root is expected, since it owns the route and wires the module; `feod`'s warning against a thin page targets a page wrapping a module page.
 
 ### App and global
 
-Files on `app` carry role markers and follow the module layout: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Global styles are imported, so they live on `app` as the root View's stylesheet, `app.view.css`. Entry points keep the name the toolchain expects (`main.tsx`) and hold the app's composition root (`mvvm` §4); one that outgrows the entry point moves to `app.vm.ts`. Assets no single file owns (fonts, favicons) sit in `app/assets/` with no marker. Files on `global` are never imported (FEOD): ambient declarations, polyfills and shims only. They carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`; a declaration the toolchain names keeps that name, `vite-env.d.ts`.
+Files on `app` carry role markers and follow the module layout, the one-file-or-folder count included; the entry point and its test carry no marker and stay at the `app` root: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Global styles are imported, so they live on `app` as the root View's stylesheet, `app.view.css`. Entry points keep the name and the place the toolchain expects (`main.tsx`, Flutter's `lib/main.dart`), belong to the `app` level wherever they sit, and hold the app's composition root (`mvvm` §4), constructing `api` values from the modules' public entries; `feod`'s `info` reports one outside the `app` folder as belonging to no layer, which is expected; one that outgrows the entry point moves to `app.vm.ts`. Assets no single file owns (fonts, favicons) sit in `app/assets/` with no marker. Files on `global` are never imported (FEOD): ambient declarations, polyfills and shims only; a stack with none has no `global` folder. They carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`; a declaration the toolchain names keeps that name, `vite-env.d.ts`.
 
 ## 5. Size is a prompt, the cut is by responsibility
 
@@ -124,12 +110,14 @@ A **headless module** (Model and ViewModel only, Views elsewhere) is legitimate 
 | Files of role | Must not import | Why |
 | --- | --- | --- |
 | every role except `api`, `dto` and tests | `dto` | raw backend shapes stop at `api` |
-| `view` | `api`, `dto` | the View binds ViewModel output and never sees transport |
+| `view` | `api`, `dto`, types included | the View binds ViewModel output and never sees transport; the module root types its dependencies against `model` |
 | `vm` | `view`, `dto`; `api` values (types pass) | the ViewModel does not know how it is drawn, and reaches transport through `model` or an injected instance it never constructs |
 | `model` | `vm`, `view`, `dto` | the Model sits below the ViewModel |
 | `api` | `vm`, `view` | transport sits below the ViewModel |
 | `config`, `types`, `lib` | `vm`, `view`, `api` | supporting roles sit below every MVVM role |
-| the public API (`index.ts`) | wildcard re-exports | the public API names every export (`feod-preset`, Module public API) |
+| the public entry | wildcard re-exports | the public API names every export (`feod-preset`, Module public API) |
+
+A test may import what its subject must not, inside its own module: a `vm` test takes the module's in-memory `api` as its fake.
 
 Enforce the table with the stack's boundaries skill (`frontend-boundaries` on the web). Without one, check every import you add against the table and say so.
 
@@ -139,7 +127,7 @@ Done when every file you added or moved passes:
 
 - [ ] Every file with a role carries a marker from §2; every file without one is listed in §1
 - [ ] A role with one file sits at the root; a role with two or more, tests and styles included, is a folder named like the marker
-- [ ] Tests are named after the file they test and sit beside it
+- [ ] Tests are named after the file they test and sit beside it, or mirror its path where the runner dictates the tree
 - [ ] Every file past ~200 lines (tests ~500) names one responsibility
 - [ ] The module's View is inside the module, or the README records it as headless
 - [ ] Routes and page views live in `pages`; the module does not know its URL

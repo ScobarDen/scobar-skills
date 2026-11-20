@@ -63,6 +63,22 @@ Do not smear fetches and maps across the tree to "localize state" or dodge re-re
 - `global/` holds polyfills named after what they patch (`array.polyfill.ts`) and `vite-env.d.ts`. No code imports them, `app/main.tsx` included: `tsconfig.json` picks up the `.d.ts`, `index.html` loads polyfills before the entry.
 - Global styles sit on `app`: the root View imports `app.view.css`.
 
+`feod`'s templates group files by technical kind. Each of their folders becomes a role:
+
+| `feod`'s folder | Role |
+| --- | --- |
+| `components/`, `ui/` | `view` |
+| `composables/`, `hooks/` | `vm` |
+| `api/` | `api`; raw response shapes `dto` |
+| `store/` | `model` |
+| `types/` | `model` for domain types; `types` for types with no owner file |
+| `utilities/` | `lib` |
+| `constants/` | `config`, or the file of the rule they tune (`role-files` §3) |
+| `layouts/` on `app` | `view` |
+| `integrations/` on `app` | each file's own role, usually `api` |
+| `init/` on `app` | the composition root in the entry point (`role-files` §4, App and global) |
+| `styles/` on `app` | `app.view.css` (`role-files` §4, App and global) |
+
 ## 5. Routes and pages
 
 `pages/<page>/<page>.route.ts` declares the route; `pages/<page>/<page>.view.tsx` mounts module roots and passes their dependencies. The page is the mediator between modules on one screen:

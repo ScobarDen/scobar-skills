@@ -19,7 +19,7 @@ _Avoid_: lint skill, enforcement layer
 ## FEOD
 
 **Level**:
-One of the five top-level folders `app`, `pages`, `modules`, `common`, `global`.
+One of the five top-level folders `app`, `pages`, `modules`, `common`, `global`. A project with no UI may name `pages` `routes` or `commands`.
 _Avoid_: layer, tier, slice
 
 **Module**:
@@ -27,7 +27,7 @@ A folder on the `modules` level holding one product responsibility, used from ou
 _Avoid_: feature, slice, package
 
 **Submodule**:
-A module nested in `modules/<name>/modules/<sub>/` for a stable part of its parent's responsibility, invisible outside unless the parent exports it. It may reach its parent's internals; the parent reaches it only through its `index.ts`.
+A module nested in `modules/<name>/modules/<sub>/` for a stable part of its parent's responsibility, invisible outside unless the parent exports it. It may reach its parent's internals; the parent reaches it only through its public entry.
 _Avoid_: child module, sub-feature
 
 **Transit module**:
@@ -39,15 +39,19 @@ A `pages/_<name>/` folder usable only by the page that owns it.
 _Avoid_: page helper, page component
 
 **Common entity**:
-A file on the `common` level, at most one folder deep, whose purpose can be stated without naming the product domain. It has no `index.ts`; consumers import the file.
+A file on the `common` level, at most one folder deep, whose purpose can be stated without naming the product domain. It has no public entry; consumers import the file.
 _Avoid_: shared, util, helper
 
 **Public API**:
-A module's `index.ts`: the contract it exposes to the rest of the code; everything else in it is internal.
-_Avoid_: facade, barrel, entry point
+A module's public entry: the contract it exposes to the rest of the code; everything else in it is internal.
+_Avoid_: facade, barrel
+
+**Public entry**:
+The one file that is a module's public API: `index.ts` in TypeScript, the file the language treats as a folder's entry elsewhere (`__init__.py`).
+_Avoid_: barrel, index file
 
 **Deep import**:
-An import from outside a module that bypasses its `index.ts` and reaches an internal file or folder.
+An import from outside a module that bypasses its public entry and reaches an internal file or folder.
 _Avoid_: private import, internal import
 
 **Zigzag import**:
@@ -100,6 +104,14 @@ _Avoid_: using it for a module's public API
 Whoever wires two parts that must not know each other by passing functions and values as arguments; the ViewModel inside a module, a page or `app` between modules.
 _Avoid_: event bus, orchestrator, god object
 
+**Module root**:
+A module's own composition root: the one export consumers mount, named after the domain, which takes the dependencies, constructs the ViewModel and hands it to the passive Views.
+_Avoid_: container, wrapper
+
+**Delivery**:
+What stands in for a screen where there is no UI: a group of HTTP endpoints, a command, a queue consumer.
+_Avoid_: controller, handler layer
+
 **Composition root**:
 The one place where the object graph of a module or of the app is constructed and dependencies are injected.
 _Avoid_: DI container, bootstrap
@@ -107,7 +119,7 @@ _Avoid_: DI container, bootstrap
 ## Role files
 
 **Role marker**:
-What tells a file's role: a dot-suffix in its name (`checkout.vm.ts`) or the role folder it sits in.
+What tells a file's role: a suffix in its name, the last word before the extension (`checkout.vm.ts`, `checkout_vm.py`), or the role folder it sits in.
 _Avoid_: file type, tag
 
 **Subject**:

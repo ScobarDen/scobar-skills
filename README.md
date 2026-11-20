@@ -72,9 +72,9 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`feod-preset`](skills/architecture/feod-preset/SKILL.md) | Мой пресет поверх официального скилла [FEOD](https://feod.dev/) (`feod` от [Sdju](https://github.com/Sdju/feod)): тест «module или common», строгий public API модуля, нейминг по `role-files` (kebab-case) или, без него, по `feod` (PascalCase), README модуля, когда пора в сабмодуль. Сам `feod` ставится отдельно (см. ниже). |
-| [`mvvm`](skills/architecture/mvvm/SKILL.md) | Кто за что отвечает: Model / ViewModel / View, facade (View не видит DTO), mediator на трёх масштабах, ошибки, тестируемость. |
-| [`role-files`](skills/architecture/role-files/SKILL.md) | Как роли становятся файлами: `checkout.vm.ts`, закрытый список ролей, один файл в корне — два и больше в папку, нейминг на всех уровнях FEOD (`common` по папкам ролей), матрица импортов между ролями. |
+| [`feod-preset`](skills/architecture/feod-preset/SKILL.md) | Мой пресет поверх официального скилла [FEOD](https://feod.dev/) (`feod` от [Sdju](https://github.com/Sdju/feod)): тест «module или common», строгий public API модуля, нейминг по `role-files` (kebab-case) или, без него, по `feod` (PascalCase), README модуля, когда пора в сабмодуль, таблица «как это пишется на твоём стеке» (публичный вход, импорты, конфиг). Сам `feod` ставится отдельно (см. ниже). |
+| [`mvvm`](skills/architecture/mvvm/SKILL.md) | Кто за что отвечает: Model / ViewModel / View, facade (View не видит DTO), mediator на трёх масштабах, ошибки, тестируемость; §10 — те же роли без экрана (бэкенд, CLI, воркер). |
+| [`role-files`](skills/architecture/role-files/SKILL.md) | Как роли становятся файлами: `checkout.vm.ts` (или `checkout_vm.py`, где язык не ест точку и дефис), закрытый список ролей, один файл в корне — два и больше в папку, нейминг на всех уровнях FEOD (`common` по папкам ролей), матрица импортов между ролями. |
 
 Словарь терминов, которыми они говорят, — [`GLOSSARY.md`](GLOSSARY.md).
 

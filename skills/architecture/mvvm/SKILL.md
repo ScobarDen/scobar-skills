@@ -1,6 +1,6 @@
 ---
 name: mvvm
-description: MVVM roles — which of Model, ViewModel and View owns a piece of state, a mapping, a handler or an error, and how parts are wired. Load when writing or reviewing a screen with logic, a god component or god ViewModel, a backend shape reaching the UI, modules importing each other, or a screen that cannot be tested without a backend or a window.
+description: MVVM roles — which of Model, ViewModel and View owns a piece of state, a mapping, a handler or an error, and how parts are wired. Load when writing or reviewing a screen with logic, a god component or god ViewModel, a backend shape reaching the UI, modules importing each other, a screen that cannot be tested without a backend or a window, or a backend endpoint or command that parses, decides and stores in one place.
 ---
 
 # MVVM
@@ -11,7 +11,7 @@ Write a screen as three roles. The ViewModel is a **role**, not a library or a b
 
 ## When this applies
 
-A screen that fetches, maps and handles user intent: a table with filters, a dashboard, a form that orchestrates more than one source. A static presentational piece (an icon, layout chrome, a UI-kit button) has no ViewModel.
+A screen that fetches, maps and handles user intent: a table with filters, a dashboard, a form that orchestrates more than one source. A static presentational piece (an icon, layout chrome, a UI-kit button) has no ViewModel. A backend, a CLI or a worker has the same three roles; §10 says how each rule reads there.
 
 ## 1. Roles
 
@@ -71,7 +71,7 @@ this.table = new TableViewModel(taskRepository.getTasks, () => ({
 - A mediator owns no data: references to the parts it wires, a status, nothing else. It is not a god object.
 - An app-level mediator collecting errors is updated with every new module, or that module's errors silently never reach the UI. It reports success only after errors are collected; the other order overwrites an error with "done".
 
-The **composition root** is the one place that constructs the object graph: per module (the module assembling itself) and once for the app. Inject what varies: repositories, transport, storage and **the clock** ("last 30 days" is untestable against a real clock). Order is correctness: the first data load happens after the mediator subscribed to errors, or the first failure is emitted into nothing. The composition root, or whoever mounts the screen, calls the first load; the View never does.
+The **composition root** is the one place that constructs the object graph: per module and once for the app. A module's is its **root**: the one export consumers mount, named after the domain (`Checkout`). It takes the module's dependencies as arguments, constructs the ViewModel from them, starts the first load and hands the ViewModel to the passive Views. Inject what varies: repositories, transport, storage and **the clock** ("last 30 days" is untestable against a real clock). Order is correctness: the first data load happens after the mediator subscribed to errors, or the first failure is emitted into nothing. The composition root calls the first load; a passive View never does.
 
 ## 5. Compose by UI domain
 
@@ -87,7 +87,7 @@ Click, submit and search handlers are ViewModel commands. When a row of buttons 
 
 - **Bindings down, actions up.** The View reads ViewModel state and calls commands. Feed a value back on the user-action event (`edited`, `activated`), not on the value-changed event, or the binding feeds itself into a loop.
 - **No domain conditions in the View.** A View comparing a payment-method key or checking an amount holds logic that escaped from the Model or the ViewModel.
-- **The View receives its ViewModel** from whoever mounts it. It does not reach for a global app object.
+- **The View receives its ViewModel** from the module root (§4). It does not reach for a global app object.
 - **Granular updates** come from binding a widget to its own slice of state, never from moving a fetch into the widget.
 
 ## 8. Errors
@@ -103,8 +103,22 @@ MVVM that cannot be tested without a backend and without a window exists only on
 
 - Model rules test with no UI and no network.
 - A ViewModel tests against a fake transport or repository and a fixed clock, through the arguments it already takes. Needing to mock an import to test it means a dependency was imported instead of injected.
-- A test touching two modules tests the wiring, so it sits beside the mediator that wires them (§4) and repeats its name: the page's View, the mediator on `app`, or the parent module's ViewModel. `feod` keeps such tests in `app` or the parent module; the page is the same rule one scale down.
-- End-to-end tests drive the built app, not one file, and live outside the source tree, in `e2e/`.
+- A test touching two modules tests the wiring, so it sits beside the mediator that wires them (§4) and repeats its name: the page's View, the mediator on `app`, or the parent module's ViewModel.
+- End-to-end tests drive the built app, not one file, and live outside the source tree: in the folder the toolchain reserves for them (Flutter's `integration_test/`), otherwise in `e2e/`.
+
+## 10. Without a screen
+
+A backend, a CLI or a worker keeps the three roles. Read *screen* as one **delivery**: a group of HTTP endpoints, a command, a queue consumer.
+
+| Role | Without a screen |
+| --- | --- |
+| **View** | the delivery binding: parses the input into a command's arguments, calls the command, renders its outcome in the transport's terms (a status code, an exit code). It decides nothing. |
+| **ViewModel** | the use case: commands, and the outcome shaped for this delivery. It holds no state between calls. |
+| **Model** | unchanged. |
+
+- §2: state that outlives one call is domain state behind a repository; the ViewModel keeps none.
+- §4: the module root is a factory that takes the dependencies and returns the binding, ready to mount (`checkout_endpoints(...)`). A module with several deliveries, endpoints and an event handler, exports one root per delivery over one Model. The page is the route declaration that mounts it under a path. Errors no response carries, a failed reaction to an event among them, go from the app mediator to the log.
+- §8: a command returns its outcome and the binding maps a failure to the transport's error. The rules about previous data and superseded loads hold only for state kept between calls: a cache, a stream.
 
 ## Review smells
 
@@ -116,13 +130,15 @@ MVVM that cannot be tested without a backend and without a window exists only on
 - A parent View re-implementing a child module instead of mounting the child's ViewModel.
 - "We put the query in the row so the table does not re-render."
 - A list cleared on error; a success message that overwrote an error.
-- `now()` or `new Date()` called inside a ViewModel.
+- The system clock read inside a ViewModel instead of an injected one.
 
 ## Related skills
 
 | Need | Load |
 | --- | --- |
-| Which level and who may import it | `feod`, `feod-preset` |
+| Which level and who may import it | `feod` (`npx skills add Sdju/feod`), `feod-preset` |
 | File names and folders per role | `role-files` |
 | React / Vue / Reatom wiring | `frontend-mvvm` |
 | What a test should assert | `test-craft` |
+
+Each but `feod` installs with `npx skills add ScobarDen/scobar-skills --skill <name>`.
