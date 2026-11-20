@@ -65,7 +65,7 @@ this.table = new TableViewModel(taskRepository.getTasks, () => ({
 }))
 ```
 
-- A module never constructs another module and never imports another module's internals. It receives what it needs.
+- A module never constructs another module and never imports another module's internals. From another module's public API it imports domain types and pure domain functions; anything with state or a lifecycle (a repository, a data source, another module's ViewModel) it receives as an argument. This is FEOD's IoC made the default for every stateful collaborator, where `feod` reserves it for strong coupling.
 - A module announces "something happened" through a callback it receives as an argument (`onTaskCompleted`); a sub-ViewModel that reacts to another's change receives a subscribe function the same way. The event carries domain data, never UI text; the mediator turns it into the receiving module's input.
 - Two sub-ViewModels that read each other get a third signal from the mediator instead (`tasksLoaded`); construct the readers before the owner.
 - A mediator owns no data: references to the parts it wires, a status, nothing else. It is not a god object.
@@ -103,7 +103,8 @@ MVVM that cannot be tested without a backend and without a window exists only on
 
 - Model rules test with no UI and no network.
 - A ViewModel tests against a fake transport or repository and a fixed clock, through the arguments it already takes. Needing to mock an import to test it means a dependency was imported instead of injected.
-- A test touching two modules is an integration test and lives where the project keeps cross-module tests; with none yet, in `tests/` at the repository root.
+- A test touching two modules tests the wiring, so it sits beside the mediator that wires them (§4) and repeats its name: the page's View, the mediator on `app`, or the parent module's ViewModel. `feod` keeps such tests in `app` or the parent module; the page is the same rule one scale down.
+- End-to-end tests drive the built app, not one file, and live outside the source tree, in `e2e/`.
 
 ## Review smells
 

@@ -21,7 +21,7 @@ The goal is a module you understand from its file list: open the folder, read th
 
 A file states its role through a **role marker**: a dot-suffix in its name (`checkout.vm.ts`) or the role folder it sits in (`vm/`). The suffix is the default and is always there; a folder appears when a role grows (§4) and its files keep the suffix. Tooling keys off the suffix: lint globs and build targets enforce role boundaries, and fuzzy search on `checkout vm` finds the file. A stack skill may make the folder alone the marker; then every role is a folder, a single file included.
 
-Inside a module, role markers replace folders by technical kind (`components/`, `composables/`, `hooks/`, `store/`).
+On every level, role markers replace folders by technical kind (`components/`, `composables/`, `hooks/`, `store/`); §2 maps `feod`'s folders to roles.
 
 A file with no role carries no marker: the public API `index.ts`, the module `README.md`, and the files §4 App and global names. A stylesheet or an asset that belongs to one file takes that file's name with its own extension (`cart.web.view.css`) and counts in that file's role.
 
@@ -42,12 +42,28 @@ A file with no role carries no marker: the public API `index.ts`, the module `RE
 
 The list is **closed**. A file that fits no role signals that the module holds two responsibilities. A genuinely new role extends this table, or the `## Roles` section of the repository's root `README.md`, first. A stack that spells markers its own way maps them to this table in its skill.
 
+`feod`'s templates group files by technical kind. Each of their folders becomes a role:
+
+| `feod`'s folder | Role |
+| --- | --- |
+| `components/`, `ui/` | `view` |
+| `composables/`, `hooks/` | `vm` |
+| `api/` | `api`; raw response shapes `dto` |
+| `store/` | `model` |
+| `types/` | `model` for domain types; `types` for types with no owner file |
+| `utilities/` | `lib` |
+| `constants/` | `config`, or the file of the rule they tune (§3) |
+| `layouts/` on `app` | `view` |
+| `integrations/` on `app` | each file's own role, usually `api` |
+| `init/` on `app` | the composition root in the entry point (§4 App) |
+| `styles/` on `app` | `app.view.css` (§4 App) |
+
 ## 3. Names
 
 - **Subject**: the part of a file name before the role marker, naming the concept the file is about. The file whose subject is the module's name is the main file of its role: `checkout.vm.ts`, `checkout.view.tsx`. Every other file is named after its concept: `delivery-address.model.ts`, `promo-code.api.ts`. The path supplies the module.
 - **Case**: kebab-case for every file and folder, unless the stack skill states its own idiom.
 - **Hosts.** A module rendered by several hosts puts the host before the role: `checkout.web.view.tsx`, `checkout.native.view.tsx`. A glob on the role still matches both. The module keeps one public API, `index.ts`, exporting each host's View under its own name.
-- **Tests** sit beside the file they test and repeat its name: `checkout.vm.test.ts`. A test split by behaviour (§5) keeps the prefix: `order-total.model.discounts.test.ts`.
+- **Tests** sit beside the file they test and repeat its name: `checkout.vm.test.ts`. A test split by behaviour (§5) keeps the prefix: `order-total.model.discounts.test.ts`. A test of two modules tests their mediator and sits beside it (`mvvm` §9).
 - **Constants** tuned together with one rule live in that rule's file; `config` holds only what the whole module shares.
 
 ## 4. One file or one folder per role
@@ -81,15 +97,17 @@ A submodule (`modules/<name>/modules/<sub>/`) repeats the same layout inside its
 
 ### Common
 
-`common` is at most one folder deep (FEOD) and groups its files by role: each common entity sits in its role's folder, `common/lib/format-money.lib.ts`, `common/view/button.view.tsx`, `common/api/http-client.api.ts`. A common entity is one file plus its test and styles wherever the stack allows; one that keeps growing files is a module. `common` has no `index.ts`: consumers import the file.
+`common` is at most one folder deep (FEOD) and groups its files by role: each common entity sits in its role's folder, `common/lib/format-money.lib.ts`, `common/api/http-client.api.ts`. `common` has no `view/`: UI primitives live in the `ui-kit` module (`feod-preset`, Module or common). A common entity is one file plus its test wherever the stack allows; one that keeps growing files is a module. `common` has no `index.ts`: consumers import the file.
 
 ### Pages
 
 The page folder follows the URL: `/cart` → `pages/cart/`, `/` → `pages/home/`. Inside it, `<page>.route.ts` declares the route and `<page>.view.tsx` mounts module roots; the subject is the page folder's name. A private page module (`pages/_<name>/`) is laid out like a module, `index.ts` included.
 
+`feod`'s module pages and a module's `routes.ts` are not used: the route lives here (§6). A page that mounts a single module root is expected, since it owns the route and wires the module; `feod`'s warning against a thin page targets a page wrapping a module page.
+
 ### App and global
 
-Files on `app` carry role markers and follow the module layout: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Global styles are imported, so they live on `app` as the root View's stylesheet, `app.view.css`. Entry points keep the name the toolchain expects (`main.tsx`). Files on `global` are never imported (FEOD): ambient declarations, polyfills and shims only. They carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`; a declaration the toolchain names keeps that name, `vite-env.d.ts`.
+Files on `app` carry role markers and follow the module layout: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Global styles are imported, so they live on `app` as the root View's stylesheet, `app.view.css`. Entry points keep the name the toolchain expects (`main.tsx`) and hold the app's composition root (`mvvm` §4); one that outgrows the entry point moves to `app.vm.ts`. Assets no single file owns (fonts, favicons) sit in `app/assets/` with no marker. Files on `global` are never imported (FEOD): ambient declarations, polyfills and shims only. They carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`; a declaration the toolchain names keeps that name, `vite-env.d.ts`.
 
 ## 5. Size is a prompt, the cut is by responsibility
 
