@@ -43,7 +43,7 @@ Do not smear fetches and maps across the tree to "localize state" or dodge re-re
 
 - `index.ts` at the module root, `export { A, B } from './…'` only; `export *` is banned (`frontend-boundaries` checks it in ESLint).
 - Consumers import `@/modules/checkout`, never `@/modules/checkout/vm/checkout.vm`. `import type` obeys the same rule.
-- `common` has no `index.ts`: consumers import the file, `@/common/format-money.lib`.
+- `common` has no `index.ts`: consumers import the file, `@/common/lib/format-money.lib`.
 - Public names: `Checkout`, `useCheckout`, `CheckoutProps`, `getOrderTotal`. Inside the module, names follow the library's convention (mobx-view-model's `CheckoutVM` class); the public surface does not restate the role.
 - A consumer writing `ReturnType<typeof getOrderStatus>` or `Parameters<typeof placeOrder>[0]` means the owner forgot to export the type.
 
@@ -58,7 +58,7 @@ Do not smear fetches and maps across the tree to "localize state" or dodge re-re
 | tests, stories | `.test.ts`, `.stories.tsx`, after the role: `checkout.vm.test.ts` |
 
 - The hooks adapter from §1 lives in `checkout.view.tsx` and is what `index.ts` exports as `Checkout`.
-- `.api` files take transport from `common/http-client/http-client.api.ts`, not from `fetch` or `ky` directly.
+- `.api` files take transport from `common/api/http-client.api.ts`, not from `fetch` or `ky` directly.
 - `global/` holds `polyfills.ts`, `vite-env.d.ts`, global styles. No code imports them, `app/main.tsx` included: `tsconfig.json` picks up the `.d.ts`, `index.html` loads polyfills and styles before the entry.
 
 ## 5. Routes and pages

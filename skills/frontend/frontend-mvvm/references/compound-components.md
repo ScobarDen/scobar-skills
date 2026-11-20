@@ -29,7 +29,7 @@ A preset is a ready assembly of a compound, inserted into markup as one tag.
 
 ## React
 
-All parts in one file, `common/card/card.view.tsx`:
+All parts in one file, `common/view/card.view.tsx`:
 
 ```tsx
 type CardContextValue = { expanded: boolean; toggle: () => void }
@@ -83,7 +83,7 @@ export function UserCard({ user, onMessage }: UserCardProps) {
 
 ## Vue
 
-Each part is its own SFC: `common/card/card-root.view.vue`, `card-actions.view.vue`. In a module they would move into a `view/` folder (`role-files` §4); `common` stays one folder deep (FEOD `no-common-deep`), so the parts sit flat in `common/card/`. The context pair lives in `common/card/card.lib.ts`.
+Each part is its own SFC: `common/view/card-root.view.vue`, `common/view/card-actions.view.vue`. `common` groups files by role one folder deep (`role-files` §4, FEOD `no-common-deep`), so the parts sit in `common/view/` and the context pair in `common/lib/card.lib.ts`.
 
 A project-wide `createContext` in `common/`, modelled on Reka UI's, gives the typed key and the throw. If `@vueuse/core` is already installed, `createInjectionState` does the same job, but its injector returns `undefined` outside the provider, so wrap it with the throw.
 

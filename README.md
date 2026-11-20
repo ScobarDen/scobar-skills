@@ -74,7 +74,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | --- | --- |
 | [`feod-preset`](skills/architecture/feod-preset/SKILL.md) | Мой пресет поверх официального скилла [FEOD](https://feod.dev/) (`feod` от [Sdju](https://github.com/Sdju/feod)): тест «module или common», строгий public API модуля, нейминг по `role-files` (kebab-case) или, без него, по `feod` (PascalCase), README модуля, когда пора в сабмодуль. Сам `feod` ставится отдельно (см. ниже). |
 | [`mvvm`](skills/architecture/mvvm/SKILL.md) | Кто за что отвечает: Model / ViewModel / View, facade (View не видит DTO), mediator на трёх масштабах, ошибки, тестируемость. |
-| [`role-files`](skills/architecture/role-files/SKILL.md) | Как роли становятся файлами: `checkout.vm.ts`, закрытый список ролей, один файл в корне — два и больше в папку, матрица импортов между ролями. |
+| [`role-files`](skills/architecture/role-files/SKILL.md) | Как роли становятся файлами: `checkout.vm.ts`, закрытый список ролей, один файл в корне — два и больше в папку, нейминг на всех уровнях FEOD (`common` по папкам ролей), матрица импортов между ролями. |
 
 Словарь терминов, которыми они говорят, — [`GLOSSARY.md`](GLOSSARY.md).
 
