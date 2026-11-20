@@ -59,7 +59,8 @@ Do not smear fetches and maps across the tree to "localize state" or dodge re-re
 
 - The hooks adapter from §1 lives in `checkout.view.tsx` and is what `index.ts` exports as `Checkout`.
 - `.api` files take transport from `common/api/http-client.api.ts`, not from `fetch` or `ky` directly.
-- `global/` holds `polyfills.ts`, `vite-env.d.ts`, global styles. No code imports them, `app/main.tsx` included: `tsconfig.json` picks up the `.d.ts`, `index.html` loads polyfills and styles before the entry.
+- `global/` holds `polyfills.ts` and `vite-env.d.ts`. No code imports them, `app/main.tsx` included: `tsconfig.json` picks up the `.d.ts`, `index.html` loads polyfills before the entry.
+- Global styles sit on `app`: the root View imports `app.view.css`.
 
 ## 5. Routes and pages
 

@@ -46,7 +46,7 @@ The plugin reads one source: a `feod` key in `package.json` or `feod.config.json
 - `aliasPrefix`/`aliasRoot` teach the plugin the `@/` alias; without them it knows only `@modules`, `@common` and the other per-level aliases. Adjust to the project's.
 - `submodules.visibility: "parent-only"` is `feod-preset`'s rule that a submodule is invisible outside its parent. The plugin's default, `"public"`, lets any module import a submodule's `index.ts`.
 
-`global` is never imported, the entry included: `app/main.tsx` importing `@/global/polyfills` is a `layer-imports` error. Connect `global` outside the import graph: `.d.ts` files through `tsconfig.json` `include`, polyfills and global styles through `index.html` (`<script type="module" src="/src/global/polyfills.ts">` before the entry) or the bundler config.
+`global` is never imported, the entry included: `app/main.tsx` importing `@/global/polyfills` is a `layer-imports` error. Connect `global` outside the import graph: `.d.ts` files through `tsconfig.json` `include`, polyfills through `index.html` (`<script type="module" src="/src/global/polyfills.ts">` before the entry) or the bundler config. Global styles are imported, so they belong to `app`, not `global`.
 
 ## How overrides combine
 

@@ -89,7 +89,7 @@ The page folder follows the URL: `/cart` → `pages/cart/`, `/` → `pages/home/
 
 ### App and global
 
-Files on `app` carry role markers and follow the module layout: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Entry points and environment declarations keep the name the toolchain expects (`main.tsx`, `vite-env.d.ts`). Files on `global` carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`, `global.css`.
+Files on `app` carry role markers and follow the module layout: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Global styles are imported, so they live on `app` as the root View's stylesheet, `app.view.css`. Entry points keep the name the toolchain expects (`main.tsx`). Files on `global` are never imported (FEOD): ambient declarations, polyfills and shims only. They carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`; a declaration the toolchain names keeps that name, `vite-env.d.ts`.
 
 ## 5. Size is a prompt, the cut is by responsibility
 
