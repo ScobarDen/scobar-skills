@@ -76,7 +76,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | [`mvvm`](skills/architecture/mvvm/SKILL.md) | Кто за что отвечает: Model / ViewModel / View, facade (View не видит DTO), mediator на трёх масштабах, ошибки, тестируемость. |
 | [`role-files`](skills/architecture/role-files/SKILL.md) | Как роли становятся файлами: `checkout.vm.ts`, закрытый список ролей, один файл в корне — два и больше в папку, матрица импортов между ролями. |
 
-Словарь терминов, которыми они говорят, — [`CONTEXT.md`](CONTEXT.md).
+Словарь терминов, которыми они говорят, — [`GLOSSARY.md`](GLOSSARY.md).
 
 ### Frontend
 
