@@ -1,6 +1,6 @@
 ---
 name: role-files
-description: Files named by the role they play — `{subject}.{role}.{ext}` (`checkout.vm.ts`, `order.dto.ts`) or a role folder, from a closed role list; one file of a role sits at the module root, two or more move into a folder named after the role; tests sit beside what they test; a role import matrix. Load when naming or placing a file inside a module, when a module or a file is too big to navigate, when deciding whether a role gets its own folder, or when setting up which role may import which. Stack-neutral; levels and public API are feod and feod-preset, what each role owns is mvvm, enforcement is frontend-boundaries or qt-cmake-boundaries.
+description: Files named by the role they play — `{subject}.{role}.{ext}` (`checkout.vm.ts`, `order.dto.ts`) or a role folder, from a closed role list; one file of a role sits at the module root, two or more move into a folder named after the role; tests sit beside what they test; a role import matrix. Load when naming or placing a file inside a module, when a module or a file is too big to navigate, when deciding whether a role gets its own folder, or when setting up which role may import which. Stack-neutral; levels and public API are feod and feod-preset, what each role owns is mvvm, enforcement is frontend-boundaries.
 ---
 
 # Role files
@@ -18,7 +18,6 @@ The goal is a module you understand from its file list: open the folder, read th
 A file states its role through a **role marker**: a dot-suffix in its name (`checkout.vm.ts`) or the role folder it sits in (`vm/`). The stack skill says which one the stack uses:
 
 - `frontend-mvvm`: the suffix is always there; a folder appears when a role grows (§4) and its files keep the suffix.
-- `qt-mvvm`: the folder is always there, because the build gives every role folder its own target; file names follow Qt's own idiom.
 
 ## 2. The roles
 
@@ -92,7 +91,7 @@ A **headless module** (Model and ViewModel only, Views elsewhere) is legitimate 
 | `api` | `vm`, `view` | transport sits below the ViewModel |
 | the root contract | wildcard re-exports | the contract is explicit (`feod-preset`, Module public API) |
 
-A boundary no tool checks lasts until the first deadline. `frontend-boundaries` turns this table into lint rules; `qt-cmake-boundaries` turns it into include paths the compiler enforces.
+A boundary no tool checks lasts until the first deadline. `frontend-boundaries` turns this table into lint rules.
 
 ## 8. Review checklist
 
@@ -111,4 +110,3 @@ A boundary no tool checks lasts until the first deadline. `frontend-boundaries` 
 | Levels, public API, submodules | `feod`, `feod-preset` |
 | What each role owns | `mvvm` |
 | Role files in TypeScript; lint rules | `frontend-mvvm`, `frontend-boundaries` |
-| Role folders in Qt; CMake targets | `qt-mvvm`, `qt-cmake-boundaries` |

@@ -85,16 +85,9 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, compound-компоненты и пресеты вместо пропса на каждый вариант, рецепт нового модуля, пример миграции магазина. |
 | [`frontend-boundaries`](skills/frontend/frontend-boundaries/SKILL.md) | Те же границы, но чтобы их ловил линтер: официальные `@o-feod/*` плагины на уровни плюс ESLint flat / oxlint правила на роли. |
 
-### Qt
-
-| Скилл | Когда грузить |
-| --- | --- |
-| [`qt-mvvm`](skills/qt/qt-mvvm/SKILL.md) | Ядро в Qt Quick: папки ролей, `include/<name>/` + `qmldir` как public API, `Module` с pimpl, `main.cpp`, `AppViewModel`, QML. |
-| [`qt-cmake-boundaries`](skills/qt/qt-cmake-boundaries/SKILL.md) | Те же границы, но чтобы их ловил компилятор, а не ревью. Шаблоны CMake в `references/`. |
-
 В каждом стеке пара: «как ядро выглядит здесь» + «кто бьёт по рукам». Новый модуль — оба, плюс ядро.
 
-`frontend-modular-mvvm` разъехался по `feod`, `role-files`, `frontend-mvvm` и `frontend-boundaries`; `qt-modular-mvvm` переименован в `qt-mvvm`. Мой `feod` переименован в `feod-preset`, а имя `feod` теперь у официального скилла автора FEOD. Если ставил старые — переставь.
+`frontend-modular-mvvm` разъехался по `feod`, `role-files`, `frontend-mvvm` и `frontend-boundaries`; `qt-modular-mvvm` (позже `qt-mvvm`) и `qt-cmake-boundaries` удалены. Мой `feod` переименован в `feod-preset`, а имя `feod` теперь у официального скилла автора FEOD. Если ставил старые — переставь.
 
 ### Reatom
 
@@ -193,7 +186,6 @@ skills/
   workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, review-flow, skill-review
   architecture/ feod-preset, mvvm, role-files
   frontend/   frontend-mvvm, frontend-boundaries
-  qt/         qt-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
   design/     design-flow
   media/      plexmatch

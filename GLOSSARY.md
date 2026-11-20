@@ -9,11 +9,11 @@ A stack-neutral skill that states one idea: `feod-preset`, `mvvm` or `role-files
 _Avoid_: base skill, generic skill
 
 **Stack skill**:
-A skill that applies the core skills to one stack and adds only what is specific to it (`frontend-mvvm`, `qt-mvvm`).
+A skill that applies the core skills to one stack and adds only what is specific to it (`frontend-mvvm`).
 _Avoid_: adapter skill, flavour
 
 **Boundaries skill**:
-A stack skill whose only job is to make a tool reject what the core forbids: a linter on the frontend, the compiler via CMake on Qt.
+A stack skill whose only job is to make a tool reject what the core forbids: a linter on the frontend.
 _Avoid_: lint skill, enforcement layer
 
 ## FEOD

@@ -146,4 +146,3 @@ A project already on `.oxlintrc.json` keeps it: add `"jsPlugins": [{ "name": "fe
 | This family's stricter rules: submodule visibility, public API | `feod-preset` |
 | The role list and role matrix | `role-files` |
 | Suffixes and `index.ts` in TypeScript | `frontend-mvvm` |
-| The same boundaries enforced by a C++ compiler | `qt-cmake-boundaries` |
