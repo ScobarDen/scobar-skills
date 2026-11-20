@@ -48,18 +48,18 @@ To answer "which fields of the order endpoint does the UI use" you read `api/che
 | `utils/format.ts` → `formatMoney` | looks like checkout code, is not: it names no product term | `common/lib/format-money.lib.ts` |
 | `utils/format.ts` → `calcDiscount` | looks like a utility, is not: it is a pricing rule | `checkout/model/order-total.model.ts` |
 | `utils/constants.ts` | a transport setting and product rules in one file | `API_URL` into `common/config/http-client.config.ts`; `FREE_SHIPPING_FROM`, `PROMO_ENABLED` into `checkout/config/` |
-| `components/Button.tsx` | fine as code, lives next to product components | `common/view/button.view.tsx` |
+| `components/Button.tsx` | fine as code, lives next to product components | `ui-kit/view/button.view.tsx`: a design-system primitive, and `common` holds no Views |
 | `components/ProductCard.tsx` takes `ProductDto` | a catalog View reading a DTO | `catalog/view/product-card.view.tsx`, fed by `catalog.vm.ts` |
-| `pages/CheckoutPage.tsx` | markup of the module in a page, and a page reaching into the cart store | `pages/checkout/checkout.view.tsx` mounts `Checkout` and hands it the cart; `checkout.route.ts` declares the URL |
+| `pages/CheckoutPage.tsx` | markup of the module in a page, and a page reaching into the cart store | `pages/checkout/checkout.view.tsx` mounts `Checkout` and hands it the cart, `checkout.view.test.tsx` beside it tests that wiring; `checkout.route.ts` declares the URL |
 | `App.tsx`, 280 lines | router, providers and client setup in one file | `app/main.tsx`, `app/app.route.ts`, `app/providers.view.tsx` |
-| `polyfills.ts` | imported by `App.tsx` like ordinary code | `global/polyfills.ts`, loaded by `index.html` before the entry; no code imports it |
+| `polyfills.ts` | imported by `App.tsx` like ordinary code, named after nothing it patches | `global/array.polyfill.ts`, loaded by `index.html` before the entry; no code imports it |
 
 ## After
 
 ```
 src/
   global/
-    polyfills.ts
+    array.polyfill.ts
     vite-env.d.ts
   app/
     main.tsx
@@ -74,9 +74,6 @@ src/
       format-money.lib.ts
       format-money.lib.test.ts
       use-debounce.lib.ts
-    view/
-      button.view.tsx
-      button.stories.tsx
   modules/
     cart/
       index.ts
@@ -120,6 +117,7 @@ src/
       modules/
         delivery/
           index.ts
+          README.md
           delivery.api.ts
           delivery.dto.ts
           delivery.model.ts
@@ -130,9 +128,16 @@ src/
             slot-range.lib.test.ts
         payment/
           index.ts
+          README.md
           payment.api.ts
           payment.vm.ts
           payment.view.tsx
+    ui-kit/
+      index.ts
+      README.md
+      view/
+        button.view.tsx
+        button.stories.tsx
   pages/
     catalog/
       index.ts
@@ -142,14 +147,16 @@ src/
       index.ts
       checkout.route.ts
       checkout.view.tsx
+      checkout.view.test.tsx
 ```
 
 What each part shows:
 
 - `cart` is fully flat: one file per role. `catalog` grew only its Views into a folder. `checkout` has a folder for every crowded role and single files (`checkout.types.ts`) at the root.
 - `delivery` and `payment` are submodules under `checkout/modules/`: their own `index.ts`, the same one-file-or-folder layout, visible outside only if `checkout/index.ts` re-exports them. A submodule may import `checkout` internals (`../../model/order.model`); `checkout` reaches a submodule only through its `index.ts`.
-- `checkout` never imports `cart`. The page is the mediator and passes the cart in; the checkout README lists `cartSource` under "Injected".
-- `common` holds files, not packages: no `index.ts`, grouped by role one folder deep (`api/`, `lib/`, `view/`), imported straight to the file (`@/common/lib/format-money.lib`). The entities name no product term.
+- `checkout` never imports `cart`. The page is the mediator and passes the cart in; the checkout README lists `cartSource` under "Injected", and the page's `checkout.view.test.tsx` tests that wiring.
+- `common` holds files, not packages: no `index.ts`, grouped by role one folder deep (`api/`, `config/`, `lib/`), imported straight to the file (`@/common/lib/format-money.lib`). The entities name no product term, and none is a View.
+- `ui-kit` is the design system: a module with its own `index.ts` and README, so `product-card.view.tsx` imports `Button` from `@/modules/ui-kit`.
 
 ## The page as mediator
 

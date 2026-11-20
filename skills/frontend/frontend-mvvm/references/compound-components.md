@@ -25,11 +25,11 @@ A preset is a ready assembly of a compound, inserted into markup as one tag.
 
 - **Rule of three.** Three identical assemblies earn a preset. Two do not.
 - **A preset takes data and callbacks only.** Its structure is fixed. A frequent new variant gets a second preset; a rare one is assembled from the parts in place. A structural prop on a preset turns it back into the component the compound replaced.
-- **Placement** (`feod-preset`, Module or common): the compound is a common entity under `common/`. A preset that names domain concepts (`UserCard`) lives in the module that uses it; a purely visual preset (`ConfirmDialog`) sits beside its compound in `common/`.
+- **Placement** (`feod-preset`, Module or common): the compound lives in the `ui-kit` module and leaves it through `ui-kit`'s `index.ts`. A preset that names domain concepts (`UserCard`) lives in the module that uses it; a purely visual preset (`ConfirmDialog`) sits beside its compound in `ui-kit`.
 
 ## React
 
-All parts in one file, `common/view/card.view.tsx`:
+All parts in one file, `modules/ui-kit/view/card.view.tsx`:
 
 ```tsx
 type CardContextValue = { expanded: boolean; toggle: () => void }
@@ -66,6 +66,8 @@ export function CardActions({ children }: { children: ReactNode }) {
 The preset in the module, `modules/team/user-card.view.tsx`:
 
 ```tsx
+import { Button, CardActions, CardBody, CardHeader, CardRoot } from '@/modules/ui-kit'
+
 export function UserCard({ user, onMessage }: UserCardProps) {
   return (
     <CardRoot>
@@ -83,9 +85,9 @@ export function UserCard({ user, onMessage }: UserCardProps) {
 
 ## Vue
 
-Each part is its own SFC: `common/view/card-root.view.vue`, `common/view/card-actions.view.vue`. `common` groups files by role one folder deep (`role-files` §4, FEOD `no-common-deep`), so the parts sit in `common/view/` and the context pair in `common/lib/card.lib.ts`.
+Each part is its own SFC: `modules/ui-kit/view/card-root.view.vue`, `modules/ui-kit/view/card-actions.view.vue`, with the context pair in `modules/ui-kit/lib/card.lib.ts`. When `ui-kit/view/` gets hard to scan, a compound becomes a submodule, `ui-kit/modules/card/`, re-exported through `ui-kit`'s `index.ts`.
 
-A project-wide `createContext` in `common/`, modelled on Reka UI's, gives the typed key and the throw. If `@vueuse/core` is already installed, `createInjectionState` does the same job, but its injector returns `undefined` outside the provider, so wrap it with the throw.
+A project-wide `createContext` in `common/lib/create-context.lib.ts`, modelled on Reka UI's, gives the typed key and the throw. If `@vueuse/core` is already installed, `createInjectionState` does the same job, but its injector returns `undefined` outside the provider, so wrap it with the throw.
 
 ```ts
 import { inject as vueInject, provide as vueProvide, type InjectionKey } from 'vue'

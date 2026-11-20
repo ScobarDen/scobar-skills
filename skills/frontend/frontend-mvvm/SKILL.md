@@ -44,6 +44,7 @@ Do not smear fetches and maps across the tree to "localize state" or dodge re-re
 - `index.ts` at the module root, `export { A, B } from './…'` only; `export *` is banned (`frontend-boundaries` checks it in ESLint).
 - Consumers import `@/modules/checkout`, never `@/modules/checkout/vm/checkout.vm`. `import type` obeys the same rule.
 - `common` has no `index.ts`: consumers import the file, `@/common/lib/format-money.lib`.
+- UI primitives come from the `ui-kit` module, `import { Button } from '@/modules/ui-kit'`. A design-system View holds UI state only, so it is imported, not one of the stateful collaborators `mvvm` §4 injects.
 - Public names: `Checkout`, `useCheckout`, `CheckoutProps`, `getOrderTotal`. Inside the module, names follow the library's convention (mobx-view-model's `CheckoutVM` class); the public surface does not restate the role.
 - A consumer writing `ReturnType<typeof getOrderStatus>` or `Parameters<typeof placeOrder>[0]` means the owner forgot to export the type.
 
@@ -59,7 +60,7 @@ Do not smear fetches and maps across the tree to "localize state" or dodge re-re
 
 - The hooks adapter from §1 lives in `checkout.view.tsx` and is what `index.ts` exports as `Checkout`.
 - `.api` files take transport from `common/api/http-client.api.ts`, not from `fetch` or `ky` directly.
-- `global/` holds `polyfills.ts` and `vite-env.d.ts`. No code imports them, `app/main.tsx` included: `tsconfig.json` picks up the `.d.ts`, `index.html` loads polyfills before the entry.
+- `global/` holds polyfills named after what they patch (`array.polyfill.ts`) and `vite-env.d.ts`. No code imports them, `app/main.tsx` included: `tsconfig.json` picks up the `.d.ts`, `index.html` loads polyfills before the entry.
 - Global styles sit on `app`: the root View imports `app.view.css`.
 
 ## 5. Routes and pages
@@ -80,13 +81,13 @@ A file-based router (Next, Nuxt, TanStack Router, React Router fs-routes) dictat
 ## 6. Recipe: a new module
 
 1. **Qualify it** (`feod-preset`, Module or common): name it in product terms, kebab-case, under `modules/`.
-2. **Files**: `index.ts`, `README.md` if it has a ViewModel, then one file per role you need (`<name>.api.ts`, `<name>.dto.ts`, `<name>.model.ts`, `<name>.vm.ts`, `<name>.view.tsx`). Folders appear only when a role reaches two files.
+2. **Files**: `index.ts`, `README.md`, then one file per role you need (`<name>.api.ts`, `<name>.dto.ts`, `<name>.model.ts`, `<name>.vm.ts`, `<name>.view.tsx`). Folders appear only when a role reaches two files.
 3. **Model**: domain types and the DTO → domain adapter in `.api` / `.model`. The DTO goes no further.
 4. **ViewModel**: the hook takes services as arguments, returns UI-shaped data and commands; tests beside it with a fake service and a fixed clock.
 5. **View**: the root View in `<name>.view.tsx` calls the hook and renders passive children.
 6. **Public API**: `index.ts` exports the root View, its props type and the domain types consumers need. Nothing else.
-7. **Mount**: a page imports the module root and passes its dependencies; the module never imports the page or another module's internals.
-8. **Check**: lint is green with the `frontend-boundaries` config; the README names what is injected.
+7. **Mount**: a page imports the module root and passes its dependencies; the module never imports the page or another module's internals. A test of that wiring sits beside the page's View (`mvvm` §9).
+8. **Check**: lint is green with the `frontend-boundaries` config; the README has the parts `feod-preset` lists, `Exports:` matching `index.ts`.
 
 ## 7. Compound components and presets
 
@@ -96,6 +97,7 @@ A component that grows a prop per variant becomes unreadable. Split it into a **
 - The root owns UI state and passes it through context; domain data comes from the ViewModel. A part used outside its root throws.
 - A preset appears on the third identical assembly, takes data and callbacks only, and never grows a structural prop: a frequent variant gets a second preset, a rare one is assembled in place.
 - Interactive compounds (dialog, select, tabs) wrap the project's headless library.
+- Compounds and visual presets live in `ui-kit`; a preset naming domain concepts lives in the module that uses it.
 
 [`references/compound-components.md`](references/compound-components.md) has the full rules, FEOD placement and React and Vue examples. Read it when building or splitting a reusable component.
 
@@ -112,6 +114,7 @@ A component that grows a prop per variant becomes unreadable. Split it into a **
 - `export *` in an `index.ts`; an import path past a module root.
 - `ReturnType<typeof …>` reconstructing a type another module owns.
 - A component file without a role suffix inside a module.
+- A View under `common/`: UI primitives belong to `ui-kit`.
 - A structural prop: `showFooter`, `renderHeader`, a `variant` that adds or drops parts.
 - A preset that grew a structural prop.
 - A compound part that fetches or holds domain state.
