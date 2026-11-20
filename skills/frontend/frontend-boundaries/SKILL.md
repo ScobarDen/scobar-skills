@@ -104,7 +104,7 @@ export default [
 
 ## oxlint
 
-`oxlint.config.ts` (oxlint ≥ 1.86, the plugin's peer range), or the `lint` block of `vite.config.ts` under vite-plus. oxlint parses TypeScript and the script of `.vue` files on its own. It has no selector-based `no-restricted-syntax`, so `export *` stays a review item there (`feod-preset` §9).
+`oxlint.config.ts` (oxlint ≥ 1.86, the plugin's peer range), or the `lint` block of `vite.config.ts` under vite-plus. oxlint parses TypeScript and the script of `.vue` files on its own. It has no selector-based `no-restricted-syntax`, so `export *` stays a review item there (`feod-preset`, Module public API).
 
 ```ts
 import { fileURLToPath } from 'node:url'

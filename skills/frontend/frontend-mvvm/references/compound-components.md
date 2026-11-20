@@ -25,7 +25,7 @@ A preset is a ready assembly of a compound, inserted into markup as one tag.
 
 - **Rule of three.** Three identical assemblies earn a preset. Two do not.
 - **A preset takes data and callbacks only.** Its structure is fixed. A frequent new variant gets a second preset; a rare one is assembled from the parts in place. A structural prop on a preset turns it back into the component the compound replaced.
-- **Placement** (`feod-preset` §2): the compound is a common entity under `common/`. A preset that names domain concepts (`UserCard`) lives in the module that uses it; a purely visual preset (`ConfirmDialog`) sits beside its compound in `common/`.
+- **Placement** (`feod-preset`, Module or common): the compound is a common entity under `common/`. A preset that names domain concepts (`UserCard`) lives in the module that uses it; a purely visual preset (`ConfirmDialog`) sits beside its compound in `common/`.
 
 ## React
 

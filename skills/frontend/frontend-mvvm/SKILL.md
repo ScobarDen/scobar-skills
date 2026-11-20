@@ -39,7 +39,7 @@ Do not smear fetches and maps across the tree to "localize state" or dodge re-re
 
 ## 3. Public API in TypeScript
 
-`feod-preset` §3, spelled out:
+`feod-preset`'s module public API, spelled out:
 
 - `index.ts` at the module root, `export { A, B } from './…'` only; `export *` is banned (`frontend-boundaries` checks it in ESLint).
 - Consumers import `@/modules/checkout`, never `@/modules/checkout/vm/checkout.vm`. `import type` obeys the same rule.
@@ -78,7 +78,7 @@ A file-based router (Next, Nuxt, TanStack Router, React Router fs-routes) dictat
 
 ## 6. Recipe: a new module
 
-1. **Qualify it** (`feod-preset` §2): name it in product terms, kebab-case, under `modules/`.
+1. **Qualify it** (`feod-preset`, Module or common): name it in product terms, kebab-case, under `modules/`.
 2. **Files**: `index.ts`, `README.md` if it has a ViewModel, then one file per role you need (`<name>.api.ts`, `<name>.dto.ts`, `<name>.model.ts`, `<name>.vm.ts`, `<name>.view.tsx`). Folders appear only when a role reaches two files.
 3. **Model**: domain types and the DTO → domain adapter in `.api` / `.model`. The DTO goes no further.
 4. **ViewModel**: the hook takes services as arguments, returns UI-shaped data and commands; tests beside it with a fake service and a fixed clock.

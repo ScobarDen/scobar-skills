@@ -90,7 +90,7 @@ A **headless module** (Model and ViewModel only, Views elsewhere) is legitimate 
 | `vm` | `view`, `dto`; `api` values (types pass) | the ViewModel does not know how it is drawn, and reaches transport through `model` or an injected instance it never constructs |
 | `model` | `vm`, `view`, `dto` | the Model sits below the ViewModel |
 | `api` | `vm`, `view` | transport sits below the ViewModel |
-| the root contract | wildcard re-exports | the contract is explicit (`feod-preset` §3) |
+| the root contract | wildcard re-exports | the contract is explicit (`feod-preset`, Module public API) |
 
 A boundary no tool checks lasts until the first deadline. `frontend-boundaries` turns this table into lint rules; `qt-cmake-boundaries` turns it into include paths the compiler enforces.
 
