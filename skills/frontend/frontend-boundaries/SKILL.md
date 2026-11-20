@@ -30,7 +30,7 @@ This table is the lint translation of FEOD (`feod`, `feod-preset`) and `role-fil
 
 ## Project config
 
-The plugin reads one source: a `feod` key in `package.json` or `feod.config.json`. The alias keys follow the project; `submodules` is this family's:
+The plugin reads one source: a `feod` key in `package.json` or `feod.config.json`. The alias keys follow the project; `modulePages` and `submodules` are this family's, and `modules.forbiddenNames` comes from `feod-preset`'s New project, which owns the list:
 
 ```json
 {
@@ -38,15 +38,17 @@ The plugin reads one source: a `feod` key in `package.json` or `feod.config.json
     "srcRoot": "src",
     "aliasPrefix": "@",
     "aliasRoot": "src",
+    "modulePages": false,
     "submodules": { "visibility": "parent-only" }
   }
 }
 ```
 
 - `aliasPrefix`/`aliasRoot` teach the plugin the `@/` alias; without them it knows only `@modules`, `@common` and the other per-level aliases. Adjust to the project's.
+- `modulePages: false` matches the profile `feod-preset` writes: routes live in `pages` (`role-files` §6), never in a module's `pages/` folder.
 - `submodules.visibility: "parent-only"` is `feod-preset`'s rule that a submodule is invisible outside its parent. The plugin's default, `"public"`, lets any module import a submodule's `index.ts`.
 
-`global` is never imported, the entry included: `app/main.tsx` importing `@/global/polyfills` is a `layer-imports` error. Connect `global` outside the import graph: `.d.ts` files through `tsconfig.json` `include`, polyfills through `index.html` (`<script type="module" src="/src/global/polyfills.ts">` before the entry) or the bundler config. Global styles are imported, so they belong to `app`, not `global`.
+`global` is never imported, the entry included: `app/main.tsx` importing `@/global/array.polyfill` is a `layer-imports` error. Connect `global` outside the import graph: `.d.ts` files through `tsconfig.json` `include`, polyfills through `index.html` (`<script type="module" src="/src/global/array.polyfill.ts">` before the entry) or the bundler config. Global styles are imported, so they belong to `app`, not `global`.
 
 ## How overrides combine
 
