@@ -24,12 +24,10 @@
     },
     {
       "title": "Frontend",
-      "description": "Ядро на вебе, границы линтером, выбор клиентского стека и MobX-рецепт.",
+      "description": "Ядро на вебе и границы линтером.",
       "skills": [
         "frontend-mvvm",
-        "frontend-boundaries",
-        "frontend-state-stack",
-        "mobx-mvvm"
+        "frontend-boundaries"
       ]
     },
     {

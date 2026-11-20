@@ -81,8 +81,6 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 | --- | --- |
 | [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, compound-компоненты и пресеты вместо пропса на каждый вариант, рецепт нового модуля, пример миграции магазина. |
 | [`frontend-boundaries`](skills/frontend/frontend-boundaries/SKILL.md) | Те же границы, но чтобы их ловил линтер: официальные `@o-feod/*` плагины на уровни плюс ESLint flat / oxlint правила на роли. |
-| [`frontend-state-stack`](skills/frontend/frontend-state-stack/SKILL.md) | Greenfield или «какой стейт-менеджер». Пока стек уже выбран — не нужен. |
-| [`mobx-mvvm`](skills/frontend/mobx-mvvm/SKILL.md) | Рецепт, если проект уже на MobX. На greenfield не предлагать. |
 
 ### Qt
 
@@ -191,7 +189,7 @@ templates/AGENTS.md   копируемый файл инструкций аге�
 skills/
   workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, review-flow
   architecture/ feod-preset, mvvm, role-files
-  frontend/   frontend-mvvm, frontend-boundaries, frontend-state-stack, mobx-mvvm
+  frontend/   frontend-mvvm, frontend-boundaries
   qt/         qt-mvvm, qt-cmake-boundaries
   reatom/     reatom-field-notes, reatom-testing
   design/     design-flow

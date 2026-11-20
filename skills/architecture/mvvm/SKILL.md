@@ -12,7 +12,7 @@ Write a feature as three roles. The ViewModel is a **role**, not a library or a 
 - Roles, facade and mediator: [MVVM for React](https://www.youtube.com/watch?v=H0pKvQ8P3UI) (separation of concerns, not reactivity history).
 - Error handling, injected clock, composition order and test seams: a Qt Quick teaching project (2026-09-03) built, tested and reviewed end to end. They hold on any stack.
 - **Project conventions win.** If the repo maps in its API clients or has no ViewModel at all, follow the repo and mention the divergence in one line.
-- Stack wiring is `frontend-mvvm` (hooks, Vue, Reatom; MobX through `mobx-mvvm`) and `qt-mvvm` (QObject, QML). Choosing a state library is `frontend-state-stack`.
+- Stack wiring is `frontend-mvvm` (hooks, Vue, Reatom) and `qt-mvvm` (QObject, QML).
 
 ## When this applies
 
@@ -122,7 +122,5 @@ MVVM that cannot be tested without a backend and without a window exists only on
 | Which level and who may import it | `feod`, `feod-preset` |
 | File names and folders per role | `role-files` |
 | React / Vue / Reatom wiring | `frontend-mvvm` |
-| MobX wiring | `mobx-mvvm` |
 | Qt Quick wiring | `qt-mvvm` |
-| Which state library | `frontend-state-stack` |
 | What a test should assert | `test-craft` |

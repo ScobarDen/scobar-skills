@@ -1,6 +1,6 @@
 ---
 name: frontend-mvvm
-description: MVVM, FEOD and role files applied to a web frontend — the ViewModel as a hook, a composable or a Reatom model, the passive component, `index.ts` as a module's public API, `{subject}.{role}.ts` in TypeScript, routes and file-based routers, compound components and presets, a new-module recipe and a worked shop migration. Load when building or reviewing a React or Vue screen or module, a component growing props that show, hide or replace its parts, writing an `index.ts`, a DTO reaching a component, a fetch or `useQuery` inside a presentational component, or migrating a frontend to modules. Doctrine is in mvvm, feod, feod-preset and role-files; state library choice is frontend-state-stack; lint enforcement is frontend-boundaries.
+description: MVVM, FEOD and role files applied to a web frontend — the ViewModel as a hook, a composable or a Reatom model, the passive component, `index.ts` as a module's public API, `{subject}.{role}.ts` in TypeScript, routes and file-based routers, compound components and presets, a new-module recipe and a worked shop migration. Load when building or reviewing a React or Vue screen or module, a component growing props that show, hide or replace its parts, writing an `index.ts`, a DTO reaching a component, a fetch or `useQuery` inside a presentational component, or migrating a frontend to modules. Doctrine is in mvvm, feod, feod-preset and role-files; lint enforcement is frontend-boundaries.
 ---
 
 # Frontend MVVM
@@ -11,7 +11,7 @@ How `mvvm`, FEOD (`feod`, `feod-preset`) and `role-files` look in a TypeScript f
 
 - Hooks adapter and render rules: [MVVM for React](https://www.youtube.com/watch?v=H0pKvQ8P3UI). Level and public API rules: [FEOD](https://feod.dev/), whose own examples are TypeScript and Vue.
 - **Project conventions win.** An existing layout, a file-based router or a ViewModel convention outranks this file. Follow it and mention the divergence in one line.
-- Picking Zustand vs Reatom vs MobX vs hooks is `frontend-state-stack`. MobX wiring is `mobx-mvvm`. Reatom API is `reatom` / `reatom-async`.
+- Reatom API is `reatom` / `reatom-async`.
 - Hook *return shape* (`form` / `state` / `functions` / `refs` / `features`) is `react-hooks-best-practices` rule `dx-extract-complex-hook`. This file owns the fact that the hook **is** the ViewModel.
 
 ## 1. The ViewModel on each framework
@@ -29,7 +29,6 @@ export function Checkout(props: CheckoutProps) {
 
 - **Vue**: the ViewModel is a composable (`useCheckout`), the View is the SFC template. SFC mechanics stay in the Vue skills.
 - **Reatom**: the ViewModel is a model of atoms and actions. Load `reatom`; do not re-implement `mvvm` as atoms here.
-- **MobX**: `ViewModelBase` + `withViewModel`, see `mobx-mvvm`.
 - Mediator arguments on hooks: `useTable({ getTasks, params })` receives getters; it does not call `useFilters()` inside.
 - React infrastructure (debounce, click-outside, `createStore` / `useSyncExternalStore` selectors, disclosure) comes from `reactuse`. Business use cases do not.
 - Inject services through props, hook arguments or the composition root in `app/`. A ViewModel does not `new AxiosClient()` in a leaf.
@@ -124,8 +123,6 @@ A component that grows a prop per variant becomes unreadable. Split it into a **
 | Levels and public API | `feod`, `feod-preset` |
 | File names and role folders | `role-files` |
 | Lint rules for levels and roles | `frontend-boundaries` |
-| Which state library | `frontend-state-stack` |
-| Project is already MobX | `mobx-mvvm` |
 | Reatom API | `reatom` / `reatom-async` |
 | Hook return contract | `react-hooks-best-practices` (`dx-extract-complex-hook`) |
 | Which ReactUse hook | `reactuse` |
