@@ -23,7 +23,7 @@ A prop that is data (`title`, `items`, `disabled`) or a visual token (`size`, `t
 
 A preset is a ready assembly of a compound, inserted into markup as one tag.
 
-- **Rule of three.** Three identical assemblies earn a preset. Two do not.
+- **Rule of three.** Three identical assemblies earn a preset. Two do not. A domain assembly written in one place, a list item rendered in a loop included, is an ordinary View of its module, named after its concept (`product-card.view.tsx`).
 - **A preset takes data and callbacks only.** Its structure is fixed. A frequent new variant gets a second preset; a rare one is assembled from the parts in place. A structural prop on a preset turns it back into the component the compound replaced.
 - **Placement** (`feod-preset`, Module or common): the compound lives in the `ui-kit` module and leaves it through `ui-kit`'s `index.ts`. A preset that names domain concepts (`UserCard`) lives in the module that uses it; a purely visual preset (`ConfirmDialog`) sits beside its compound in `ui-kit`.
 
@@ -133,9 +133,3 @@ const { expanded, toggle } = injectCardContext('CardActions')
 - **Default slot** for content.
 - **Scoped slot** when the caller needs a part's state (`v-slot="{ expanded }"`).
 - **`asChild`** (render the caller's element with the part's behaviour) comes from the headless library; do not reimplement it.
-
-## Sources
-
-- [Reka UI: composition and `asChild`](https://reka-ui.com/docs/guides/composition.md), [inject context](https://reka-ui.com/docs/guides/inject-context.md), [`createContext` source](https://github.com/unovue/reka-ui/blob/v2/packages/core/src/shared/createContext.ts)
-- [VueUse `createInjectionState`](https://vueuse.org/shared/createInjectionState/)
-- [Vuetify0 compound components and slot props](https://0.vuetifyjs.com/guide/fundamentals/components.md)

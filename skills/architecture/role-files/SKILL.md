@@ -29,8 +29,8 @@ A file with no role carries no marker: the public entry, the module `README.md`,
 
 | Marker | Holds | MVVM role (`mvvm`) |
 | --- | --- | --- |
-| `model` | domain types, domain rules, domain state, and the type of every injected collaborator (`OrderRepository`, `PaymentClient`), which `api` implements | Model |
-| `api` | whatever crosses the process boundary, transport or storage, plus the backend → domain adapter; a repository is `api` | Model |
+| `model` | domain types, domain rules, domain state, and the type of every injected collaborator (`OrderRepository`, `PaymentClient`), which `api` implements; a store that is itself the source of truth in memory (a cart with no backend) is domain state, so `model` | Model |
+| `api` | whatever crosses the process boundary, transport or storage, plus the backend → domain adapter; a repository is `api`, and so is its in-memory stand-in for that storage (`InMemoryOrderRepository`) | Model |
 | `dto` | raw backend shapes; they stop at `api` | Model |
 | `vm` | screen state, commands, UI-shaped data, list adapters | ViewModel |
 | `view` | passive render of ViewModel output, and the module root that constructs the ViewModel (`mvvm` §4); with no screen, the delivery binding (`mvvm` §10) | View |
@@ -93,7 +93,7 @@ The page folder follows the URL: `/cart` → `pages/cart/`, `/` → `pages/home/
 
 ### App and global
 
-Files on `app` carry role markers and follow the module layout, the one-file-or-folder count included; the entry point and its test carry no marker and stay at the `app` root: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Global styles are imported, so they live on `app` as the root View's stylesheet, `app.view.css`. Entry points keep the name and the place the toolchain expects (`main.tsx`, Flutter's `lib/main.dart`), belong to the `app` level wherever they sit, and hold the app's composition root (`mvvm` §4), constructing `api` values from the modules' public entries; `feod`'s `info` reports one outside the `app` folder as belonging to no layer, which is expected; one that outgrows the entry point moves to `app.vm.ts`. Assets no single file owns (fonts, favicons) sit in `app/assets/` with no marker. Files on `global` are never imported (FEOD): ambient declarations, polyfills and shims only; a stack with none has no `global` folder. They carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`; a declaration the toolchain names keeps that name, `vite-env.d.ts`.
+Files on `app` carry role markers and follow the module layout, the one-file-or-folder count included; the entry point and its test carry no marker and stay at the `app` root: `app.config.ts`, `default-layout.view.tsx`, a `view/` folder once there are two Views. Global styles are imported, so they live on `app` as the entry point's stylesheet, named after it and beside it (`main.css` next to `main.tsx`); like the entry point, it carries no marker and counts in no role, so a root View is not needed to hold it. Entry points keep the name and the place the toolchain expects (`main.tsx`, Flutter's `lib/main.dart`), belong to the `app` level wherever they sit, and hold the app's composition root (`mvvm` §4), constructing `api` values from the modules' public entries; `feod`'s `info` reports one outside the `app` folder as belonging to no layer, which is expected; one that outgrows the entry point moves to `app.vm.ts`. Assets no single file owns (fonts, favicons) sit in `app/assets/` with no marker. Files on `global` are never imported (FEOD): ambient declarations, polyfills and shims only; a stack with none has no `global` folder. They carry no role marker: each is named after what it patches or declares, `array.polyfill.ts`; a declaration the toolchain names keeps that name, `vite-env.d.ts`.
 
 ## 5. Size is a prompt, the cut is by responsibility
 

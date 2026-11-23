@@ -50,8 +50,8 @@ To answer "which fields of the order endpoint does the UI use" you read `api/che
 | `utils/constants.ts` | a transport setting and product rules in one file | `API_URL` into `common/config/http-client.config.ts`; `FREE_SHIPPING_FROM`, `PROMO_ENABLED` into `checkout/config/` |
 | `components/Button.tsx` | fine as code, lives next to product components | `ui-kit/view/button.view.tsx`: a design-system primitive, and `common` holds no Views |
 | `components/ProductCard.tsx` takes `ProductDto` | a catalog View reading a DTO | `catalog/view/product-card.view.tsx`, fed by `catalog.vm.ts` |
-| `pages/CheckoutPage.tsx` | markup of the module in a page, and a page reaching into the cart store | `pages/checkout/checkout.view.tsx` mounts `Checkout` and hands it the cart, `checkout.view.test.tsx` beside it tests that wiring; `checkout.route.ts` declares the URL |
-| `App.tsx`, 280 lines | router, providers and client setup in one file | `app/main.tsx`, `app/app.route.ts`, `app/providers.view.tsx` |
+| `pages/CheckoutPage.tsx` | markup of the module in a page, and a page reaching into the cart store | `pages/checkout/checkout.view.tsx` mounts `Checkout` and hands it the cart, `checkout.view.test.tsx` beside it tests that wiring; `checkout.route.ts` declares the URL as data |
+| `App.tsx`, 280 lines | router, providers and client setup in one file | `app/main.tsx` constructs the dependencies, `app/app.route.ts` joins each route with its page View, `app/providers.view.tsx` |
 | `polyfills.ts` | imported by `App.tsx` like ordinary code, named after nothing it patches | `global/array.polyfill.ts`, loaded by `index.html` before the entry; no code imports it |
 
 ## After
@@ -140,11 +140,9 @@ src/
         button.stories.tsx
   pages/
     catalog/
-      index.ts
       catalog.route.ts
       catalog.view.tsx
     checkout/
-      index.ts
       checkout.route.ts
       checkout.view.tsx
       checkout.view.test.tsx
@@ -160,4 +158,4 @@ What each part shows:
 
 ## The page as mediator
 
-`pages/checkout/checkout.view.tsx` is the page from `SKILL.md` §5: both imports end at a module root, and `Checkout` is the hooks adapter in `checkout/view/checkout.view.tsx` that calls `useCheckout` from `checkout/vm/checkout.vm.ts`.
+`pages/checkout/checkout.view.tsx` is the page from `SKILL.md` §5: it receives `cartSource` from `app/app.route.ts`, both its imports end at a module root, and `Checkout` is the hooks adapter in `checkout/view/checkout.view.tsx` that calls `useCheckout` from `checkout/vm/checkout.vm.ts`.
