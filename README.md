@@ -104,7 +104,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`design-flow`](skills/design/design-flow/SKILL.md) | «Как бы улучшить этот интерфейс» или «хочу новый». По запросу и коду решает развилки (новое или существующее, страница или рабочий экран, один компонент или весь экран, есть ли Figma) и выдаёт маршрут на 1–4 шага: какую команду печатать и готовый промпт к ней. Сам ничего не строит. |
+| [`design-flow`](skills/design/design-flow/SKILL.md) | «Как бы улучшить этот интерфейс» или «хочу новый». По запросу и коду решает развилки (новое или существующее, страница или рабочий экран, один компонент или весь экран, есть ли Figma) и выдаёт маршрут на 1–4 шага: какую команду печатать и готовый промпт к ней. Страницы ведёт через taste-skill, рабочие экраны — через `frontend-design`. Если какого-то скилла из маршрута нет, маршрут не печатает: даёт строки установки и ждёт. Сам ничего не строит. |
 
 Половина скиллов Якуба (`/variant`, `/state-machine`, `/break`, `/interface-review`, `/explain-interface`) закрыта `disable-model-invocation: true`, их запускаешь только ты. `design-flow` помечает в маршруте, какой шаг закрытый, а какой можно просто попросить словами. И режет «дашборд» на компоненты, потому что эти скиллы берут один компонент за прогон.
 
@@ -155,8 +155,8 @@ npx skills add DietrichGebert/ponytail
 - [DenisSergeevitch/agents-best-practices](https://github.com/DenisSergeevitch/agents-best-practices) — как собирать агентный харнесс.
 - [DenisSergeevitch/chatgpt-custom-instructions](https://github.com/DenisSergeevitch/chatgpt-custom-instructions) — не скиллы, а кастомные инструкции; всё равно стоит глянуть.
 - [TheQtCompanyRnD/agent-skills](https://github.com/TheQtCompanyRnD/agent-skills) — скиллы Qt Company.
-- [jakubkrehel/skills](https://github.com/jakubkrehel/skills) — интерфейс по дисциплинам: `better-*` про цвет, типографику, лейаут, тексты, a11y и полировку, плюс стенды `variant` / `state-machine` / `break` и ревью диффа. Без него мой `design-flow` наполовину пустой.
-- [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) — арт-дирекшн против AI-слопа: раздаёт направления из библиотеки реальных сайтов, проверяет в браузере, отдельный прогон для дашбордов и рабочих экранов.
+- [jakubkrehel/skills](https://github.com/jakubkrehel/skills) — интерфейс по дисциплинам: `better-*` про цвет, типографику, лейаут, тексты, a11y, полировку и анимацию, плюс стенды `variant` / `state-machine` / `break` и ревью диффа. Без него мой `design-flow` наполовину пустой.
+- [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) — арт-дирекшн против AI-слопа для сайтов компаний и лендингов: раздаёт палитру и hero, держит финиш-гейт в реальном браузере. С 2.5 дашборды и рабочие экраны не делает — для них `design-flow` берёт `frontend-design`.
 - [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) — режим «ленивого сеньора»: самое маленькое изменение, которое целиком решает задачу, без спекулятивных абстракций; плюс `ponytail-review` (ревью диффа), `ponytail-audit` (то же по всему репо) и `ponytail-debt` (реестр `shortcut:`-срезов). Без него мой `review-flow` без базы. В Claude Code лучше плагином — хуки держат режим включённым в каждой сессии, после `/clear` и компакта, и в сабагентах:
 
   ```
