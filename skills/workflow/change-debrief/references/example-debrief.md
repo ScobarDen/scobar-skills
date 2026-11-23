@@ -1,16 +1,14 @@
 # Example debrief
 
-A fictional branch, `feature/ORD-412-order-status`, in a fictional repo. Read it for **form and density**: how short each section is, how a change of shape lands as a sketch plus the one line of code that holds it, how a decision block fits in five lines. The wording is not a template, and the language of a real debrief follows the user.
-
 ---
 
 # Разбор: `feature/ORD-412-order-status`
 
-> 11 файлов · база `origin/dev` · 3 коммита + незакоммиченное рабочее дерево
+> 11 файлов · база `origin/main` · 3 коммита + незакоммиченное рабочее дерево
 
 ## Суть
 
-Бэкенд переименовал `status_code` в `state`, и починка одного поля потребовала правок в четырёх компонентах: DTO расходился по всему экрану заказов. Теперь между API и UI стоит `OrderListViewModel`, и форму ответа бэкенда знает ровно одна функция.
+Бэкенд переименовал `status_code` в `state`, и починка одного поля потребовала правок в четырёх компонентах: DTO расходился по всему экрану заказов. Теперь между API и UI стоят `toOrder()` в Model и `OrderListViewModel`, и форму ответа бэкенда знает ровно одна функция.
 
 **Разошлось с задачей:** в тикете был весь модуль заказов, вынесен только список. Карточка заказа ходит в другой эндпоинт со своей формой ответа — это второй маппер, разумнее отдельной веткой.
 
@@ -22,7 +20,7 @@ A fictional branch, `feature/ORD-412-order-status`, in a fictional repo. Read it
  <OrderListPage>                    ui/OrderListPage.tsx
 +  OrderListViewModel               viewmodel/OrderListViewModel.ts
 +    ordersApi.list()
-+    toOrder(dto)                   viewmodel/mappers.ts
++    toOrder(dto)                   model/mappers.ts
    <OrderList>
      <OrderRow>                     ui/OrderRow.tsx
 -      fetch(`/api/orders/${id}`)
@@ -30,7 +28,7 @@ A fictional branch, `feature/ORD-412-order-status`, in a fictional repo. Read it
 +      order.status
 ```
 
-`src/modules/orders/viewmodel/mappers.ts:5`:
+`src/modules/orders/model/mappers.ts:5`:
 
 ```ts
 export function toOrder(dto: OrderDto): Order {
@@ -46,7 +44,7 @@ export function toOrder(dto: OrderDto): Order {
 
 ## Что поменялось
 
-- **Слой view-model** — `OrderListViewModel` грузит, держит состояние запроса и маппит.
+- **Роль ViewModel** — `OrderListViewModel` грузит и держит состояние запроса, ответ бэкенда в `Order` превращает `toOrder()` из Model.
 - **Компоненты стали пассивными** — `OrderList` и `OrderRow` принимают `Order` и колбэки, про `fetch` не знают.
 - **Статус — один union** вместо трёх булевых флагов.
 - **Зависимости — аргументами**: API приходит в конструктор ViewModel.
@@ -57,14 +55,14 @@ export function toOrder(dto: OrderDto): Order {
 ### 1. Маппинг DTO в одном месте
 
 - **Выбрал:** единственный `toOrder()` на весь ответ бэкенда — см. «Главное в коде».
-- **Почему:** форму ответа меняют без нас, и у чужого контракта должна быть одна точка входа (правило: `CLAUDE.md`, «UI не видит DTO»; как в `billing/viewmodel/mappers.ts:14`).
+- **Почему:** форму ответа меняют без нас, и у чужого контракта должна быть одна точка входа (правило: `CLAUDE.md`, «UI не видит DTO»; как в `billing/model/mappers.ts:14`).
 - **Вместо:** маппинга прямо в хуке запроса — короче, но маппер тогда не проверить без мока сети.
 - **Цена:** новое поле API добавляется в двух местах, в `OrderDto` и в `toOrder()`.
 - **Откат:** двусторонняя дверь, наружу слой не торчит.
 
 ### 2. Статус — union вместо флагов
 
-- **Выбрал:** `status: 'created' | 'paid' | 'shipped' | 'cancelled'` в `domain/order.ts:3`.
+- **Выбрал:** `status: 'created' | 'paid' | 'shipped' | 'cancelled'` в `model/order.ts:3`.
 - **Почему:** три флага описывают восемь состояний при четырёх реальных; union делает несуществующие — «отменён и отгружен» — невыразимыми (общая практика).
 - **Вместо:** флагов плюс вычисляемого `status` — два источника правды разъедутся при первой правке одного из них.
 - **Цена:** старые записи в localStorage лежат с флагами, `parseStoredOrder()` обязан их конвертировать, пока не протухнут сессии.
@@ -90,4 +88,4 @@ export function toOrder(dto: OrderDto): Order {
 pnpm test src/modules/orders
 ```
 
-Могу развернуть: гонку состояния запроса при быстром перелистывании; почему маппер в `viewmodel/`, а не в `domain/`; как конвертируются старые записи из localStorage.
+Могу развернуть: гонку состояния запроса при быстром перелистывании; почему `toOrder()` в Model, а не во ViewModel; как конвертируются старые записи из localStorage.

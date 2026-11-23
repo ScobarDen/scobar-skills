@@ -11,26 +11,28 @@ A debrief after the flight: the work is done, and now the person who owns it has
 
 The reader is a developer who has not seen this code — except where they have. Stack vocabulary is fine — `ViewModel`, facade, memoization. Anything specific to *this* project gets explained.
 
-**Short by default, deeper on request.** The debrief is a one-to-two-minute read. Everything that doesn't fit goes into the closing offer to expand (§5), and the reader pulls what they want.
+**Short by default, deeper on request.** The debrief is at most 550 words of prose outside code blocks. Everything that doesn't fit goes into the closing offer to expand (§5), and the reader pulls what they want.
 
 **Calibrate on what the reader already watched.** Decisions the user made, approved or argued through in this session are established; re-deriving them spends the reader's attention on what they already hold. One line of reference each, and the budget goes to what happened out of their sight.
 
 **Read-only.** Reads git, files, the forge and the tracker, and writes the debrief into the chat. Runs no tests, no build, no linter. A file only when the user asks for one, at the path they name.
 
-**Explains, does not grade.** Bugs → `review-flow`. Improvements → `refactor-advice`. MR text → `pr-description`. When something genuinely broken surfaces mid-debrief, name it in one line, say which skill picks it up, and carry on explaining.
+**Explains, does not grade.** Bugs, improvements and MR text belong to other skills — `review-flow`, `refactor-advice`, `pr-description` when installed. When something genuinely broken surfaces mid-debrief, name it in one line, add the skill that picks it up when one is installed, and carry on explaining.
 
 ## 1. Resolve the scope
 
 First match wins:
 
-1. **Nothing named** → the current branch in full: commits ahead of base **and** the working tree. This is the common case — a task just finished, half of it committed, half still sitting uncommitted.
+1. **Nothing named** → the current branch in full: commits ahead of base **and** the working tree.
 2. **A branch or a range** (`feature/x`, `main..feature/x`) → that diff.
 3. **An existing path** → code mode (§5). Nothing changed there; explain how it is built.
 4. **Prose naming a feature** → find it first: grep the name, read the directory layout, follow routes and entry points. One obvious home → work with it and **say out loud what you settled on** ("reading this as `src/modules/auth/*` — redirect me if that's wrong"). Several candidates or none → show what you looked for and ask.
 
-Base branch: what the user named → `origin/dev` / `origin/develop` if either exists → `origin/HEAD` → `origin/main` / `origin/master`. Diff with **three dots** (`git diff <base>...HEAD`) — with two, commits that landed on the base after branching become "your" work and the debrief turns into fiction.
+Base branch: what the user named → the target branch of the open PR/MR → `origin/HEAD` → `origin/main` / `origin/master` → ask. Diff with **three dots** (`git diff <base>...HEAD`) — with two, commits that landed on the base after branching become "your" work and the debrief turns into fiction.
 
 Nothing committed, nothing modified, no scope given → say so and stop.
+
+**Done when:** the scope and, in diff mode, the base are named.
 
 ## 2. Facts from the files, reasons from the session
 
@@ -40,10 +42,13 @@ The one failure mode nobody catches in review: a fluent retelling of what the ag
 - **Describe only hunks you have read.** A large diff goes to a temp file and gets read in chunks.
 - Prefer whole files over hunks wherever the decision under discussion reaches past the changed lines.
 - In branch mode, read all of it: `git status`, `git diff`, `git diff --staged`, `git diff <base>...HEAD`, `git log <base>..HEAD --oneline`. Untracked files are read too — new files are usually the heart of the work.
-- **Noise** is read through `--stat` only: lockfiles, build output (`dist/`, `build/`, `*.min.*`), snapshots, generated code, anything `.gitattributes` marks `linguist-generated` or `-diff`. It earns one line at most.
+- **Noise** is read through `--stat` only: lockfiles, build output (`dist/`, `build/`, `*.min.*`), snapshots, generated code, anything `.gitattributes` marks `linguist-generated` or `-diff`. It earns one line in the whole debrief, the routine line of "What changed", and no other section, the closing offer included, returns to it. A dependency arrives through the manifest (`package.json`, `pyproject.toml`, `go.mod`), never through the lockfile: a lockfile-only change stays noise.
+- **Reading cap:** past 2,000 changed lines outside noise, read in full only the files behind the decisions §4 selects and read the rest through `--stat`.
 - Changes in the tree that this session did not make belong to the user. Cover them as part of the picture, attributed honestly, or name them as out of scope.
 
 The *why* comes from the session — what was asked, tried, rejected. When the session doesn't hold it (a fresh session, someone else's branch), fall back, best effort and read-only: the body of the open PR → the task in the tracker, by the id in the branch name, through whatever MCP server or CLI the session has → commit messages. Still nothing → say the motive is unknown rather than inventing one.
+
+**Done when:** every non-noise file in scope is read, or the cap is hit and named, and the motive is found or marked unknown.
 
 ## 3. Every principle names its source
 
@@ -51,9 +56,9 @@ The *why* comes from the session — what was asked, tried, rejected. When the s
 
 | Class | What it is | Tag in the text |
 | --- | --- | --- |
-| **Project rule** | Written down in this repo: `AGENTS.md` / `CLAUDE.md`, an ADR, `CONTEXT.md`, `CONTRIBUTING.md`, linter and compiler config, a skill under `./.claude/skills` | `(правило: CLAUDE.md)` |
-| **Local convention** | A pattern already living in neighbouring code | `(как в billing/mappers.ts:14)` |
-| **General practice** | Widely held craft, written nowhere here | `(общая практика)` |
+| **Project rule** | Written down in this repo: `AGENTS.md` / `CLAUDE.md`, an ADR, `CONTEXT.md`, `CONTRIBUTING.md`, linter and compiler config, a skill kept in the repo | `(rule: CLAUDE.md)` |
+| **Local convention** | A pattern already living in neighbouring code | `(as in billing/mappers.ts:14)` |
+| **General practice** | Widely held craft, written nowhere here | `(general practice)` |
 
 The tag is a parenthesis at the end of the sentence it backs, not a sentence of its own. No source, no mention. Naming an acronym obliges you to show the concrete thing that would break under the alternative — otherwise the acronym is decoration and the sentence reads better without it.
 
@@ -69,70 +74,66 @@ One to three decisions carry the debrief. A change qualifies when at least one h
 - an external dependency arrived
 - a public contract changed: API, props, signature, schema, event, migration
 
-Rank by **consequence**, measured as what breaks or gets harder under the alternative. Diff size measures typing, not weight — a three-line change that inverts a dependency outranks a four-hundred-line rename, and the rename belongs in the routine line.
+Rank by **consequence**, measured as what breaks or gets harder under the alternative. Diff size measures typing, not weight — a three-line change that inverts a dependency outranks a four-hundred-line rename, and the rename belongs in the routine line. Between close candidates, a one-way door (§5, **Rollback**) ranks above a two-way one.
 
 **Decision №1 is the main change.** It is the one shown in code (§5), so the example and the ranking never disagree.
 
 ## 5. The skeleton
 
+Section names, field labels, `before` / `after` and source tags are given here in English; write them in the language of the debrief (§6).
+
 Sections in order. A section with nothing real in it is left out entirely, heading included.
+
+The debrief opens with a title naming the scope — the branch, range or path — and one line under it: files in scope, noise included; the base; commits, and whether the working tree is part of it. A cap hit in §2 is named on that line.
 
 **Diff mode** — work that changed something:
 
-1. **Суть** — 2–3 sentences: **why** first (the problem), then what it is now. Where the delivered work diverged from what was asked — scope trimmed, approach swapped, a piece deferred — the divergence goes here, in the opening.
-2. **Главное в коде** — decision №1, shown. Pick the view by what the decision is about, then 2–3 sentences:
-   - **Behaviour** — a condition, a computation, a state transition → real code. A local edit → one ```` ```diff ```` block. Code that moved between files → two blocks, `было` and `стало`. Each block is headed by its `path:line`, holds at most 8 lines, and is cut with `…` rather than paraphrased. Code is copied verbatim — no markers added inside it.
+1. **Gist** — 2–3 sentences: **why** first (the problem), then what it is now. Where the delivered work diverged from what was asked — scope trimmed, approach swapped, a piece deferred — the divergence goes here, in the opening.
+2. **The main change in code** — decision №1, shown. Pick the view by what the decision is about, then 2–3 sentences:
+   - **Behaviour** — a condition, a computation, a state transition → real code. A local edit → one ```` ```diff ```` block. Code that moved between files → two blocks, `before` and `after`. Each block is headed by its `path:line`, holds at most 8 lines, and is cut with `…` rather than paraphrased. Code is copied verbatim — no markers added inside it.
    - **Shape** — a boundary moved, a dependency changed direction, a layer or module appeared, files were reorganised → a structural sketch: a call tree, a component tree or a shallow file tree in one ```` ```diff ```` block, `+` and `-` on the nodes that changed, unchanged nodes kept only where they show ownership and order. At most 10 lines. Every node is an identifier or path read in this run, with its file beside the nodes the reader will want to open — a sketch is a map of the files, not a picture of the intent. When one line of code is what makes the shape hold (the signature, the import), it follows as a second block under the code rules above.
    - Plain text only: no Mermaid or anything else that needs a renderer — the debrief lands in a chat or a terminal.
-   - The sentences name the key line by its identifier and say what changes **in behaviour**: what happens at the next edit of this kind, and what used to happen instead. This is where the debrief goes one level below the label — a shape ("вынес маппинг в фасад") reads as understanding while leaving none behind; the chain is what stays with the reader.
+   - The sentences name the key line by its identifier and say what changes **in behaviour**: what happens at the next edit of this kind, and what used to happen instead. This is where the debrief goes one level below the label — a shape ("moved the mapping out of the component into the Model") reads as understanding while leaving none behind; the chain is what stays with the reader.
    - No meaningful code in the diff (docs, config, types only) → the weightiest hunk, whatever its kind. Nothing but noise → the section is left out.
-3. **Что поменялось** — 3–5 bullets grouped by meaning, not by file, plus one line for routine and noise. A reader should be able to name the moving parts from this alone.
-4. **Главные решения** — one block per decision from §4, five short lines of one sentence each:
-   - **Выбрал** — what.
-   - **Почему** — the reason, answering "and what if the opposite".
-   - **Вместо** — what was turned down.
-   - **Цена** — what became harder, slower or newly obligatory. A decision that lists only upsides is advertising.
-   - **Откат** — the door. Two-way: a revert undoes it, and three words say so. One-way: name what makes it so — data a migration rewrote, a contract someone already consumes, state written in the new format, a message already sent. The one-way doors are why this line exists.
+3. **What changed** — 3–5 bullets grouped by meaning, not by file, plus one line for routine and noise. A reader should be able to name the moving parts from this alone.
+4. **Key decisions** — one block per decision from §4, five short lines of one sentence each:
+   - **Chose** — what.
+   - **Why** — the reason, answering "and what if the opposite". A reason that survives no alternative is the code restated; drop it.
+   - **Instead** — what was turned down. Where no rejected option is recorded, name the most obvious alternative and mark it as reconstruction.
+   - **Cost** — what became harder, slower or newly obligatory. A decision that lists only upsides is advertising.
+   - **Rollback** — the door. Two-way: a revert undoes it, and three words say so. One-way: name what makes it so — data a migration rewrote, a contract someone already consumes, state written in the new format, a message already sent. The one-way doors are why this line exists. Work still sitting in the tree is judged as if it shipped as it stands.
 
    Decision №1 refers to the snippet or sketch above instead of repeating it. The other decisions get `path:line`, never a snippet.
-5. **Что осталось и чего не проверял** — up to 5 bullets: cut corners, `TODO`s, uncovered cases, deferred calls, deliberate compromises — including your own — and the tests, runtime and integrations not exercised. Then one command the user can run to close the biggest gap.
+5. **What's left and what I did not check** — up to 5 bullets: cut corners, `TODO`s, uncovered cases, deferred calls, deliberate compromises — including your own — and the tests, runtime and integrations not exercised. Then one command the user can run to close the biggest gap; it changes no tracked file and leaves the uncommitted work where it is.
 
-Close with one line: **«Могу развернуть: …»** — two or three places where the debrief simplified, each an offer to expand. This is where the reader sees the edge of their own understanding.
+Close with one line: **"I can expand on: …"** — two or three places where the debrief simplified, each an offer to expand. This is where the reader sees the edge of their own understanding.
 
 **Code mode** — a path or a feature that already existed:
 
-1. **Зачем эта штука** — the job it does, 2–3 sentences.
-2. **Сердце механизма** — up to 10 lines of the one place everything turns on (the entry point, the mapper, the state transition), headed by `path:line` — or, when the mechanism is in how the parts connect, a call or component tree without `+`/`-`, same rules as the sketch above — then 2–3 sentences on what happens there and why it is built that way.
-3. **Из чего состоит** — 3–5 bullets: the parts, and who talks to whom.
-4. **Главные решения** — same block and criteria as §4, reconstructed from the code. Mark reconstruction as reconstruction: "выглядит так, будто" is honest where an ADR or `git blame` is silent, and both are cheap to check first.
-5. **Где тонко и чего не проверял** — debts, oddities, `TODO`s, the places that break under an innocent edit; remaining work only where the code itself declares it.
+1. **What this is for** — the job it does, 2–3 sentences.
+2. **The heart of the mechanism** — up to 10 lines of the one place everything turns on (the entry point, the mapper, the state transition), headed by `path:line` — or, when the mechanism is in how the parts connect, a call or component tree without `+`/`-`, same rules as the sketch above — then 2–3 sentences on what happens there and why it is built that way.
+3. **What it is made of** — 3–5 bullets: the parts, and who talks to whom.
+4. **Key decisions** — same block and criteria as §4, reconstructed from the code. Mark reconstruction as reconstruction: "it looks as if" is honest where an ADR or `git blame` is silent, and both are cheap to check first.
+5. **Where it is thin and what I did not check** — debts, oddities, `TODO`s, the places that break under an innocent edit; remaining work only where the code itself declares it.
 
-Close with the same «Могу развернуть» line.
+Close with the same "I can expand on" line.
+
+[`references/example-debrief.md`](references/example-debrief.md) is one full debrief of a fictional refactor. Read it for **form and density** — the length of each section, how the main change lands in code, how short a decision block is. Its wording and its Russian are not a template; the language of the output follows the user.
+
+**Done when:** the debrief is in the chat, every section is filled or dropped as empty, and the prose fits the 550 words.
 
 ## 6. How it reads
 
-- **Past tense, factual verbs.** "Вынес маппинг в фасад" — the reader decides whether that was good.
-- **Every "why" answers "and what if the opposite".** A reason that survives no alternative is the code restated; drop it.
+- **Past tense, factual verbs.** "Moved the mapping into the Model" — the reader decides whether that was good.
 - **One analogy at most**, and only where the mechanism is genuinely non-obvious — a trade-off, an inversion, a lifecycle. It explains mechanism rather than decorating, and one clause says where it stops holding: an analogy carried past its limit is how a confident wrong model gets built.
 - **Headings and bullets**, emoji in section headings at most.
 - **Language follows the user.** Prose in whatever language the conversation runs in; identifiers, paths, commands and quoted output stay as the repo has them.
 
-Write the facts and the trade-offs plainly: "этот вариант дороже в поддержке, взял его ради X" explains. Words that grade the author's own work — *элегантно*, *чисто*, *значительно*, *robust*, *правильная архитектура* — and connectives that announce importance while carrying none — *стоит отметить, что* — stay out.
+Write the facts and the trade-offs plainly: "this option costs more to maintain, I took it for X" explains. Words that grade the author's own work — *elegant*, *clean*, *significantly*, *robust*, *the right architecture*, and their equivalents in the debrief's language — and connectives that announce importance while carrying none — *it is worth noting that* — stay out.
 
 ## 7. Scale and honesty
 
-- A hundred-plus files is not an invitation to describe a hundred files. Explain what §4 selects, then one line for the rest: "плюс N файлов рутины — переименования, импорты, форматирование".
+- A hundred-plus files is not an invitation to describe a hundred files. Explain what §4 selects, then one line for the rest: "plus N files of routine — renames, imports, formatting".
 - A debrief that cannot fit the target read offers a split by theme and lets the user pick, rather than shipping a wall.
 - State the reading cap when one was hit. An unstated cap reads as full coverage.
-- A `TODO` or `FIXME` sitting in code the debrief covers is worth one line in «Что осталось» — what it is about, not a plan to fix it.
-
-[`references/example-debrief.md`](references/example-debrief.md) is one full debrief of a fictional refactor. Read it for **form and density** — the length of each section, how the main change lands in code, how short a decision block is. Its wording and its Russian are not a template; the language of the output follows the user.
-
-## Boundaries
-
-- Every file described is a file opened in this run.
-- Every principle carries its source tag.
-- In code mode, remaining work comes only from what the code itself declares.
-- Explaining is the whole job: fixes, refactors and reviews are named in one line and handed to their skill.
-- Tests, builds and linters stay unrun; the gap is named instead.
-- The reader is offered depth, never quizzed.
+- A `TODO` or `FIXME` sitting in code the debrief covers is worth one line in "What's left" — what it is about, not a plan to fix it.
