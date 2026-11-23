@@ -11,7 +11,7 @@ Given a feature, a module, a path, or just "what I've been writing" — produce 
 
 **This is not a review.** Reviews hunt defects; this hunts better shapes for code that already works. A real bug you trip over gets one line ("also: `foo.ts:42` drops the error"), not a findings section.
 
-**Doctrine lives in `code-craft`** — what a good name, a good signature, a good state shape and a good function look like, plus the base floor. Load it first and judge against it. Do not restate those rules here; this file owns only what is specific to advising on code that already exists. The two are a pair.
+**Doctrine lives in `code-craft`** — what a good name, a good signature, a good state shape and a good function look like, plus DRY and YAGNI where they get misapplied. Load it first and judge against it. Do not restate those rules here; this file owns only what is specific to advising on code that already exists. The two are a pair.
 
 ## 1. Resolve the scope
 
@@ -32,7 +32,7 @@ Advice measured against the wrong rules is noise. Discover the project's *effect
 1. **The project's own rules.** `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` at the root *and* nested ones deeper in the tree, `.cursorrules`, `.cursor/rules/**`, `.windsurfrules`, `.github/copilot-instructions.md`, `CONTRIBUTING.md`, the dev section of `README`, `.editorconfig`, and the linter/formatter/compiler configs the project actually runs (ESLint, Prettier, Biome, Ruff, Black, clang-format, clang-tidy, golangci-lint, RuboCop, ktlint, `tsconfig.json`, `.clang-tidy`, `pyproject.toml`, `Cargo.toml` lints, `.editorconfig`).
 2. **The project's own skills and agents** — `./.claude/skills/*/SKILL.md`, `./.claude/agents/*`, or the equivalent for whatever harness is in use. These are the conventions the team wrote down for itself.
 3. **Installed skills matching the detected stack.** Detect the stack from the repo — manifests, lockfiles, file extensions, imports, config files — and load the skills that match it *before* judging code written in it. A Vue project's advice comes from the Vue skill, not from general instincts about components; a Qt project's from the Qt skill; a test file's from the test-runner skill. Read the ones the stack actually uses and no others.
-4. **The base floor, always in effect** — naming, signatures, state shape, function shape, code placement and the classic principles, all of it in **`code-craft`**. Load that skill rather than working from memory of it.
+4. **The base floor, always in effect** — naming, signatures, state shape, function shape, code placement, DRY and YAGNI, all of it in **`code-craft`**. Load that skill rather than working from memory of it.
 
 A conflict between levels is worth one line in the report. The project's convention beating a general principle is the correct outcome, not a finding.
 

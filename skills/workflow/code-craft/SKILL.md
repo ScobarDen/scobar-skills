@@ -1,37 +1,25 @@
 ---
 name: code-craft
-description: The decisions that make code readable at the moment it is written — names that state the result instead of the machinery, signatures with no positional flags, one status union instead of a constellation of booleans, guard clauses instead of nesting, and where a new file actually belongs. Load at a decision point — naming something, designing or extending a signature, a second boolean appearing in an argument list, a function outgrowing a screen, three flags describing one state, choosing which module or layer new code goes into, or a direct "what should I call this" / "is this signature ok". Not for judging code that already exists — that is refactor-advice. Stack-agnostic, and the project's own conventions outrank everything in it.
+description: Naming, signatures, state shape, function shape and file placement, decided while writing code. Load when naming something, designing or extending a signature, a second boolean argument or a third flag for one state appears, a function outgrows a screen, choosing where new code goes, or asked "what should I call this" / "is this signature ok". Not for judging code that already exists — that is refactor-advice.
 ---
 
 # Code craft
 
 The handful of decisions that decide whether this code is readable in six months. All of them are made **while writing**, and none of them get cheaper afterwards.
 
-Deliberately short. It loads at a decision point, not for the duration of a task.
-
-## When this fires
-
-- Naming anything — function, variable, type, file, module, component.
-- Designing a signature, or adding a parameter to an existing one.
-- A second boolean turning up in an argument list.
-- A function outgrowing a screen, or growing a third level of nesting.
-- Three flags describing what is really one state.
-- Deciding which file, module or layer new code goes into.
-- Asked outright — what should I call this, is this signature alright.
+**Done when:** every new name, signature, state shape, function and file placement in your change has been checked against the sections below.
 
 ## When it doesn't
 
 - Judging code that already exists → **`refactor-advice`**.
-- A bug hunt, tests to write, a stack- or framework-specific question → the skill that matches it.
-- Anything the project's own rules already answer.
 
 ## The project wins
 
-Read how the neighbours in this repo already do it and follow that. A convention you'd have chosen differently, applied consistently, beats a better idea applied in one file. Everything below is the default for where the project has no opinion — never a licence to reshape code nobody asked you to touch.
+Read how the neighbours in this repo already do it and follow that. A convention you'd have chosen differently, applied consistently, beats a better idea applied in one file. Everything below is the default for where the project has no opinion. Where the project's stated convention disagrees with this file, follow the project and say so in one line.
 
 ## Pairs with ponytail
 
-When [`ponytail`](https://github.com/DietrichGebert/ponytail) is installed, load it too: it decides **how much** code to write — the smallest complete change, at its default `full` level — and this file decides **the shape** of what remains. Its `shortcut: <limit>, <when to upgrade>` marker is a legitimate why-comment.
+When [`ponytail`](https://github.com/DietrichGebert/ponytail) is installed (`npx skills add DietrichGebert/ponytail`), load it too: it decides **how much** code to write — the smallest complete change, at its default `full` level — and this file decides **the shape** of what remains. Its `shortcut: <limit>, <when to upgrade>` marker is a legitimate why-comment.
 
 ## Names state the result, not the machinery
 
@@ -47,12 +35,13 @@ A reader should get what something does from its name, without opening it.
 
 - Booleans read as a question: `is` / `has` / `can` / `should`.
 - Length is not the goal; a name that needs a comment to be understood is the one to change.
-- One concept, one word, across the whole codebase. `fetch`, `load`, `get` and `retrieve` meaning the same thing in four files is four times the reading cost.
-- Don't abbreviate what isn't already an abbreviation in the domain. `usr`, `cnt`, `mgr` save four characters and cost a lookup.
+- One concept, one word, across the whole codebase. `fetch`, `load`, `get` and `retrieve` meaning the same thing in four files is four times the reading cost. Different meanings keep different words; where the project and its stack skill have none yet: `get` reads what is already in memory, `fetch` crosses an I/O boundary and returns the result, `load` fetches into state the caller then reads.
+- A helper generic over the operation is named for what it adds: `retry(operation, policy)`. `fetchWithRetry` is the name only when it fetches.
+- Spell words out; abbreviate only what the domain already abbreviates. `usr`, `cnt`, `mgr` save four characters and cost a lookup.
 
 ## Signatures make the argument's meaning visible
 
-The rule bites where the parameter's name is **invisible at the call site** — positional arguments. Named forms are already fine: keyword arguments, object fields, template props, builders. Nothing to fix there.
+The rule bites where the parameter's name is **invisible at the call site** — positional arguments. Named forms are already fine: keyword arguments, object fields, template props, builders. Nothing to fix there. The examples below are TypeScript; "options object" means whatever named form the language has: an object literal, keyword arguments, a struct or record literal, a builder.
 
 | Call site | The problem | Write instead |
 | --- | --- | --- |
@@ -61,11 +50,12 @@ The rule bites where the parameter's name is **invisible at the call site** — 
 | `retry(3, 500, true)` | magic literals with no names in sight | `retry({ attempts: 3, delayMs: 500, jitter: true })` |
 | `createUser(name, email, true, null, 2)` | five positionals is a struct wearing a trench coat | one options object, or a builder |
 
+- **Mode value or two functions.** Two functions when each call site always takes the same branch; a mode value when the choice is data that travels — from config, user input or a stored record.
 - **A boolean that *is* the data is fine.** `setVisible(true)`, `checked: true`, `setEnabled(false)` — nothing to fix. Only an argument that **selects a branch of behaviour** (`force`, `silent`, `recursive`, `override`, `replace`) qualifies.
 - Two positionals of the same type in a row is a bug waiting to happen — `transfer(accountA, accountB)` reads fine until someone swaps them. Name them, or take a single object.
 - Magic literals at a call site get a named constant, even when the signature is fine.
 - **Three or more parameters is a signal**, not a violation. Ask whether they are really one concept.
-- A UI component prop that shows, hides or replaces a part of it (`showFooter`, `renderHeader`) is the same flag at the component level: split it into a compound, see `frontend-mvvm` §7.
+- A **structural prop** — a prop that shows, hides, replaces or rearranges a part of a UI component (`showFooter`, `renderHeader`) — is the same flag at the component level: split the component into a compound (a root plus flat named parts the caller assembles), as `frontend-mvvm` §7 shows on the web (`npx skills add ScobarDen/scobar-skills --skill frontend-mvvm`). A slot that takes the caller's content (`children`, a named slot) is that composition already, not a structural prop.
 
 ## One union beats a constellation of booleans
 
@@ -77,9 +67,11 @@ status: 'idle' | 'loading' | 'ready' | 'empty' | 'error'
 
 The impossible states stop existing, and the exhaustiveness check does the reminding for you.
 
+Spell it as the language's closed set of variants, data on each: a literal or discriminated union in TypeScript, a sealed class in Kotlin and Java, an enum with payloads in Rust and Swift, a union of dataclasses tagged by a `Literal` field in Python. Where the compiler has no exhaustiveness check (Go: a typed constant set or an interface with one type per variant), every `switch` over it gets a `default` that fails loudly.
+
 - Applies to the project's **own** domain types, state and props. Never to the shape a third-party library hands back — wrapping a library's return just to comply is worse than the flags.
 - Carry the data on the variant that has it (`{ status: 'error', error }`) rather than in a parallel field that is meaningless in four states out of five.
-- **Don't store what you can derive.** A field that is always `items.length === 0` is a second source of truth for the same fact.
+- **Don't store what you can derive.** A field that is always `items.length === 0` is a second source of truth for the same fact. The `empty` variant above is such a case: store the loaded items, and derive `empty` where you build the state its reader gets.
 
 ## Shape of a function
 
@@ -92,24 +84,17 @@ The impossible states stop existing, and the exhaustiveness check does the remin
 ## Where the code goes
 
 - **Mirror the neighbours.** Find the closest existing thing of the same kind and match its directory, file naming, internal structure and registration. Consistency here is worth more than any layout you'd argue for in the abstract.
-- **Don't invent a layer the project doesn't have.** A `services/` folder in a codebase with no services is a new convention, and introducing one is a decision to raise, not to make silently.
+- **A new kind of folder is the user's call.** A `services/` folder in a codebase with no services is a new convention: raise it, and put the code where the existing kinds of folder say until the user answers.
 - **Dependencies point one way.** Whatever the project's direction is, don't be the first import that goes back up.
 - New file or existing one — a file that has grown past what you can hold in your head is doing too many jobs. That's the signal to split, not the line count.
-- A project with no layout of its own yet: levels and module boundaries are **`feod`** with **`feod-preset`**, file names inside a module are **`role-files`**, and the stack skill (**`frontend-mvvm`**) says how both look there.
+- A project with no layout of its own yet: **levels** (the five top-level folders `app`, `pages`, `modules`, `common`, `global`) and **modules** (a folder on the `modules` level holding one product responsibility, used from outside only through its public API) are **`feod`** with **`feod-preset`**, what each file inside a module owns is **`mvvm`** (a project with no UI gets a delivery — HTTP endpoints, a command, a queue consumer — where a screen would be), file names are **`role-files`**. A stack skill spells all of it for its stack (**`frontend-mvvm`** on the web); with none, `feod-preset`'s Stack spelling says how to spell it in the language's own idiom. Prerequisites: `npx skills add Sdju/feod`, and `npx skills add ScobarDen/scobar-skills --skill <name>` for `feod-preset`, `mvvm`, `role-files` and, on the web, `frontend-mvvm`. When any of them is missing from your skill list, stop before laying out files: give the user the install lines for the missing ones and wait for their answer.
 
-## The base floor
-
-SOLID, KISS, YAGNI, DRY, separation of concerns, Law of Demeter, composition over inheritance, fail fast, least astonishment, high cohesion / low coupling. Assume them; this file is not the place to re-teach them.
-
-Two that get misapplied often enough to be worth a line each:
+## Two principles that get misapplied
 
 - **DRY is about knowledge, not characters.** Two blocks that look alike but change for different reasons are not duplication. Don't abstract on the first repeat — wait for the third, when the shape of the abstraction is actually visible.
 - **YAGNI beats an extension point you're imagining.** An interface with one implementation and no second caller in sight is ceremony, not flexibility.
 
-## What NOT to do
+## Scope
 
-- ❌ Don't refactor surrounding code to match this file. You were asked to write a thing; write it.
-- ❌ Don't add an abstraction, a config object, or a wrapper for a caller that doesn't exist yet.
-- ❌ Don't rename existing symbols outside the scope you were given — other callers depend on them.
-- ❌ Don't file findings. Noticing that neighbouring code breaks these rules is not this skill's output; it's a note in one line, at most.
-- ❌ Don't apply any of this against the project's stated convention. Follow the project, say so in one line, move on.
+- Rename only symbols inside the scope you were given — other callers depend on the rest.
+- Neighbouring code that breaks these rules gets one line in your final message, at most.
