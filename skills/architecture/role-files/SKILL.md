@@ -1,6 +1,6 @@
 ---
 name: role-files
-description: Role files — files named and placed by the role they play (`checkout.vm.ts`): a closed role list, one file at the root or a role folder, on every FEOD level, and a role import matrix. Load when naming or placing a file or a folder, when a module or a file is too big to navigate, or when deciding which role may import which.
+description: "Role files — files named and placed by the role they play (`checkout.vm.ts`): a closed role list, one file at the root or a role folder, on every FEOD level, and a role import matrix. Load when naming or placing a file or a folder, when a module or a file is too big to navigate, or when deciding which role may import which."
 ---
 
 # Role files
