@@ -11,7 +11,7 @@ Given a feature, a module, a path, or just "what I've been writing" — produce 
 
 **This is not a review.** Reviews hunt defects; this hunts better shapes for code that already works. A real bug you trip over gets one line in the report's closing block ("`foo.ts:42` drops the error") and lives there only — the health snapshot rates shapes, not defects.
 
-**Prerequisite: `code-craft`** (`npx skills add ScobarDen/scobar-skills --skill code-craft`) — what a good name, a good signature, a good state shape, a good function and a good file placement look like, plus DRY and YAGNI where they get misapplied. Load it before judging anything. When it is missing from your skill list, give the user that install line and stop.
+**Prerequisite: `code-craft`** (`npx skills add ScobarDen/scobar-skills --skill code-craft`) — SOLID and OOP, what a good name, a good signature, a good state shape, a good function and a good file placement look like, plus DRY and YAGNI where they get misapplied. Load it before judging anything. When it is missing from your skill list, give the user that install line and stop.
 
 ## 1. Resolve the scope
 

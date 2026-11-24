@@ -1,13 +1,13 @@
 ---
 name: code-craft
-description: Naming, signatures, state shape, function shape and file placement, decided while writing code. Load when naming something, designing or extending a signature, a second boolean argument or a third flag for one state appears, a function outgrows a screen, choosing where new code goes, or asked "what should I call this" / "is this signature ok". Not for judging code that already exists — that is refactor-advice.
+description: SOLID and OOP, naming, signatures, state shape, function shape and file placement, decided while writing code. Load when naming something, designing or extending a signature, a second boolean argument or a third flag for one state appears, a function outgrows a screen, reaching for a base class, an interface or a `switch` on kind, business logic needs storage, network or the clock, choosing where new code goes, or asked "what should I call this" / "is this signature ok". Not for judging code that already exists — that is refactor-advice.
 ---
 
 # Code craft
 
 The handful of decisions that decide whether this code is readable in six months. All of them are made **while writing**, and none of them get cheaper afterwards.
 
-**Done when:** every new name, signature, state shape, function and file placement in your change has been checked against the sections below.
+**Done when:** every new name, signature, state shape, function, type and file placement in your change has been checked against the sections below.
 
 ## When it doesn't
 
@@ -17,9 +17,36 @@ The handful of decisions that decide whether this code is readable in six months
 
 Read how the neighbours in this repo already do it and follow that. A convention you'd have chosen differently, applied consistently, beats a better idea applied in one file. Everything below is the default for where the project has no opinion. Where the project's stated convention disagrees with this file, follow the project and say so in one line.
 
+Below the project, the order is: SOLID, then OOP, then every other rule in this file. When two collide, the higher one wins.
+
 ## Pairs with ponytail
 
-When [`ponytail`](https://github.com/DietrichGebert/ponytail) is installed (`npx skills add DietrichGebert/ponytail`), load it too: it decides **how much** code to write — the smallest complete change, at its default `full` level — and this file decides **the shape** of what remains. Its `shortcut: <limit>, <when to upgrade>` marker is a legitimate why-comment.
+When [`ponytail`](https://github.com/DietrichGebert/ponytail) is installed (`npx skills add DietrichGebert/ponytail`), load it too: it decides **how much** code to write — the smallest complete change, at its default `full` level — and this file decides **the shape** of what remains. Its `shortcut: <limit>, <when to upgrade>` marker is a legitimate why-comment. It sizes the change inside SOLID: a seam a test substitutes, or a new variant at an existing variation point, is part of the complete change.
+
+## SOLID
+
+Stated for modules, types and functions; a class is one case of them.
+
+- **S — Single responsibility.** A function, type, module or file has one reason to change. If describing it needs an "and", it is two.
+- **O — Open/closed.** At an existing variation point — a second variant of behaviour, a `switch` on kind repeated in more than one place — a new variant arrives as new code: a new union member with its handler, a new implementation, a new table entry. The existing branches stay as they are. With one variant, write it directly; the variation point appears with the second.
+- **L — Liskov substitution.** Every implementation of a contract — subtype, interface implementation, test fake — works wherever the contract is expected, with no caller checking which one it got: it accepts at least what the contract accepts, returns everything it promises, and fails only in the ways the contract names. A fake honours the same contract as the real thing.
+- **I — Interface segregation.** A consumer depends on exactly what it uses. A parameter type narrows to the members the function reads; a contract that several consumers each use in part splits along those consumers.
+- **D — Dependency inversion.** Business logic receives its I/O — storage, network, clock, randomness — from outside, as a parameter or a constructor argument typed by what it needs. The contract belongs to the code that uses it. That is the seam a test passes a fake through.
+
+| Instead of | Write |
+| --- | --- |
+| a third `case 'crypto':` added to three `switch (method)` blocks | `paymentHandlers: Record<Method, PaymentHandler>` and one new entry |
+| `sendReceipt(user: User)` that reads only `user.email` | `sendReceipt(to: { email: string })` |
+| `new Date()` and `fetch` inside `applyDiscount` | `applyDiscount(order, { now, prices })` |
+
+## OOP
+
+Applies where the code models types with behaviour — classes, structs with methods, `impl` blocks, objects carrying methods. A module of plain functions and data keeps that style; the neighbours decide it.
+
+- **Encapsulation.** A type that holds an invariant — a balance that stays non-negative, an order paid once — changes only through its own operations. Callers tell it what to do (`order.pay(payment)`) instead of reading its fields, deciding, and writing them back. Data with no invariant stays plain data with open fields.
+- **Inheritance.** Reuse comes from composition: hold the collaborator and delegate to it. Extend only a true is-a, where the subtype passes L.
+- **Polymorphism.** Each variant carries its own behaviour, and the caller invokes it without asking which variant it holds. Adding a variant is O.
+- **Abstraction.** A type exposes what it does, named as in the names table; how it does it stays inside. Which abstractions earn a contract is D and YAGNI.
 
 ## Names state the result, not the machinery
 
@@ -77,7 +104,6 @@ Spell it as the language's closed set of variants, data on each: a literal or di
 
 - **Guard clauses first.** Handle the impossible cases up front and return; the happy path stays at one indent level instead of being buried three deep.
 - **One level of abstraction per function.** Orchestrating steps and doing byte-level work in the same body is what makes a function hard to skim.
-- **One job.** If describing what it does needs an "and", that's two functions.
 - Prefer a short function whose name you can say out loud over a long one with section-banner comments inside it. Those banners are the extraction points.
 - Fail fast and loudly. A swallowed error is a bug that surfaces somewhere else, at a worse time, without a stack trace.
 
@@ -86,13 +112,13 @@ Spell it as the language's closed set of variants, data on each: a literal or di
 - **Mirror the neighbours.** Find the closest existing thing of the same kind and match its directory, file naming, internal structure and registration. Consistency here is worth more than any layout you'd argue for in the abstract.
 - **A new kind of folder is the user's call.** A `services/` folder in a codebase with no services is a new convention: raise it, and put the code where the existing kinds of folder say until the user answers.
 - **Dependencies point one way.** Whatever the project's direction is, don't be the first import that goes back up.
-- New file or existing one — a file that has grown past what you can hold in your head is doing too many jobs. That's the signal to split, not the line count.
+- A file that has grown past what you can hold in your head breaks S — split it; the line count is not the signal.
 - A project with no layout of its own yet: **levels** (the five top-level folders `app`, `pages`, `modules`, `common`, `global`) and **modules** (a folder on the `modules` level holding one product responsibility, used from outside only through its public API) are **`feod`** with **`feod-preset`**, what each file inside a module owns is **`mvvm`** (a project with no UI gets a delivery — HTTP endpoints, a command, a queue consumer — where a screen would be), file names are **`role-files`**. A stack skill spells all of it for its stack (**`frontend-mvvm`** on the web); with none, `feod-preset`'s Stack spelling says how to spell it in the language's own idiom. Prerequisites: `npx skills add Sdju/feod`, and `npx skills add ScobarDen/scobar-skills --skill <name>` for `feod-preset`, `mvvm`, `role-files` and, on the web, `frontend-mvvm`. When any of them is missing from your skill list, stop before laying out files: give the user the install lines for the missing ones and wait for their answer.
 
 ## Two principles that get misapplied
 
 - **DRY is about knowledge, not characters.** Two blocks that look alike but change for different reasons are not duplication. Don't abstract on the first repeat — wait for the third, when the shape of the abstraction is actually visible.
-- **YAGNI beats an extension point you're imagining.** An interface with one implementation and no second caller in sight is ceremony, not flexibility.
+- **YAGNI beats an extension point you're imagining.** An interface earns its place with a second consumer, and a test that substitutes the dependency is one. An interface nothing substitutes, in production or in tests, is ceremony.
 
 ## Scope
 
