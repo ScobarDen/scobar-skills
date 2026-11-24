@@ -95,7 +95,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`reatom-field-notes`](skills/reatom/reatom-field-notes/SKILL.md) | Вместе с `reatom`: странные аборты, рекурсия, полевые заметки из канала автора. |
+| [`reatom-field-notes`](skills/reatom/reatom-field-notes/SKILL.md) | Вместе с `reatom`: странные аборты, рекурсия, примитивы вместо голого `atom`, SSR, логгер, «почему Reatom, а не X». |
 | [`reatom-testing`](skills/reatom/reatom-testing/SKILL.md) | Тесты на Reatom: `context.start` / `context.reset`, моки, тайминг ассерта. |
 
 ### Поверх UI-скиллов
