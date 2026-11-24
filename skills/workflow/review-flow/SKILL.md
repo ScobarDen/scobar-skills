@@ -50,7 +50,7 @@ Gather candidates from two places:
 | Lens | Its zone in the diff |
 | --- | --- |
 | `mattpocock-skills:code-review` (or the pack's `code-review`) | a spec was found — run its **Spec** axis only |
-| `code-craft` | new names, signatures, state shapes, new files |
+| `code-craft` | new names, signatures, state shapes, new types and classes, inheritance, I/O inside business logic, new files |
 | `test-craft` | tests added or changed |
 | `reatom-review` | Reatom imports |
 | `frontend-mvvm`, `feod-preset` | a module (a folder on the `modules` level) added or moved, a ViewModel (the role that owns screen state and user intent) added, an import between modules |
