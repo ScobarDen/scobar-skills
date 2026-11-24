@@ -1,57 +1,64 @@
 ---
 name: refactor-advice
-description: Prioritized, read-only improvement advice for a feature, module, path or the current branch's diff — quick wins versus deeper refactors, each with a why, a before→after snippet and effort/impact/risk. Treats simplification as a first-class lens — hunts places where a verbose block collapses to a fraction of its size. Builds the project's effective rulebook by priority and speaks in the architecture the project actually uses. Load when the user asks to improve, simplify, clean up, refactor, tidy, "make this nicer", "what's wrong with this code", "как это упростить". Not a bug hunt and not an automatic rewrite — advice first, edits only when asked, and then under a behaviour-preserving discipline (know why the code exists, one change at a time, tests green unmodified). Also load it when the user says to apply or land a refactor that was already discussed. Pairs with code-craft, which owns the doctrine this judges against. Stack-agnostic.
+description: Prioritized, read-only improvement advice for existing code — a path, module, feature or the current branch's work — each with a why, a before→after snippet and impact/cost/risk, plus a behaviour-preserving discipline for applying the ones the user picks. Load when asked to improve, simplify or refactor code, "what's wrong with this code", "как это упростить", or to apply a refactor already discussed.
 ---
 
 # Refactor advice
 
 Given a feature, a module, a path, or just "what I've been writing" — produce a prioritized set of concrete improvements. Each one gets a reason, a `before → after` snippet and an honest cost.
 
-**Advisory by default.** Read, judge, report. Applying the suggestions is a separate decision the user makes after seeing them — and when they do say "apply", apply only what they picked, not the whole list, and under the discipline in §8.
+**Advisory by default.** Read, judge, report. Applying the suggestions is a separate decision the user makes after seeing them — and when they do say "apply", apply only what they picked, not the whole list, and under the discipline in §8. The analysis only reads: tests, lint and build run only in §8, after every change.
 
-**This is not a review.** Reviews hunt defects; this hunts better shapes for code that already works. A real bug you trip over gets one line ("also: `foo.ts:42` drops the error"), not a findings section.
+**This is not a review.** Reviews hunt defects; this hunts better shapes for code that already works. A real bug you trip over gets one line in the report's closing block ("`foo.ts:42` drops the error") and lives there only — the health snapshot rates shapes, not defects.
 
-**Doctrine lives in `code-craft`** — what a good name, a good signature, a good state shape and a good function look like, plus DRY and YAGNI where they get misapplied. Load it first and judge against it. Do not restate those rules here; this file owns only what is specific to advising on code that already exists. The two are a pair.
+**Prerequisite: `code-craft`** (`npx skills add ScobarDen/scobar-skills --skill code-craft`) — what a good name, a good signature, a good state shape, a good function and a good file placement look like, plus DRY and YAGNI where they get misapplied. Load it before judging anything. When it is missing from your skill list, give the user that install line and stop.
 
 ## 1. Resolve the scope
 
 - An explicit path, module, feature or symbol → that.
-- Nothing explicit → the current branch's own diff:
+- Nothing explicit → the current branch's own work: the files changed against the base plus the working tree.
   ```sh
   git diff --name-only <base>...HEAD
+  git status --porcelain
   ```
-  with `<base>`: what the user named → `origin/dev` / `origin/develop` if either exists → `origin/HEAD` → `origin/main` / `origin/master`. That reading of an empty request is "improve what I just wrote", which is almost always what it means.
-- Diff empty too, and no scope given → say there's nothing to look at and stop. Don't go browsing the repo for something to criticise.
+  with `<base>`: what the user named → the target branch of the open PR/MR, when the session has the forge's CLI or MCP server → `origin/HEAD` → `origin/main` / `origin/master`. None of them exists → say so and stop.
+- Nothing changed and no scope given → say there's nothing to look at and stop.
 
-Don't ask clarifying questions. Decide from what's there; if the scope genuinely can't be located, say which name you looked for and stop.
+Decide the scope from what's there, without asking; if a named scope can't be located, say which name you looked for and stop.
+
+**Done when:** the scope's file list and, for a diff, the base are named.
 
 ## 2. Build the rulebook — strict priority order
 
 Advice measured against the wrong rules is noise. Discover the project's *effective* rules before judging anything, and **the higher source wins on conflict**. Where a suggestion enforces a rule, name the rule.
 
-1. **The project's own rules.** `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` at the root *and* nested ones deeper in the tree, `.cursorrules`, `.cursor/rules/**`, `.windsurfrules`, `.github/copilot-instructions.md`, `CONTRIBUTING.md`, the dev section of `README`, `.editorconfig`, and the linter/formatter/compiler configs the project actually runs (ESLint, Prettier, Biome, Ruff, Black, clang-format, clang-tidy, golangci-lint, RuboCop, ktlint, `tsconfig.json`, `.clang-tidy`, `pyproject.toml`, `Cargo.toml` lints, `.editorconfig`).
+1. **The project's own rules.** `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` at the root *and* nested ones deeper in the tree, the other agent rule files the repo keeps (`.cursor/rules/**`, `.github/copilot-instructions.md`), `CONTRIBUTING.md`, the dev section of `README`, `.editorconfig`, and the linter, formatter and compiler configs the project actually runs (`eslint.config.*`, `pyproject.toml`, `tsconfig.json`).
 2. **The project's own skills and agents** — `./.claude/skills/*/SKILL.md`, `./.claude/agents/*`, or the equivalent for whatever harness is in use. These are the conventions the team wrote down for itself.
 3. **Installed skills matching the detected stack.** Detect the stack from the repo — manifests, lockfiles, file extensions, imports, config files — and load the skills that match it *before* judging code written in it. A Vue project's advice comes from the Vue skill, not from general instincts about components; a Qt project's from the Qt skill; a test file's from the test-runner skill. Read the ones the stack actually uses and no others.
-4. **The base floor, always in effect** — naming, signatures, state shape, function shape, code placement, DRY and YAGNI, all of it in **`code-craft`**. Load that skill rather than working from memory of it.
+4. **The base floor: `code-craft`.**
 
 A conflict between levels is worth one line in the report. The project's convention beating a general principle is the correct outcome, not a finding.
 
+**Done when:** every source found at levels 1–3 is read and `code-craft` is loaded.
+
 ## 3. Detect the architecture — never impose one
 
-Read the real structure and name units the way the project names them:
+Read the real structure and name units the way the project names them.
 
 | Signals | Architecture → unit vocabulary |
 | --- | --- |
 | `src/{app,pages,widgets,features,entities,shared}` | Feature-Sliced Design → layer + slice |
-| `src/{app,pages,modules,common,global}`, `index.ts` per module | FEOD → level + module (`feod`, `feod-preset`) |
-| `src/modules/*`, `*.module.ts`, per-feature folders with a public entry point | Modular / feature-based → module |
+| `src/{app,pages,modules,common,global}`, `index.ts` per module | FEOD → level + module; the `feod` and `feod-preset` skills, when installed, count as §2 level 3 |
+| `src/modules/*`, `*.module.ts`, per-feature folders with a public entry point | Modular / feature-based → the project's own word for the unit (module, feature) |
 | `domain/application/infrastructure`, `controllers/services/repositories`, ports & adapters | Layered / Clean / Hexagonal → layer |
 | `packages/*`, `apps/*`, `libs/*` + a workspace config | Monorepo → package / app |
 | `models/views/controllers`, flat role folders | MVC / classic → folder role |
 | a CMake/Bazel/Gradle tree of libraries with explicit deps | Component graph → target |
 | none of the above | Infer from reality; use the project's own words |
 
-**An architecture the project doesn't use is not a finding.** "This should be FSD" is not advice, it's a rewrite proposal wearing advice's clothes.
+**An architecture the project doesn't use is not a finding,** nor is a state manager or a library it didn't choose. "This should be FSD" is not advice, it's a rewrite proposal wearing advice's clothes.
+
+**Done when:** the architecture and its word for a unit are named.
 
 ## 4. Applying the doctrine as an advisor
 
@@ -64,9 +71,11 @@ Read the real structure and name units the way the project names them:
 ## 5. Read enough to be right
 
 - Prefer **whole files** over hunks. A diff read without its surroundings is how you invent a problem the untouched half of the file already solves.
-- **Cap around 12 files read in full.** Hit the cap → say so in the report. An unreported cap turns a partial read into a clean bill of health.
+- **Cap at 12 files read in full.** Hit the cap → say so in the report. An unreported cap turns a partial read into a clean bill of health.
 - Glance at the neighbours — an adjacent module or slice, the configs from §2 — so the advice matches how this project writes code, not how code could be written in general.
 - Cross-reference imports and public entry points wherever the scope crosses a boundary. That's where the expensive suggestions live.
+
+**Done when:** every file in scope is read in full, or the cap is reached and named.
 
 ## 6. Dimensions
 
@@ -115,23 +124,30 @@ Why it helps, in one or two lines.
 ## 🏗️ Deeper refactors
 
 ### <title> · impact: high/med · cost: high/med · risk: low/med
-Why, the trade-off, and a representative `before → after`.
+Why, the trade-off, and a representative `before → after`. Every refactor here is a sequence of steps that each leave the code working.
+
+## Nits
+- `path:line` — one line each: private helpers, call sites of code the scope doesn't own.
 
 ## Order to tackle it
 1. What first, and why — dependency, risk, or payoff order.
 
 ## Cover with tests first
 - What could break, and what should be under test before anything is touched.
+
+## Also, not refactoring
+- `path:line` — one line per bug tripped over.
 ```
 
+- A section with nothing in it is left out of the report.
 - Snippets stay code — real identifiers from the project, in its language and style. Comments in a snippet only where they mark what changed.
 - Point with `path:line`. Don't paste whole files.
 - **Clean code gets a short report.** "This is already in good shape, here are two nits" is a complete and useful answer. Padding a report to look thorough is the single worst failure mode of this skill.
-- Language of the report follows the harness's own instructions (`AGENTS.md` / `CLAUDE.md` / chat). This skill doesn't override it.
+- The report is in the user's language, unless the repo's agent rules name another; the template's headings are translated with it, its emoji stay.
 
 ## 8. Applying what was picked
 
-The report is the default terminal state. This section starts only once the user names what they want done — and then it applies to those suggestions and nothing else.
+The report is the default terminal state. This section starts only once the user names what they want done — and then it applies to those suggestions and nothing else. An unrelated fix spotted on the way goes into your final message, not into the diff.
 
 **Know why it exists before you change it.** For each thing you're about to touch — what is it responsible for, what calls it, what calls it makes, what its edge cases and error paths are, whether tests already define its behaviour, and **what `git blame` says about why it was written this way**. A fence across a road gets understood before it gets removed; the reason may still hold (a platform quirk, a perf fix, an incident). Can't answer those → not ready to touch it. Read more.
 
@@ -142,9 +158,15 @@ The report is the default terminal state. This section starts only once the user
 - the same side effects, in the same order
 - **existing tests pass unmodified**
 
-That last one is the sharpest signal there is. **If a test had to be edited to go green, the behaviour changed** — that's not a refactor, and it needs to be raised, not absorbed. The only legitimate test edit is one the user asked for as part of the change.
+That last one is the sharpest signal there is. **If a test had to be edited to go green, the behaviour changed** — that's not a refactor, and it needs to be raised, not absorbed. The only legitimate test edit is one the user asked for as part of the change. And green only means the suite didn't catch a difference: where coverage is thin, the checks above still have to be made by reading.
 
-**One at a time.** Make a single change, run the suite, keep it or revert it, then take the next. A batch that goes red tells you nothing about which edit did it. And don't run a refactor and a feature in the same commit — a change that both reshapes and adds is two changes, and reviewing it as one costs more than splitting it.
+**The suite** is the test command the repo declares — manifest scripts, a Makefile or task runner target, the CI config. The repo declares none → tell the user the changes can be checked only by reading, and apply after their yes.
+
+**Uncovered code waits.** When no test exercises the code a picked suggestion touches, tell the user before changing it and offer a characterization test that pins its current behaviour first; go on after their answer.
+
+**One at a time.** Run the suite once before the first change, so a green run afterwards means something. Then make a single change, run the suite, keep it or revert it, then take the next. A batch that goes red tells you nothing about which edit did it. And keep a refactor apart from feature work — a change that both reshapes and adds is two changes, and reviewing it as one costs more than splitting it.
+
+**Leave it uncommitted.** When a file you changed also holds the user's own uncommitted edits, say so, so they can split the two at commit time.
 
 **Watch for over-simplification** — the failure mode of this whole exercise:
 
@@ -158,23 +180,4 @@ That last one is the sharpest signal there is. **If a test had to be edited to g
 
 **Stop condition.** If the result reads worse, or the diff is harder to review than the code was to read, revert it and say so. Not every suggestion survives contact with the code — abandoning one is a normal outcome, not a failure to report.
 
-### Rationalizations to catch yourself on
-
-| Excuse | Reality |
-| --- | --- |
-| "The test needed a tiny tweak to match" | The tweak is the evidence that behaviour moved. Stop and surface it. |
-| "I'll fix this unrelated thing while I'm in here" | Out-of-scope edits make the diff unreviewable and put regressions where nobody is looking for them. |
-| "The author had no reason for this, it's just cruft" | Sometimes true. `git blame` is how you find out, and it costs one command. |
-| "I'll batch these, they're all small" | Small edits break things too, and a red suite over five of them costs more than five green runs. |
-| "Tests are green, so it's equivalent" | Green means the suite didn't catch it. A gap in coverage is not a proof of equivalence. |
-| "It's shorter, so it's better" | Shorter is a means. If it reads worse, the change is a regression that happens to fit on one line. |
-
-## What NOT to do
-
-- ❌ Don't edit code as part of the analysis. Advise first; apply only what the user picks, under §8.
-- ❌ Don't run tests, lint or build **during the analysis** — that part is reads only. Once you are applying (§8), running the suite after every single change is required.
-- ❌ Don't propose a wholesale rewrite. Incremental steps that each leave the code working.
-- ❌ Don't invent problems to fill the report, and don't restate the scope for its own sake — mention only code you have something to say about.
-- ❌ Don't impose an architecture, a state manager, or a library the project didn't choose.
-- ❌ Don't file bugs here. One line, then keep advising.
-- ❌ Don't judge code you didn't read.
+**Done when:** each picked suggestion is either applied with the suite green or reverted, and each is reported.
