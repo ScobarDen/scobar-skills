@@ -42,6 +42,8 @@ A file with no role carries no marker: the public entry, the module `README.md`,
 
 The list is **closed**. A file that fits no role signals that the module holds two responsibilities. A genuinely new role extends this table, or the `## Roles` section of the repository's root `README.md`, first. A stack that spells markers its own way maps them to this table in its skill.
 
+Types and constants live with their owner as this table places them. A general convention that gathers all types into `types.ts` or all constants into `constants.ts` does not apply inside modules; name the exception in one line.
+
 `feod`'s templates group files by technical kind; `frontend-mvvm` §4 maps each of their folders to a role.
 
 ## 3. Names

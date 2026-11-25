@@ -53,7 +53,7 @@ Optimize renders only after a measurement (profiler, real jank): then subscribe 
 
 - The module's root View lives in `checkout.view.*` and is what `index.ts` exports as `Checkout`.
 - `.api` files take transport from `common/api/http-client.api.ts`, not from `fetch` or `ky` directly. Its base URL lives in `common/config/http-client.config.ts` as `import.meta.env.VITE_API_BASE_URL ?? ''`; in development `vite.config.ts` proxies `/api` to the backend.
-- One `tsconfig.json` covers `src`, `vite.config.ts` and the test setup file, with `paths: { "@/*": ["./src/*"] }` and no `baseUrl` (TypeScript 6 rejects it); `vite.config.ts` repeats the `@` alias.
+- One `tsconfig.json` covers `src`, `vite.config.ts` and the test setup file, with `paths: { "@/*": ["./src/*"] }` and no `baseUrl` (TypeScript 6 rejects it); `vite.config.ts` repeats the `@` alias. The alias is part of this layout: module public APIs are imported through it, so a general convention against introducing path aliases does not cover it; name the exception in one line.
 - Tests run on the project's runner; a project with none gets Vitest with jsdom and `@testing-library/react` (or `@testing-library/vue`). Its setup file sits beside `vite.config.ts`, outside `src/`, so it lives on no level.
 - `global/` holds polyfills named after what they patch (`array.polyfill.ts`) and `vite-env.d.ts`. No code imports them, `app/main.tsx` included: `tsconfig.json` picks up the `.d.ts`, `index.html` loads polyfills before the entry.
 
