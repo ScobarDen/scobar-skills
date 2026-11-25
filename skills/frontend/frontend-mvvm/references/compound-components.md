@@ -10,7 +10,7 @@ The trigger is the role of a prop, not the count. The first **structural prop** 
 - replaces a part: `renderActions`, `footerSlot`, `headerContent`;
 - picks a layout of parts: `variant: 'compact' | 'full'` when the variants differ in which parts exist.
 
-A prop that is data (`title`, `items`, `disabled`) or a visual token (`size`, `tone`) stays a prop.
+A prop that is data (`title`, `items`, `disabled`) or a visual token (`size`, `tone`) stays a prop, and so does a part that appears because its data is there (`discountLabel: string | null` rendering a discount row). A structural prop is the caller's choice: a flag or a render function.
 
 ## Rules
 

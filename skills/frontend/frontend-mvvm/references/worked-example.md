@@ -158,4 +158,4 @@ What each part shows:
 
 ## The page as mediator
 
-`pages/checkout/checkout.view.tsx` is the page from `SKILL.md` §5: it receives `cartSource` from `app/app.route.ts`, both its imports end at a module root, and `Checkout` is the hooks adapter in `checkout/view/checkout.view.tsx` that calls `useCheckout` from `checkout/vm/checkout.vm.ts`.
+`pages/checkout/checkout.view.tsx` is the page from `SKILL.md` §5, wired as [`react.md`](react.md) shows: it receives `cartSource` from `app/app.route.ts`, both its imports end at a module root, and `Checkout` is the hooks adapter in `checkout/view/checkout.view.tsx` that calls `useCheckout` from `checkout/vm/checkout.vm.ts`.

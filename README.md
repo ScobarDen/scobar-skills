@@ -82,7 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templa
 
 | Скилл | Когда грузить |
 | --- | --- |
-| [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, compound-компоненты и пресеты вместо пропса на каждый вариант, рецепт нового модуля, пример миграции магазина. |
+| [`frontend-mvvm`](skills/frontend/frontend-mvvm/SKILL.md) | Ядро на вебе: VM как хук / composable / Reatom-модель, `index.ts`, суффиксы в TS, роуты, compound-компоненты и пресеты вместо пропса на каждый вариант, рецепт нового модуля, пример миграции магазина. Правила под React, Vue и Reatom — в `references/`, агент идёт туда по таблице из §1. |
 | [`frontend-boundaries`](skills/frontend/frontend-boundaries/SKILL.md) | Те же границы, но чтобы их ловил линтер: официальные `@o-feod/*` плагины на уровни плюс ESLint flat / oxlint правила на роли. |
 
 В каждом стеке пара: «как ядро выглядит здесь» + «кто бьёт по рукам». Новый модуль — оба, плюс ядро.
