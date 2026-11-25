@@ -22,12 +22,33 @@ export function Checkout(props: CheckoutProps) {
 
 `useCheckout` is the ViewModel: queries, mapping, handlers, wiring. `CheckoutView` and its children bind; they do not call the API. `Checkout` is the module's root View and, in React, the module's composition root (`mvvm` §4): it starts the first load in a `useEffect` calling the hook's `load` command, or leaves it to a query library that loads on mount. The hook itself starts nothing, so its test calls `load` explicitly.
 
-- **Return shape**: the hook returns one object grouped by kind: `state` (UI-shaped data), `functions` (commands), and `form`, `refs` or `features` when the screen has them. The `.vm.ts` exports that object's type by name (`CheckoutViewModel`), and the passive View takes it as props; `ReturnType<typeof useCheckout>` hides that contract.
+- **Return shape**: the hook returns one object grouped by kind: `state` (UI-shaped data), `functions` (commands), and `form`, `refs` or `features` when the screen has them; `features` holds the nested controllers the screen owns, each with its own state and commands: a modal's disclosure, a drawer, an uploader, a child ViewModel. The `.vm.ts` exports that object's type by name (`CheckoutViewModel`), and the passive View takes it as props; `ReturnType<typeof useCheckout>` hides that contract.
 
-- **Vue**: the ViewModel is a composable (`useCheckout`), the View is the SFC template.
+- **Vue**: the ViewModel is a composable (`useCheckout`), the View is the SFC template. A template unwraps only top-level refs, so the composable keeps its state in `shallowRef` / `ref` and returns each group in the shape its binding needs:
+
+  | Group | Returned as | Why |
+  | --- | --- | --- |
+  | `state` | `readonly(reactive({ ... }))` | unwraps the refs; Views cannot write |
+  | `form` | `reactive({ ... })` | unwraps the refs; `v-model="form.email"` writes through to the ref |
+  | `features` | `readonly(reactive({ ... }))` | unwraps refs at any depth, whatever shape the nested controller has; a nested controller's template refs move up to `refs`, a third-party instance inside it is `markRaw` |
+  | `functions` | plain object | nothing to unwrap |
+  | `refs` | plain object, bound as `:ref="refs.emailInput"` | `reactive` would unwrap the ref and the element never reaches it |
+
+  ```ts
+  return {
+    state: readonly(reactive({ items, total, isSubmitting })),
+    form: reactive({ email, password }),
+    features: readonly(reactive({ promoModal })),
+    functions: { removeItem, submit },
+    refs: { emailInput },
+  }
+  ```
+
+  A project's general ban on `reactive()` does not cover these return groups; name the exception in one line. `CheckoutViewModel` types the unwrapped values (`state: Readonly<CheckoutState>` with `total: number`; `refs` keeps its `Ref` types). Views pass groups whole (`:state="state"`, `:functions="functions"`); destructuring a group snapshots its values.
+
 - **Reatom**: the ViewModel is a model of atoms and actions. The roles and their boundaries stay exactly as `mvvm` states them; atoms are only the mechanism, and the Reatom API comes from `reatom`.
 - Mediator arguments on hooks: `useTable({ getTasks, params })` receives getters; it does not call `useFilters()` inside.
-- React infrastructure hooks (debounce, click-outside, `useSyncExternalStore` selectors, disclosure) come from the project's hook library or `common/lib/`. Business use cases live in the ViewModel.
+- Infrastructure hooks and composables (debounce, click-outside, disclosure; `useSyncExternalStore` selectors in React) come from the project's hook library or `common/lib/` as `lib` files (`role-files`). Business use cases live in the ViewModel.
 - Inject services through props, hook arguments or the composition root in `app/`. A ViewModel does not `new AxiosClient()` in a leaf.
 
 ## 2. Renders
@@ -142,6 +163,8 @@ On the first **structural prop** (`showHeader`, `renderActions`, a `variant` tha
 - `ReturnType<typeof …>` reconstructing a type another module owns.
 - A component file without a role suffix inside a module.
 - A View under `common/`: UI primitives belong to `ui-kit`.
+- A Vue ViewModel returning `state`, `form` or `features` as a plain object of refs (`state: { total }`): in `:disabled="state.isSubmitting"` the binding gets the ref, always truthy, while `{{ state.total }}` still renders and hides the bug.
+- A Vue ViewModel returning `refs` inside `reactive`: `:ref="refs.emailInput"` binds the unwrapped `null`, the element never reaches the ViewModel, and `emailInput.value?.focus()` does nothing.
 
 ## Related skills
 

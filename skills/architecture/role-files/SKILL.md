@@ -37,7 +37,7 @@ A file with no role carries no marker: the public entry, the module `README.md`,
 | `route` | route declaration; lives in `pages`, the router collecting them in `app` as `app.route.ts` | — |
 | `config` | constants and feature flags the whole module shares | — |
 | `types` | types with no single owner file | — |
-| `lib` | pure helpers internal to the module | — |
+| `lib` | helpers internal to the module that make no product decision: pure functions, and stack infrastructure that holds generic UI state, such as a hook or composable (`useDisclosure`, `useDebounce`) | — |
 | `test`, `stories` | as the runner requires | — |
 
 The list is **closed**. A file that fits no role signals that the module holds two responsibilities. A genuinely new role extends this table, or the `## Roles` section of the repository's root `README.md`, first. A stack that spells markers its own way maps them to this table in its skill.
