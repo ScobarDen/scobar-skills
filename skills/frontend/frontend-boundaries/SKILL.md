@@ -28,7 +28,7 @@ This table is the lint translation of FEOD (`feod`, `feod-preset`) and `role-fil
 | `*.model.ts` | import `.vm`, `.view` | `no-restricted-imports`: the Model is below the VM |
 | `*.api.ts` | import `.vm`, `.view` | `no-restricted-imports`: transport is below the VM |
 | `*.{config,types,lib}.ts` | import `.vm`, `.view`, `.api` | `no-restricted-imports`: supporting roles sit below every MVVM role |
-| `index.ts` | `export *` | `no-restricted-syntax`, ESLint only |
+| `index.ts` | `export *` | `no-restricted-syntax` in ESLint; `barrel-files/avoid-re-export-all` in oxlint |
 | every file | grow past 200 lines (tests 500) | `max-lines` as `warn`: a prompt to name the file's responsibilities |
 
 ## Project config
@@ -74,7 +74,7 @@ A pure-domain rule (`*.model.ts` imports no packages) is the same shape with its
 
 ## ESLint (flat config)
 
-A project with no linter yet gets ESLint: only it checks `export *`. oxlint is for a project already on oxlint or vite-plus.
+A project with no linter yet gets ESLint, or oxlint when it runs on vite-plus.
 
 Merge into the project's flat config: `.ts` files need its TypeScript parser (typescript-eslint), `.vue` files `vue-eslint-parser`, and `allowTypeImports` reads the type-import marks the TS parser sets. `configFromProject` registers the plugin and reads the `feod` config. A project with no flat config starts the array with `{ ignores: ['dist'] }`, `@eslint/js`'s `configs.recommended` and `...tseslint.configs.recommended`, then the entries below.
 
@@ -116,7 +116,7 @@ export default [
 
 ## oxlint
 
-`oxlint.config.ts` (oxlint ≥ 1.86, the plugin's peer range), or the `lint` block of `vite.config.ts` under vite-plus. oxlint parses TypeScript and the script of `.vue` files on its own. It has no selector-based `no-restricted-syntax`, so `export *` stays a review item there (`feod-preset`, Module public API).
+`oxlint.config.ts` (oxlint ≥ 1.86, the plugin's peer range), or the `lint` block of `vite.config.ts` under vite-plus. oxlint parses TypeScript and the script of `.vue` files on its own. It has no selector-based `no-restricted-syntax`, so `export *` is banned by `barrel-files/avoid-re-export-all` from `eslint-plugin-barrel-files`, loaded as a JS plugin (checked with eslint-plugin-barrel-files 3.0.1 and vite-plus 1.8.0 / oxlint 1.94, 2026-11-25).
 
 ```ts
 import { fileURLToPath } from 'node:url'
@@ -134,8 +134,11 @@ const maxLines = (max: number) => ({
   'max-lines': ['warn', { max, skipBlankLines: true, skipComments: true }],
 })
 
-export default defineConfig({
-  ...configFromProject({ rootDir, preset: 'recommended' }),
+const feod = configFromProject({ rootDir, preset: 'recommended' })
+
+export const boundaries = {
+  ...feod,
+  jsPlugins: [...(feod.jsPlugins ?? []), 'eslint-plugin-barrel-files'],
   overrides: [
     { files: ['src/**/*.{ts,tsx,vue}'], rules: { ...restrict(role('dto')), ...maxLines(200) } },
     { files: ['src/**/*.test.{ts,tsx}'], rules: { 'no-restricted-imports': 'off', ...maxLines(500) } },
@@ -147,11 +150,16 @@ export default defineConfig({
     { files: ['src/**/*.{config,types,lib}.ts'], rules: restrict(role('vm', 'view', 'api', 'dto')) },
     // shortcut: @o-feod 0.1.7 reads a page's wiring test importing its View as page → page; drop when the plugin allows imports within one page
     { files: ['src/pages/**/*.test.{ts,tsx}'], rules: { 'feod-structure/layer-imports': 'off' } },
+    { files: ['src/**/index.ts'], rules: { 'barrel-files/avoid-re-export-all': 'error' } },
   ],
-})
+}
+
+export default defineConfig(boundaries)
 ```
 
-A project already on `.oxlintrc.json` keeps it: add `"jsPlugins": [{ "name": "feod-structure", "specifier": "@o-feod/oxlint-structure-plugin" }]`, the `feod-structure/*` rules with their options spelled out (JSON cannot call `configFromProject`), and the overrides above as JSON.
+Under vite-plus, build the same `boundaries` object in `vite.config.ts` and pass it as the `lint` block, `defineConfig({ lint: { ...boundaries } })` from `vite-plus`, merging the project's own plugins and rules into it.
+
+A project already on `.oxlintrc.json` keeps it: add `"jsPlugins": [{ "name": "feod-structure", "specifier": "@o-feod/oxlint-structure-plugin" }, "eslint-plugin-barrel-files"]`, the `feod-structure/*` rules with their options spelled out (JSON cannot call `configFromProject`), and the overrides above as JSON.
 
 ## Related skills
 

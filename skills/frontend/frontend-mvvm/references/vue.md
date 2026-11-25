@@ -6,7 +6,7 @@ The Vue branch of [`frontend-mvvm`](../SKILL.md). Read it with `SKILL.md` before
 
 `useCheckout` in `checkout.vm.ts` is the ViewModel; the View is the SFC template. Its arguments type, `UseCheckoutArgs`, is also the module root's props type: `checkout.view.vue` declares `defineProps<UseCheckoutArgs>()`, and `index.ts` re-exports it as `CheckoutProps` next to `export { default as Checkout } from './view/checkout.view.vue'`.
 
-The module root calls the composable in `<script setup>`, starts the first load with `onMounted(() => functions.load())`, and renders passive child SFCs.
+The module root calls the composable in `<script setup>`, starts the first load with `onMounted(() => functions.load())`, and renders passive child SFCs. Read data held in a Pinia Colada `useQuery` inside the composable loads on its own, and the root has no `load` call.
 
 ## Groups in Vue
 
@@ -45,9 +45,12 @@ export const checkoutRoute = { path: '/checkout' }
 // app/app.route.ts
 import type { RouteRecordRaw } from 'vue-router'
 import { checkoutRoute } from '@/pages/checkout/checkout.route'
-import CheckoutPage, { type CheckoutPageProps } from '@/pages/checkout/checkout.view.vue'
+import type { CartSource } from '@/modules/cart'
+import CheckoutPage from '@/pages/checkout/checkout.view.vue'
 
-export function createRoutes(deps: CheckoutPageProps): RouteRecordRaw[] {
+export interface RouteDeps { cartSource: CartSource }
+
+export function createRoutes(deps: RouteDeps): RouteRecordRaw[] {
   return [{ ...checkoutRoute, component: CheckoutPage, props: deps }]
 }
 
@@ -67,9 +70,7 @@ createApp(App).use(router).mount('#app')
 import type { CartSource } from '@/modules/cart'
 import { Checkout } from '@/modules/checkout'
 
-export interface CheckoutPageProps { cartSource: CartSource }
-
-const props = defineProps<CheckoutPageProps>()
+const props = defineProps<{ cartSource: CartSource }>()
 </script>
 
 <template>
@@ -81,7 +82,7 @@ const props = defineProps<CheckoutPageProps>()
 
 `vue-tsc --noEmit` checks only what the `tsconfig.json` it reads includes: create-vite's root config (`"files": []` plus references) makes it check nothing. Use the single config from `SKILL.md` §4 with `src/**/*.vue` included, or run `vue-tsc -b`.
 
-Vitest with jsdom and `@testing-library/vue`. The ViewModel test calls the composable directly, reads unwrapped values (`vm.state.total`) and assigns a test element to a `refs` entry; stories are `.stories.ts`.
+Vitest with jsdom and `@testing-library/vue`. The ViewModel test calls the composable directly (inside `app.runWithContext` and an `effectScope` when it injects the router, Pinia or Pinia Colada), reads unwrapped values (`vm.state.total`) and assigns a test element to a `refs` entry; stories are `.stories.ts`.
 
 ## Review smells
 

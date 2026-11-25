@@ -16,11 +16,18 @@ npx skills add ScobarDen/scobar-skills --skill mvvm
 
 ---
 
-## Шаблон инструкций агента
+## Шаблоны инструкций агента
 
-Не скилл и не ставится через `npx skills add`. Нейтральный [`templates/AGENTS.md`](templates/AGENTS.md) — копирую в корень репо как `AGENTS.md`. Если агент читает только другое имя (`CLAUDE.md`, `GEMINI.md`) — копия или симлинк туда же.
+Не скиллы и не ставятся через `npx skills add`. Четыре слоя: один на уровне пользователя и три собираются в `AGENTS.md` проекта.
 
-Внутри только поведение, без стека:
+| Файл | Куда | Что внутри |
+| --- | --- | --- |
+| [`templates/user/AGENTS.md`](templates/user/AGENTS.md) | инструкции пользователя: `~/.claude/CLAUDE.md` в Claude Code, `~/.codex/AGENTS.md` в Codex | только поведение, без стека |
+| [`templates/project/AGENTS.md`](templates/project/AGENTS.md) | корень репо, `AGENTS.md` | архитектура FEOD + MVVM + role-files, скиллы под неё со строками установки, места под команды и заметки проекта |
+| [`templates/frontend/AGENTS.md`](templates/frontend/AGENTS.md) | дописать в конец проектного | веб: `frontend-mvvm`, Vite+ (`vp`), Oxlint + Oxfmt с правилами antfu и antislop через JS-плагины, тесты (`test-craft` + `testing` от siberiacancode + `vitest`), фронтовые скиллы |
+| [`templates/vue/AGENTS.md`](templates/vue/AGENTS.md) | дописать после фронтенда | Vue-стек по antfu: где живёт состояние, реактивность, UnoCSS, `vue-tsc`, Vue-скиллы |
+
+В пользовательском слое:
 
 - русский в чате, английский в коде
 - стиль общения
@@ -29,15 +36,25 @@ npx skills add ScobarDen/scobar-skills --skill mvvm
 - TODO/FIXME
 - документация: сначала MCP Context7 или `llms.txt` / `llms-full.txt` на сайте доки
 - как открывать ссылки (fetch → нативный браузер агента → Playwright); если в браузере не прошла авторизация или упёрся во что-то ещё — остановиться и попросить меня, я сам введу и переподключу, без обходных манёвров
-- ворктри — только через скилл, и не плодить ворктри внутри ворктри
 - специфичная задача (тесты, фреймворк, язык, библиотека) — сначала проверь, есть ли скилл под неё; то же и для общих скиллов про ремесло
 - кто побеждает при конфликте: чат > проектные правила > скиллы / этот файл; между двумя скиллами — более узкий: архитектурный решает раскладку, имена файлов и импорты, стилевой — всё остальное
 
-Каталога скиллов внутри нет.
+Пользовательский слой (Claude Code), перезаписывает файл целиком:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templates/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templates/user/AGENTS.md -o ~/.claude/CLAUDE.md
 ```
+
+Проект на Vue — три слоя в один файл, потом скиллы по блокам `npx skills add` из каждого слоя:
+
+```bash
+base=https://raw.githubusercontent.com/ScobarDen/scobar-skills/main/templates
+curl -fsSL $base/project/AGENTS.md -o AGENTS.md
+curl -fsSL $base/frontend/AGENTS.md | { echo; cat; } >> AGENTS.md
+curl -fsSL $base/vue/AGENTS.md | { echo; cat; } >> AGENTS.md
+```
+
+Если агент читает только другое имя (`CLAUDE.md`, `GEMINI.md`) — копия или симлинк туда же.
 
 ---
 
@@ -181,7 +198,11 @@ npx skills add DietrichGebert/ponytail
 ## Как устроен репозиторий
 
 ```
-templates/AGENTS.md   копируемый файл инструкций агента
+templates/
+  user/       инструкции пользователя: поведение
+  project/    AGENTS.md проекта: архитектура и скиллы
+  frontend/   дополнение для веба: Vite+, lint, тесты
+  vue/        дополнение для Vue
 skills/
   workflow/   code-craft, test-craft, refactor-advice, change-debrief, pr-description, review-flow, skill-review
   architecture/ feod-preset, mvvm, role-files
