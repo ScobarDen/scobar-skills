@@ -54,7 +54,7 @@ lint: {
 Four test skills, each answering one question:
 
 - `test-craft`: what a test asserts and what it leaves alone.
-- `testing` (siberiacancode): conventions of a unit test, and Playwright integration tests derived from test cases. Before writing tests, `unit-test-analyze` and `integration-test-analyze` plan the coverage. In a project with no tests yet, its defaults set the shape: `Should <observable behavior>` names, repeated cases through `forEach`. Its React rules apply only to React subjects.
+- `testing` (siberiacancode): conventions of a unit test, and Playwright integration tests derived from test cases. Before writing tests, its `rules/unit-test-analyze.md` and `rules/integration-test-analyze.md` plan the coverage. In a project with no tests yet, its defaults set the shape: `Should <observable behavior>` names, repeated cases through `forEach`. Its React rules apply only to React subjects.
 - `vitest`: the runner's API.
 - The framework file: how its subjects are mounted and tested.
 
@@ -66,13 +66,13 @@ Flows that need real navigation are Playwright browser tests; everything below t
 | --- | --- |
 | Architecture on the web; lint for levels and roles | `frontend-mvvm`, `frontend-boundaries` |
 | Tooling conventions; Vite; Vitest; pnpm | `antfu`, `vite`, `vitest`, `pnpm` (from `antfu/skills`) |
-| Test conventions, Playwright integration, coverage planning | `testing`, `unit-test-analyze`, `integration-test-analyze` (from `siberiacancode/agent-skills`) |
+| Test conventions, Playwright integration, coverage planning | `testing` (from `siberiacancode/agent-skills`) |
 | Improving an interface, or a new one | `design-flow` with `jakubkrehel/skills` and `Leonxlnx/taste-skill` |
 
 ```bash
 npx skills add ScobarDen/scobar-skills --skill frontend-mvvm frontend-boundaries design-flow
 npx skills add antfu/skills --skill antfu vite vitest pnpm
-npx skills add siberiacancode/agent-skills --skill testing unit-test-analyze integration-test-analyze
+npx skills add siberiacancode/agent-skills --skill testing
 npx skills add jakubkrehel/skills
 npx skills add Leonxlnx/taste-skill
 ```
